@@ -1,0 +1,1872 @@
+
+module tracrchem
+
+   !----------------------------------------------------------------------- 
+   ! Purpose: 
+   ! Contains the chemistry code for the model tracers.
+   ! 
+   ! Author: 
+   ! Module coded by E. Wilson
+   !----------------------------------------------------------------------- 
+
+   use shr_kind_mod, only: r8 => shr_kind_r8
+   use ppgrid,      only: pcols, pver, begchunk, endchunk
+   use pmgrid,     only: plat, plon, masterproc
+   use abortutils, only: endrun
+   use constituents, only: ppcnst
+   use tracers,      only: ixtrct, hazeind
+   use tracers_suite, only: adv, trac_ncnst, trtend, nadv
+   use shr_const_mod, only: shr_const_boltz, shr_const_pi, shr_const_avogad
+
+   implicit none
+
+#include <comctl.h>
+
+   private
+   save
+
+   public :: &
+      inichem,      &! Initialize chemistry parameters
+      chemdr         ! Chemistry driver
+
+   ! private module data
+   integer, parameter :: DBLKIND = selected_real_kind(12)
+
+   integer, parameter ::&
+      num_wave=158,       &! Number of wavelength bins
+      num_spec=43          ! Total number of chemical species
+
+      integer :: counter      ! number of times chemdr is implemented
+      integer :: nj(num_spec) ! # of photolytic reactions for given species
+      integer :: nr(num_spec)  ! # of chemical reactions for given species
+      integer :: nr2(num_spec) ! # of unimolecular reactions for given species
+      integer :: index_r(num_spec,100) ! Reaction index for given species
+      integer :: index_r2(num_spec,100)! Rxn idx for given species unimolecular rxn
+      integer :: index_j(num_spec,100) ! Photolytic index for given species
+      integer :: ind             ! Number of reactions in rates list
+      integer :: code(200)       ! Reaction type
+      integer :: reac1(200),reac2(200) ! Arrays of reactants
+      integer :: prod1(200),prod2(200),prod3(200) !Arrays of products
+      integer :: csrc(num_spec,3)  ! Cross section indices, 1=constituent index
+                                 ! 2=wavelength start 3=wavelength finish
+      integer :: cspd(num_spec,num_spec,num_spec)  ! Quantum yield arrays (constituents,photolytic products,photolytic pathways)
+      integer :: num_mol(num_spec)     ! number of products for particular absorber
+      real(r8) :: qi(pcols,pver,num_spec)   ! initial constituent mixing ratio
+      real(r8) :: qim(pcols,pver,num_spec) ! initial constituent mass mixing ratio
+      real(r8) :: q(pcols,pver,num_spec)          ! constituent mixing ratio
+      real(r8) :: qm(pcols,pver,num_spec)      ! constituent mass mixing ratio
+      integer, parameter :: numrad = num_spec-((adv+nadv)+1)+1 !inc N2
+                                                        ! radical mixing ratios
+      real(r8), allocatable :: radchunk(:,:,:,:)    ! ! radical mixing ratios
+      real(r8) :: saturation(pcols,pver,num_spec) ! saturation mixing ratio
+      real(r8) :: haze(pcols,pver)       ! haze parameterized mixing ratio
+      real(r8) :: hprod(pcols,pver)         ! haze production coefficient
+      real(r8) :: mw(num_spec)           ! constituent molecular wt g/mol
+      real(r8) :: nd(pcols,pver)           ! atm number density
+      real(r8) :: t(pcols,pver)            ! air temperature
+      real(r8) :: g(pver)                  ! gravity
+      real(r8) :: pmid(pcols,pver)         ! midpoint pressure in Pa
+      real(r8) :: zmid(pver)               ! midpoint altitude in meters
+      real(r8) :: mwg(pcols,pver)       ! atmospheric molecular weight in g/mol
+      real(r8) :: jper(num_spec,num_spec,pcols,pver)   ! j values 
+      real(r8) :: rates(num_spec,num_spec)   ! bi/trimolecular rate coefficient
+      real(r8) :: unim(num_spec)                ! unimolecular rate coefficient
+      real(r8) :: fa(num_spec,num_spec,num_spec)  ! Stoichiometric coefficient for given species,rxn in a 2 or 3 body reaction
+      real(r8) :: fb(num_spec,num_spec)      ! Stoichiometric coefficient for given species,rxn in a unimolecular reaction
+      real(r8) :: k(200),k0(200),ea(200),ea0(200),&
+                  nn(200),nn0(200),f1(200),f2(200) ! Rate parameters
+      real(r8) :: jv(pver)                 ! j-values
+      real(r8) :: cross_sec(num_spec,200)        ! constituent cross sections
+      real(r8) :: ray_n2(200)              ! Rayleigh cross sections of N2
+      real(r8) :: w2_n2
+      real(r8) :: w1_a
+      real(r8) :: w2_a
+      real(r8) :: haze_abs                 ! parameterized haze absorption cs
+      real(r8) :: haze_scat                ! parameterized haze scattering cs
+      real(r8) :: quantum_yield(num_spec,num_spec,200) ! constituent quantum yields
+      real(r8) :: wavelength(200)          ! wavelength in angstroms
+      real(r8) :: fl(200)      ! solar flux for moderate solar activity at 1 AU
+      real(r8) :: fac1(pver),fac2(pver)  ! scaling factors for haze computation
+      real(r8) :: cr1(pver),cr2(pver)      ! N4s,N2d production from cosmic ray
+      real(r8) :: radchnk_fld(plon,pver,plat,numrad)
+
+      character*100 :: path = '/home/ewilson/cam_titan_080904/titandata/atm/cam2/tracerdata/'
+      integer, parameter :: iprnt = 2000 !# of timesteps between radical output
+      real(r8), parameter :: mwn2 = 28.  ! molecular weight of N2
+      real(r8), parameter :: boltz = shr_const_boltz*1.0d7 
+      real(r8), parameter :: pi = shr_const_pi
+      real(r8), parameter :: avo = shr_const_avogad/1.0d3
+      real(r8), parameter :: rho = 1.0  !assuming haze density of 1 g cm^-3
+      real(r8), parameter :: rad = 1e-4               ! (radius in cm)
+      real(r8), parameter :: vol = 4.0*pi/3.0*rad**3
+      logical, parameter :: cosmic = .true.  ! include cosmic ray contribution
+      logical, parameter :: radwrite = .true. ! output radical conc.
+      logical, parameter :: radcheck = .false. ! check tendencies of radicals
+
+
+
+!##############################################################################
+contains
+!##############################################################################
+
+
+   subroutine inichem
+
+      !----------------------------------------------------------------------- 
+      ! Purpose: 
+      ! Initializes parameters for chemistry module.
+      ! 
+      ! Author: E. Wilson
+      !----------------------------------------------------------------------- 
+
+      use constituents,   only: cnst_mw
+      use ioFileMod, only: opnfil
+      use phys_grid, only: scatter_field_to_chunk
+      use filenames, only: raddata
+
+      implicit none
+
+      ! Local variables
+      integer ::&
+         i, j, l, m, ichnk, jj, s1, s2, r1, r2, p1, p2, p3, ierr
+      real(r8)  ::&
+         dummy
+      real(r8), parameter :: h_mass = 1.0
+      real(r8), parameter :: c_mass = 12.0
+      real(r8), parameter :: n_mass = 14.0
+      integer, parameter :: lun = 20
+
+      character(3)  :: inp
+!------------------------------------------------------------------------------
+
+      counter = 0
+
+      do l = ixtrct,ixtrct+(adv+nadv)-1    ! molecular weights of adv species
+         mw(l-ixtrct+1) = cnst_mw(l)
+      enddo
+
+      !-----------------------------------------------------------------------
+      !     molecular weights of radicals
+      !
+      !-----------------------------------------------------------------------
+
+      mw(20)=h_mass
+      mw(21)=c_mass + 3.0*h_mass
+      mw(22)=2.0*c_mass
+      mw(23)=2.0*c_mass + h_mass
+      mw(24)=2.0*c_mass + 3.0*h_mass
+      mw(25)=2.0*c_mass + 5.0*h_mass
+      mw(26)=3.0*c_mass + 2.0*h_mass
+      mw(27)=3.0*c_mass + 3.0*h_mass
+      mw(28)=3.0*c_mass + 5.0*h_mass
+      mw(29)=3.0*c_mass + 7.0*h_mass
+      mw(30)=4.0*c_mass + h_mass
+      mw(31)=4.0*c_mass + 2.0*h_mass
+      mw(32)=4.0*c_mass + 3.0*h_mass
+      mw(33)=4.0*c_mass + 4.0*h_mass
+      mw(34)=4.0*c_mass + 5.0*h_mass
+      mw(35)=4.0*c_mass + 6.0*h_mass
+      mw(36)=n_mass
+      mw(37)=n_mass
+      mw(38)=n_mass + h_mass
+      mw(39)=n_mass + c_mass
+      mw(40)=n_mass + c_mass + 2.0*h_mass
+      mw(41)=n_mass + 3.0*c_mass
+      mw(42)=n_mass + 3.0*c_mass + 2.0*h_mass
+      mw(43)=2.0*n_mass
+
+ 
+!-----------------------------------------------------------------------------
+!     read in rate coefficient parameters from data file
+!     set reaction rate indices
+!-----------------------------------------------------------------------------
+
+         call openfile(path,'rates.dat',10)
+
+         ind = 0
+         read(10,*) inp
+         read(10,*) inp
+ 11      if (inp.ne.'end') then
+            ind = ind+1
+            if ((inp.eq.'1').or.(inp.eq.'3')) then
+               read(10,*) reac1(ind),reac2(ind),prod1(ind),prod2(ind),&
+                 prod3(ind),k(ind),ea(ind),nn(ind),f1(ind),f2(ind)
+               r1=reac1(ind)
+               r2=reac2(ind)
+               p1=prod1(ind)
+               p2=prod2(ind)
+               p3=prod3(ind)
+               if (inp.eq.'1') then
+                  code(ind) = 1
+                  if ((100*r1+r2).ne.index_r(r1,nr(r1))) then
+                     nr(r1)=nr(r1)+1
+                     index_r(r1,nr(r1)) = 100*r1 + r2
+                  endif
+                  if (r2.ne.0) then
+                     if ((100*r1+r2).ne.index_r(r2,nr(r2))) then
+                        nr(r2)=nr(r2)+1
+                        index_r(r2,nr(r2)) = 100*r1 + r2
+                     endif
+                  endif
+                  if ((100*r1+r2).ne.index_r(p1,nr(p1))) then
+                     nr(p1)=nr(p1)+1
+                     index_r(p1,nr(p1)) = 100*r1 + r2
+                  endif
+                  if (p2.ne.0) then
+                     if ((100*r1+r2).ne.index_r(p2,nr(p2))) then
+                        nr(p2)=nr(p2)+1
+                        index_r(p2,nr(p2)) = 100*r1 + r2
+                     endif
+                  endif
+                  if (p3.ne.0) then
+                     if ((100*r1+r2).ne.index_r(p3,nr(p3))) then
+                        nr(p3)=nr(p3)+1
+                        index_r(p3,nr(p3)) = 100*r1 + r2
+                     endif
+                  endif
+               else
+                  code(ind) = 3
+                  nr2(r2)=nr2(r2)+1
+                  index_r2(r2,nr2(r2)) = r2
+                  nr2(p2)=nr2(p2)+1
+                  index_r2(p2,nr2(p2)) = r2
+               endif
+            elseif (inp.eq.'2') then
+               read(10,*) reac1(ind),reac2(ind),prod1(ind),prod2(ind),&
+                 prod3(ind),k0(ind),ea0(ind),nn0(ind),f1(ind),f2(ind)
+               read(10,*) k(ind),ea(ind),nn(ind)
+               r1=reac1(ind)
+               r2=reac2(ind)
+               p1=prod1(ind)
+               p2=prod2(ind)
+               p3=prod3(ind)
+               code(ind) = 2
+               if ((100*r1+r2).ne.index_r(r1,nr(r1))) then
+                  nr(r1)=nr(r1)+1
+                  index_r(r1,nr(r1)) = 100*r1 + r2
+               endif
+               if (r2.ne.0) then
+                  if ((100*r1+r2).ne.index_r(r2,nr(r2))) then
+                     nr(r2)=nr(r2)+1
+                     index_r(r2,nr(r2)) = 100*r1 + r2
+                  endif
+               endif
+               if ((100*r1+r2).ne.index_r(p1,nr(p1))) then
+                  nr(p1)=nr(p1)+1
+                  index_r(p1,nr(p1)) = 100*r1 + r2
+               endif
+               if (p2.ne.0) then
+                  if ((100*r1+r2).ne.index_r(p2,nr(p2))) then
+                     nr(p2)=nr(p2)+1
+                     index_r(p2,nr(p2)) = 100*r1 + r2
+                  endif
+               endif
+               if (p3.ne.0) then
+                  if ((100*r1+r2).ne.index_r(p3,nr(p3))) then
+                     nr(p3)=nr(p3)+1
+                     index_r(p3,nr(p3)) = 100*r1 + r2
+                  endif
+               endif
+            endif
+            read(10,*) inp
+            goto 11
+         endif
+         close(unit=10,status='keep')
+
+!  Read constituent cross sections
+
+      call cross_sections
+
+      allocate(radchunk(pcols,pver,begchunk:endchunk,numrad))
+
+! Save for photolysis calc (and/not) use for initial radical mrs
+      call openfile(path,'radicals.dat',10)
+      do i=1,pver
+         read(10,*) dummy,(qi(1,i,m+adv+nadv),m=1,numrad)
+         do j=2,pcols
+            qi(j,i,adv+nadv+1:num_spec)=qi(1,i,adv+nadv+1:num_spec)
+         enddo
+      enddo
+      close(unit=10,status='keep')
+      
+
+!  Option: either execute next do loop or next if,call statements
+      do ichnk=begchunk,endchunk
+         radchunk(:,:,ichnk,:)=qi(:,:,adv+nadv+1:num_spec)
+      enddo
+
+!      if (masterproc) then
+!         call opnfil (raddata,lun,'u')
+!         read(lun,iostat=ierr) radchnk_fld
+!         close(lun)
+!      endif
+!      call scatter_field_to_chunk(1,pver,numrad,plon,radchnk_fld,radchunk(:,:,begchunk:endchunk,:))
+
+
+! Chemical scaling factors used in parameterization of haze production
+! thru chemistry (units of molecules s^-1)
+     call openfile(path,'hazefactors',20)
+     do i=1,pver
+        read(20,*) dummy,fac1(i),fac2(i)
+     enddo
+     close(unit=20,status='keep')
+
+! Read solar spectrum
+      call openfile(path,'solar_mod_ext.dat',10)
+      read(10,*) (wavelength(i),fl(i),i=1,num_wave)
+      close(unit=10,status='keep')
+
+
+!  N production from cosmic ray destruction of N2
+      call openfile(path,'N2_cr.loss',20)
+      do i=1,pver
+         read(20,*) dummy,cr1(i),cr2(i)
+      enddo
+      close(unit=20,status='keep')
+
+!  Initialize tracer tendencies
+     allocate(trtend(pcols,pver,begchunk:endchunk,trac_ncnst))
+     trtend = 0.0
+
+     if (radcheck) then
+       open(unit=20,file='/home/ewilson/cam_titan_080904/camrun.titan/radical1',status='old')
+       open(unit=21,file='/home/ewilson/cam_titan_080904/camrun.titan/radical2',status='old')
+       open(unit=22,file='/home/ewilson/cam_titan_080904/camrun.titan/radical3',status='old')
+     endif   
+
+   end subroutine inichem
+
+!##############################################################################
+
+  subroutine cross_sections
+ 
+     implicit none
+
+     ! Local variables
+      real(r8) :: dummy,qe(20),alpha_n2,gamma_n2,assym,w2
+      integer :: &
+        i,j,k,k1,l,z,y,ind,num_path(num_spec)
+      character(3) :: dum
+      character(70) :: qpathname(num_spec),cpathname(num_spec)
+      logical :: first,last
+
+         
+! Read cross sections
+         j=0
+         call openfile(path,'csec',17)
+         read(17,*) dum
+         read(17,*) dum
+ 5       if (dum.ne.'end') then
+            read(17,*) ind,cpathname(ind)
+            call openfile(path,cpathname(ind),1)
+            j=j+1
+            first = .false.
+            last = .false.
+            i=1
+ 10         if ((.not.(last)).and.(i.le.num_wave)) then
+               if (i.gt.158) then
+                  wavelength(i) = i*10.0d0+1430.0
+                  cross_sec(ind,i) = 0.0d0
+               else
+                  read(1,*) wavelength(i), cross_sec(ind,i)
+               endif
+               csrc(j,1)=ind
+               if ((cross_sec(csrc(j,1),i).ne.0.0d0).and.(.not.(first))) then
+                  csrc(j,2)=i
+                  first = .true.
+               elseif ((cross_sec(csrc(j,1),i).eq.0.0d0).and.(first)) then
+                  csrc(j,3)=i-1
+                  last = .true.
+ 11               i=i+1
+                  if (i.gt.158) then
+                     wavelength(i) = i*10.0d0+1430.0
+                     cross_sec(ind,i) = 0.0d0
+                  else
+                     read(1,*) wavelength(i), cross_sec(ind,i)
+                  endif
+                  if ((i.lt.num_wave).and.(cross_sec(csrc(j,1),i).eq.0.0d0)) then
+                     goto 11
+                  elseif (cross_sec(csrc(j,1),i).ne.0.0d0) then
+                     last = .false.
+                  endif
+               endif
+               i=i+1
+               goto 10
+            endif
+            if (.not.(last)) then
+               if (first) then
+                  if (num_wave.gt.158) then
+                     csrc(j,3)=158
+                  else
+                     csrc(j,3)=num_wave
+                  endif
+               else
+                  csrc(j,3)=0
+               endif
+            endif
+            close(unit=1,status='keep')
+            read(17,*) dum
+            goto 5
+         endif
+         close(unit=17,status='keep')
+
+! Read quantum yields
+          quantum_yield = 0.0
+          nj = 0
+         
+         call openfile(path,'qyld',10)
+         read(10,*) dum
+         read(10,*) dum
+         read(10,*) dum
+ 290     if (dum.ne.'end') then
+            read(10,*) ind,qpathname(ind),num_mol(ind),num_path(ind)
+            do 291 y=1,num_mol(ind)
+                  read(10,*) (cspd(ind,y,z),z=1,num_path(ind)+1)
+                  nj(cspd(ind,y,1))=nj(cspd(ind,y,1))+1
+	          index_j(cspd(ind,y,1),nj(cspd(ind,y,1)))=ind
+ 292           continue
+ 291        continue
+            read(10,*) dum
+            goto 290
+         endif
+         close(unit=10,status='keep')
+         do 298 y=1,j
+            call openfile(path,qpathname(csrc(y,1)),10)
+            if (csrc(y,2).ne.0) then
+              read(10,*) dummy
+ 998          if (dummy.ne.wavelength(csrc(y,2))) then
+                read(10,*) dummy
+                goto 998
+              else
+                backspace(unit=10)
+              endif
+              do 299 i=csrc(y,2),csrc(y,3)
+                read(10,*) dummy,(qe(z),z=1,num_path(csrc(y,1)))
+                do 300 k=2,num_path(csrc(y,1))+1
+                  do 301 l=1,num_mol(csrc(y,1))
+                    quantum_yield((cspd(csrc(y,1),l,1)),csrc(y,1),i)= &
+                     quantum_yield((cspd(csrc(y,1),l,1)),csrc(y,1),i)+qe(k-1)*cspd(csrc(y,1),l,k)
+ 301              continue
+ 300            continue
+! Assuming loss processes undetermined
+                if (csrc(y,1).eq.8) then
+                  quantum_yield(csrc(y,1),csrc(y,1),i) = -1.0d0
+                endif
+ 299          continue
+            endif
+            if (csrc(y,1).eq.8) then
+              num_mol(csrc(y,1))=num_mol(csrc(y,1))+1
+              cspd(csrc(y,1),num_mol(csrc(y,1)),1)=csrc(y,1)
+            endif
+            close(unit=10,status='keep')
+ 298     continue
+
+! Account for contribution from cosmic ray destruction of N2
+         if (cosmic) then
+            nj(36)=nj(36)+1
+            index_j(36,nj(36))=43
+            nj(37)=nj(37)+1
+            index_j(37,nj(37))=43
+         endif
+
+! Haze cross section
+         haze_abs=2d-5          ! value to give appropriate haze opacity
+         haze_scat=2d-5         ! for rad_trans calculations
+
+! Rayleigh cross sections
+         alpha_n2 = 3.96d-25
+         gamma_n2 = 5.18d-49       ! gamma squared from Penney et al (1974)
+         w2_n2 = 0.5d0*(1.0-gamma_n2)/(1.0+2.0*gamma_n2)
+         do i=1,num_wave
+            ray_n2(i) = 8.0d0*pi/3.0d0*     &
+              ((2.0d0*pi/wavelength(i)*1.0d8)**2.0*alpha_n2)**2.0d0
+         enddo
+         assym=0.91
+         w2=0.86
+
+         w1_a=assym
+         w2_a=w2
+
+
+  end subroutine cross_sections
+
+!##############################################################################
+
+   subroutine chemdr( state, nstep, ncol, day_in_year, clat, clon, dtime)
+
+      !----------------------------------------------------------------------- 
+      ! Purpose: 
+      ! Chemistry driver.
+      ! 
+      ! Author: E. Wilson
+      !----------------------------------------------------------------------- 
+
+      use history, only: outfld
+      use physics_types, only: physics_state
+      use constituents, only: ppcnst
+      use phys_grid, only: gather_chunk_to_field
+
+
+      implicit none
+
+      integer, intent(in) ::    nstep
+      integer, intent(in) ::    ncol
+
+      type(physics_state), intent(inout) :: state
+
+      real(r8), intent(in) ::&
+         day_in_year,              &
+         clat(pcols),              &! current latitudes(radians)
+         clon(pcols),              &! current longitudes(radians)
+         dtime                      ! time step
+
+
+      ! Local variables
+      integer :: i, j, k, l, m, r1, r2, lchnk, ichnk, ind
+      real(r8), dimension(pcols,pver,num_spec) :: &
+         prod,         &! production coefficient
+         loss,         &! loss coefficient
+         qnew,         &! updated mixing ratios
+         qold           ! old mixing ratios
+      real(r8), dimension(pcols,pver) :: &
+         acetloss,      &! loss rate of acetylene
+         n2cr,          &! production rate of N atoms from N2 cosmic ray dest
+         hden,          &! haze particle density
+         hnew,          &! new haze particle density
+         hold,          &! old haze particle density
+         hprod,         &! haze production coefficient
+         hloss           ! haze loss rate
+      real(r8), dimension(pcols) :: &
+         diurnal_ave,   &! diurnally-averaged cos(SZA)
+         h               ! half-length of the illuminated day (in radians)
+      real(r8), dimension(num_spec) :: &
+         p0,           &! predictor production coefficient
+         g0,           &! initial source function
+         gp,           &! "predicted" source function
+         l0,           &! predictor loss coefficient
+         qq              ! temporary mole fraction for particular i,j
+      real(r8) :: dummy
+      real(r8) :: mmr(pcols,pver,ppcnst)     ! state mass mixing ratios
+      real(r8) :: tend(pcols,pver,trac_ncnst)
+
+      logical :: sat                        ! if saturated
+
+!------------------------------------------------------------------------------
+!     Initialization
+
+     counter = counter + 1
+
+
+     pmid = state%pmid
+     mmr = state%q
+     t = state%t
+     lchnk = state%lchnk
+     
+
+     do j = 1,ncol
+        do i = 1,pver
+           do l = ixtrct,hazeind-1 !Obtain mass mixing ratio for adv species
+	      qm(j,i,l-ixtrct+1) = mmr(j,i,l)
+	   enddo
+        enddo
+     enddo
+
+     haze(:,:)=mmr(:,:,hazeind)
+
+!    Reset tendency array
+     tend = 0.0
+
+! Calculate diurnally averaged cosine of solar zenith angle
+     call zenith_diurnal_av(day_in_year, clat, ncol, diurnal_ave, h)
+
+!  qm is taken to be qim in atmparam, quantities defined for photo calc are
+!  determined there
+     call atmparam(ncol)                    ! Prepare atm for chemistry
+
+     q(:,:,(adv+nadv)+1:num_spec) = radchunk(:,:,lchnk,:)
+     
+
+!  Calculate saturation vapor pressures
+     call vapor_pressure(ncol)
+
+!-----------------------------------------------------------------------------
+     do j=1,ncol
+        call rad_trans(j,diurnal_ave(j),h(j),clat(j),clon(j)) ! Acquire j-values (jper)
+	do i=1,pver
+           call reaction_rates(j,i)    ! Acquire rate data (rates,fa,fb,unim)
+! Calculate prod/loss for advected species, radicals for this time step
+! Note: prod is actually production/nd (units of s^-1)
+           qq = q(j,i,:)
+           do ind=1,2     ! 1 = predictor calc, 2 = corrector calc
+              do l=1,num_spec-1
+                 prod(j,i,l) = 0.0
+                 loss(j,i,l) = 0.0
+                 do m=1,nr(l)
+	            r1 = int(index_r(l,m)/100)
+                    r2 = mod(index_r(l,m),100)
+                    if (l.eq.r1) then
+                       loss(j,i,l) = loss(j,i,l)-fa(l,r1,r2)*        &
+	                rates(r1,r2)*qq(r2)*nd(j,i)
+                    elseif (l.eq.r2) then
+	               loss(j,i,l) = loss(j,i,l)-fa(l,r1,r2)*        &
+                        rates(r1,r2)*qq(r1)*nd(j,i)
+                    else
+                       prod(j,i,l) = prod(j,i,l)+fa(l,r1,r2)*        &
+                        rates(r1,r2)*qq(r1)*qq(r2)*nd(j,i)
+                    endif
+                 enddo
+                 do m=1,nr2(l)
+	            r1 = index_r2(l,m)
+                    if (l.eq.r1) then
+                       loss(j,i,l) = loss(j,i,l)-fb(l,r1)*unim(r1)
+                    else
+                       prod(j,i,l) = prod(j,i,l)+fb(l,r1)*unim(r1)*qq(r1)
+                    endif
+                 enddo
+                 do m=1,nj(l)
+	            r1 = index_j(l,m) 
+                    if (l.eq.r1) then
+                       loss(j,i,l) = loss(j,i,l)-jper(l,r1,j,i)
+                    else
+                       prod(j,i,l) = prod(j,i,l)+jper(l,r1,j,i)*qq(r1)
+                    endif
+                    if ((masterproc).and.(j.eq.1).and.(l.eq.23).and.(r1.eq.3)) then
+                       write(*,*) '***',i,jper(l,r1,j,i),qq(r1),jper(l,r1,j,i)*qq(r1)
+                    endif
+                       
+                 enddo
+              enddo
+              do l=1,num_spec-1 
+                 if ((1.0/loss(j,i,l)).ge.(dtime*ichem)) then
+                    if (ind.eq.1) then
+                       g0(l) = prod(j,i,l)-qq(l)*loss(j,i,l)
+                       qq(l) = q(j,i,l) + dtime*g0(l)
+                    else
+                       gp(l) = prod(j,i,l)-qq(l)*loss(j,i,l)
+                       qq(l) = q(j,i,l) + dtime/2.0*(g0(l) + gp(l))
+                    endif
+                 elseif ((1.0/loss(j,i,l)).lt.dtime*ichem) then
+                    if (ind.eq.1) then
+                       qq(l) = prod(j,i,l)/loss(j,i,l)
+                    else
+                       qq(l) = prod(j,i,l)/((l0(l)+loss(j,i,l))/2.0)
+                    endif
+                 else
+                    if (ind.eq.1) then
+                       g0(l) = prod(j,i,l)-q(j,i,l)*loss(j,i,l)
+                       qq(l) = q(j,i,l) + dtime*ichem*g0(l)/  &
+                                (1.0+dtime*ichem*loss(j,i,l))
+                    else
+                       g0(l) = ((p0(l)+prod(j,i,l))/2.0)-q(j,i,l)*l0(l)
+                       qq(l) = q(j,i,l) + dtime*ichem*g0(l)/ &
+                                (1.0+dtime*ichem*((l0(l)+loss(j,i,l))/2.0)/2.0)
+                    endif
+                 endif
+                 p0 = prod(j,i,:)
+                 l0 = loss(j,i,:)
+              enddo
+           enddo
+!  radical concentrations
+           do l=(adv+nadv)+1,num_spec-1
+              if (qq(l).lt.1.0d-60) then
+                 qq(l) = 1.0d-60
+              endif
+              if (radcheck) then
+                 if ((lchnk.eq.42).and.(j.eq.6).and.(i.eq.18)) then!.and.(mod(nstep,18).eq.0)) then
+                   write(20,83) nstep,l,q(j,i,l),qq(l)-q(j,i,l),prod(j,i,l)/loss(j,i,l)
+                 endif
+                 if ((lchnk.eq.23).and.(j.eq.1).and.(i.eq.1)) then !.and.(mod(nstep,18).eq.0)) then
+                   write(21,83) nstep,l,q(j,i,l),qq(l)-q(j,i,l),prod(j,i,l)/loss(j,i,l)
+                 endif
+                 if ((lchnk.eq.33).and.(j.eq.3).and.(i.eq.40)) then !.and.(mod(nstep,18).eq.0)) then
+                   write(22,83) nstep,l,q(j,i,l),qq(l)-q(j,i,l),prod(j,i,l)/loss(j,i,l)
+                 endif
+ 83              format(i8,4x,i2,4x,e16.7,4x,e12.3,4x,e8.3)
+              endif
+              if ((qq(l)-q(j,i,l)).lt.(-q(j,i,l)*(1.0d0 - 1.0d-10))) then
+                 q(j,i,l) = q(j,i,l)-q(j,i,l)*(1.0d0 - 1.0d-10)
+              elseif ((qq(l)-q(j,i,l)).gt.q(j,i,l)) then
+                 q(j,i,l) = q(j,i,l)+q(j,i,l)
+              else
+                 q(j,i,l) = qq(l)
+              endif
+           enddo
+
+! advected species
+	   do l=1,adv
+              sat = .false.
+	      qnew(j,i,l)=qq(l)
+              if (saturation(j,i,l).gt.0.0d0) then
+	         if (qnew(j,i,l).gt.saturation(j,i,l)) then
+                   qnew(j,i,l) = saturation(j,i,l)
+                   sat = .true.
+                 endif
+              endif
+! if saturated, reduce tendency so saturated value is reached by next 
+! chemical timestep
+              if (sat) then
+                  tend(j,i,l) =  mw(l)/mwg(j,i)* &
+                                    (qnew(j,i,l)-q(j,i,l))/dtime/ichem/2.0
+              else
+                  tend(j,i,l) =  mw(l)/mwg(j,i)* &
+                                    (qnew(j,i,l)-q(j,i,l))/dtime
+              endif
+           enddo
+        enddo
+     enddo
+
+! Convert haze mass mixing ratio to particles cm^-3
+     do j=1,ncol
+        do i=1,pver
+           hden(j,i) = haze(j,i)*mwg(j,i)/avo*nd(j,i)/rho/vol
+        enddo
+     enddo
+
+     acetloss=loss(:,:,3)*q(:,:,3)
+     n2cr=prod(:,:,36)+prod(:,:,37)
+
+
+!  Parameterize haze microphysics  
+     call microphys(ncol,hden,hprod,hloss,dtime,acetloss,n2cr)
+
+! haze tendency
+     hold = hden
+     do j=1,ncol
+        do i=1,pver
+           hnew(j,i) = (hold(j,i)+hprod(j,i)*dtime)/(1.0+hloss(j,i)*dtime)
+           tend(j,i,(adv+nadv)+1) = rho*vol*avo/mwg(j,i)/nd(j,i)* &
+                                    (hnew(j,i)-hold(j,i))/dtime
+        enddo
+     enddo
+
+
+     trtend(:,:,lchnk,:)=tend    ! assign adv & haze to storage array
+
+     radchunk(:,:,lchnk,:)=q(:,:,(adv+nadv)+1:num_spec) !assign rad to storage array
+     if (radwrite) then
+        if (mod(counter,iprnt).eq.0) then
+           call gather_chunk_to_field(1,pver,numrad,plon,radchunk(:,:,begchunk:endchunk,:),radchnk_fld)
+           call write_radical             ! write radicals to file every iprnt
+        endif                             ! chem timesteps
+     endif
+    
+   end subroutine chemdr
+
+!##############################################################################
+
+   subroutine atmparam(ncol)
+
+      !----------------------------------------------------------------------- 
+      ! Purpose: 
+      ! Converts atmospheric parameters to those necessary for chemistry
+      ! calculations: p(Pa) -> nd(cm^-3), q(kg/kg) -> q(molecule/molecule)
+      !
+      ! Author: E. Wilson
+      !----------------------------------------------------------------------- 
+
+
+      implicit none
+
+      integer, intent(in) ::&
+         ncol                  ! number of atmospheric columns used in chunk
+
+      ! Local variables
+      integer :: i, j, k
+      real(r8) ::&
+         n2mmr(pcols,pver)  ! mass mixing ratio for N2
+      !----------------------------------------------------------------------
+
+!  Calculate atmospheric number density and N2 mass mixing ratio
+      do j=1,ncol
+         do i=1,pver
+            if (i.eq.pver) then
+              nd(j,i) = 10.0d0**(2.0d0*log10(pmid(j,i))-log10(pmid(j,i-1)))*  &
+                       1.0d1/boltz/t(j,i)
+            else
+              nd(j,i) = 10.0d0**((log10(pmid(j,i))+log10(pmid(j,i+1)))/2.0d0)*&
+                       1.0d1/boltz/t(j,i)
+            endif
+            n2mmr(j,i) = 1.0d0
+            do k=1,adv
+               n2mmr(j,i) = n2mmr(j,i)-qm(j,i,k)
+            end do
+         end do
+      end do
+
+! Calculate atmospheric molecular weight for each grid point
+      do j=1,ncol
+         do i=1,pver
+            mwg(j,i) = n2mmr(j,i)/mwn2
+            do k=1,adv
+               mwg(j,i) = mwg(j,i) + qm(j,i,k)/mw(k)
+            end do
+            mwg(j,i) = 1.0d0/mwg(j,i)
+         end do
+      end do
+!  Convert constituent mass mixing ratio to molecular mixing ratio
+      do j=1,ncol
+         do i=1,pver
+            do k=1,adv+nadv
+               q(j,i,k) = qm(j,i,k)*mwg(j,i)/mw(k)
+            end do
+         end do
+      end do
+
+   if (counter.eq.1) then
+     do i=1,pver                     ! Calculate initial radical mass mixing
+        do j=1,ncol                  ! ratios for photolysis calc
+           do k=(adv+nadv)+1,(adv+nadv)+numrad
+              qim(j,i,k)=qi(j,i,k)*mw(k)/mwg(j,i)
+           enddo
+        enddo
+     enddo
+     qi(:,:,1:adv+nadv) = q(:,:,1:adv+nadv)   ! Save initial mixing ratios
+     qim(:,:,1:adv+nadv) = qm(:,:,1:adv+nadv) ! for photolysis calc
+   endif  
+
+   end subroutine atmparam
+
+
+!##############################################################################
+
+    subroutine rad_trans(col,dza,h,lat,lon)
+
+     use physconst, only: gravit
+     use shr_const_mod, only: shr_const_rearth,shr_const_rgas
+     use radcnst, only: ztau
+     use tracers, only: tflx
+
+     implicit none
+
+#include <comsol.h>
+!------------------------------Arguments--------------------------------
+     integer, intent(in) :: col
+     real(r8), intent(in) :: dza  !   diurnally-averaged solar zenith angle
+     real(r8), intent(in) :: h    ! 1/2-length of the illuminated day (in rad)
+
+!---------------------------Local variables-----------------------------
+      real(r8), dimension(pver) :: &
+        tau,zflux,w1,w2,ssa,i_ave,src,hmr,sh
+      real(r8) :: &
+	tau_tot(0:pver),flux0,f,new_ssa,arg,erf,ch,lat,lon
+      real(r8) :: &
+        colden,rttosun,radius,ssa1,lw1_0,lw2_0,za
+      real(r8), parameter :: rgas = shr_const_rgas/1000d0 ! J/mol/K
+      real(r8), parameter :: conv = 0.1  ! to convert cm^2/g to MKS
+      integer :: &
+        i,j,k,l,m
+!---------------------------------         -----------------------------------!
+
+
+      jper(:,:,col,:) = 0.0
+
+      do i=1,pver                 ! molecular mixing ratio
+         hmr(i) = haze(col,i)/(rho*vol)*mwg(col,1)/avo
+      enddo
+
+
+      do i=1,pver-1
+        zmid(i)=(ztau(i+1)+ztau(i))/2.0d0
+      enddo
+      zmid(pver)=ztau(pver)/2.0d0
+      do i=1,pver
+        if (i.ne.pver) then
+           g(i)=10.0d0**      &  ! g in units of m/s^2
+            (-((log10(pmid(col,i))+log10(pmid(col,i+1)))/2.0d0))*      &
+            (pmid(col,i+1)-pmid(col,i))/(zmid(i)-zmid(i+1))*           &
+            t(col,i)*rgas/(mwg(col,i)/1.0d3)
+        else
+           g(i)=g(i-1)
+        endif
+        sh(i) = rgas*t(col,i)/(g(i)*mwg(col,i)/1000d0)
+      enddo
+
+! Get orbital data
+      radius=shr_const_rearth
+      rttosun=9.4962672d0             ! Distance from sun in AU
+
+
+!  column density integrated over altitude from top to infinity in cm^-2
+!  assuming constant scale height in cm
+      colden = nd(col,1)*sh(1)*100d0
+
+      src = 0.0
+!      do i=1,pver
+!         write(87,*) col,i,qm(col,i,24)
+!      enddo
+      do k=1,num_wave
+         tau_tot(0)=colden*hmr(1)*(haze_abs+haze_scat) ! using molecular mixing ratio
+         j = 1
+ 441     if (csrc(j,1).ne.0) then
+            tau_tot(0) = tau_tot(0) + colden*qi(col,1,csrc(j,1))*cross_sec(csrc(j,1),k)
+            j = j+1
+            goto 441
+         endif
+         ssa1=colden*(hmr(1)*haze_scat+ray_n2(k))/tau_tot(0)
+         lw1_0 = ssa1*(hmr(1)*haze_scat*w1_a)/ &
+                 (ray_n2(k)+hmr(1)*haze_scat)
+         lw2_0 = ssa1*(ray_n2(k)*w2_n2+hmr(1)*haze_scat*w2_a)/ &
+                 (ray_n2(k)+hmr(1)*haze_scat)
+! Calculate elements of tau -> cm/s^2/Pa   using mass mixing ratio
+         do i=1,pver
+           tau(i)=(haze(col,i)*(haze_abs+haze_scat)/(vol*rho)+ray_n2(k)/(mwn2/avo))*conv
+           ssa(i)=(haze(col,i)*haze_scat/(vol*rho)+ray_n2(k)/(mwn2/avo))*conv
+           j = 1
+41         if (csrc(j,1).ne.0) then
+               tau(i) = tau(i) + qim(col,i,csrc(j,1))*   &
+                        cross_sec(csrc(j,1),k)/(mw(csrc(j,1))/avo)*conv
+!               if ((masterproc).and.(k.eq.83).and.(i.eq.38)) then
+!                  write(84,*) col,csrc(j,1),qim(col,i,csrc(j,1)), &
+!                  cross_sec(csrc(j,1),k),mw(csrc(j,1)),     &
+!                  pmid(col,i)-pmid(col,i-1),g(i),           &
+!                  qim(col,i,csrc(j,1))*cross_sec(csrc(j,1),k)/(mw(csrc(j,1))/avo)*conv*(pmid(col,i)-pmid(col,i-1))/g(i)
+!               endif
+               j = j+1
+               goto 41
+           endif
+!     Multiply by rho*dz in units of kg m^-2
+           if (i.eq.pver) then
+              tau(i) = tau(i)*(pmid(col,i)-pmid(col,i-1))/g(i)
+              ssa(i) = ssa(i)*(pmid(col,i)-pmid(col,i-1))/g(i)
+           else
+              tau(i) = tau(i)*(pmid(col,i+1)-pmid(col,i))/g(i)
+              ssa(i) = ssa(i)*(pmid(col,i+1)-pmid(col,i))/g(i)
+           endif
+!           if (masterproc) then
+!              if (k.eq.83) then
+!                 write(81,*) i,tau(i),ssa(i),qim(col,i,24)
+!              endif
+!           endif
+           close(unit=81,status='keep')
+           ssa(i) = ssa(i)/tau(i)
+           w1(i) = ssa(i)*(hmr(i)*haze_scat*w1_a)/ &
+                 (ray_n2(k)+hmr(i)*haze_scat)
+           w2(i) = ssa(i)*(ray_n2(k)*w2_n2+hmr(i)*haze_scat*w2_a)/ &
+                 (ray_n2(k)+hmr(i)*haze_scat)
+           flux0 = fl(k)/pi*(1.0d0/rttosun)**2
+         enddo
+!     Delta-M Approximation
+         flux0 = flux0*h/pi
+         do i=1,pver
+            f = w2(i)/ssa(i)/5.0d0
+            new_ssa = (1.0d0 - f)*ssa(i)/(1.0d0 - ssa(i)*f)
+            tau(i) = (1.0d0 - ssa(i)*f)*tau(i)
+            w1(i) = (w1(i)/3.0d0/ssa(i)-f)/(1.0d0-f)*3.0d0*new_ssa
+            ssa(i) = new_ssa
+            tau_tot(i) = tau_tot(i-1) + tau(i)
+            if (tau_tot(i).gt.20.0) then
+               tau_tot(i) = 20.0             ! Maximum tau
+               tau(i) = 0.0
+            endif
+            if (acos(dza).gt.(pi*75.0/180.0)) then
+               arg = (radius+zmid(i))/sh(i)
+               if (acos(dza).le.(pi*90.0/180.0)) then
+                  ch = sqrt(pi*arg/2.0)*                          &
+                       (1.0-erf(sqrt(arg/2.0)*abs(dza)))*    &
+                       exp(arg/2.0*dza**2)
+               else
+                  ch = sqrt(2.0*pi*arg)*                          &
+                       (sqrt(sin(acos(dza)))*exp(arg*(1.0-sin(acos(dza))))-   &
+                       (0.5*exp(arg/2.0*dza**2)*            &
+                       (1.0-erf(sqrt(arg/2.0)*abs(dza)))))
+               endif
+               zflux(i)=fl(k)*exp(-(tau_tot(i-1)+tau(i)/2.0d0)*ch)* &
+                        (1.0d0/rttosun)**2.0d0*h/pi
+            else
+               zflux(i)=fl(k)*exp(-(tau_tot(i-1)+tau(i)/2.0d0)/dza)*   &
+                        (1.0d0/rttosun)**2.0d0*h/pi
+            endif
+            if (zflux(i).lt.1.0d-10) then
+              zflux(i) = 1.0d-10                 ! Minimum zflux
+            endif
+!            if (dza.lt.1.0d-2) then
+!               za = 1.0d-2           ! Minimum cos(SZA) for two_stream
+!            else
+               za = dza
+!            endif
+         enddo
+         call two_stream(pver,tau_tot,tau,ssa,za,flux0,i_ave,ssa1,src,w1,w2,lw1_0,lw2_0,k,zflux,lat,lon)
+         do i=1,pver
+            j = 1
+ 61         if (csrc(j,1).ne.0d0) then
+               do l=1,num_mol(csrc(j,1))
+                  if (k.eq.num_wave) then
+                     jper(cspd(csrc(j,1),l,1),csrc(j,1),col,i) =       &
+                      jper(cspd(csrc(j,1),l,1),csrc(j,1),col,i) +      &
+                      cross_sec(csrc(j,1),k)*(zflux(i)+i_ave(i))*       &
+                      (wavelength(k)-wavelength(k-1))*                 &
+                      quantum_yield(cspd(csrc(j,1),l,1),csrc(j,1),k)/2.0d0
+                  elseif (k.eq.1) then
+                     jper(cspd(csrc(j,1),l,1),csrc(j,1),col,i) =       &
+                      jper(cspd(csrc(j,1),l,1),csrc(j,1),col,i) +     &
+                      cross_sec(csrc(j,1),k)*(zflux(i)+i_ave(i))*     &
+                      (wavelength(k+1)-wavelength(k))*                &
+                      quantum_yield(cspd(csrc(j,1),l,1),csrc(j,1),k)/2.0d0
+                  else
+                     jper(cspd(csrc(j,1),l,1),csrc(j,1),col,i) =       &
+                      jper(cspd(csrc(j,1),l,1),csrc(j,1),col,i) +     &
+                      cross_sec(csrc(j,1),k)*(zflux(i)+i_ave(i))*     &
+                      (wavelength(k+1)-wavelength(k))*                &
+                      quantum_yield(cspd(csrc(j,1),l,1),csrc(j,1),k)
+                  endif
+               enddo
+               j = j+1
+               goto 61
+            endif
+         enddo
+      enddo
+
+!  N production from cosmic ray destruction of N2
+      if (cosmic) then
+         do i=1,pver
+            jper(36,43,col,i) = jper(36,43,col,i) + cr1(i)
+            jper(37,43,col,i) = jper(37,43,col,i) + cr2(i)
+         enddo
+      endif
+      close(unit=81,status='keep')
+
+
+  end subroutine rad_trans
+
+!##############################################################################
+
+   subroutine microphys(ncol,hden,hprod,hloss,dtime,chem1,chem2)
+
+      !----------------------------------------------------------------------- 
+      ! Purpose: 
+      ! Parameterize haze loss processes through microphysics
+      ! 
+      ! Author: E. Wilson
+      !----------------------------------------------------------------------- 
+
+      integer, intent(in) ::    ncol
+      real(r8), intent(in) ::   dtime
+      real(r8), intent(in) ::   hden(pcols,pver)
+      real(r8), intent(out) ::  hprod(pcols,pver)
+      real(r8), intent(out) ::  hloss(pcols,pver)
+      real(r8), intent(in) :: chem1(pcols,pver)
+      real(r8), intent(in) :: chem2(pcols,pver)
+
+      ! Local variables
+      integer :: i, j
+      real(r8), dimension(pcols,pver) :: &
+         tcoag,         &! coagulation timescale
+         tsed,          &! sedimentation timescale
+         sh,            &! haze scale height
+         vel,           &! sedimentation velocity
+         kern            ! coagulation kernel
+      real(r8) :: &
+         mass,          &! haze mass
+         als,           &! sticking coefficient
+         bgyr,          &! fit parameter
+         rgyr,          &! gyroradius
+         diam,          &! haze diameter
+         proton,        &! mass of proton
+         vis,           &! viscosity
+         ph0,           &! shape factor
+         crosec,        &! collision cross section
+         mfp,           &! mean free path * mass
+         xsecrat,       &
+         sigs,          &
+         n2phi,         &
+         vsed0,         &
+         ased,          &
+         kn            
+      real(r8) :: grav(pver),dz(pver),dummy
+
+!------------------------------------------------------------------------------
+
+! Parameterization of Haze production thru chem (units of molecules cm^-3 s^-1)
+     do i=1,pver
+        do j=1,ncol
+           hprod(j,i) = (fac1(i)*chem1(j,i)+fac2(i)*chem2(j,i))
+        enddo
+     enddo
+
+! Initialization
+     do i=1,pver
+        grav(i) = g(i)*100.0       ! (gravity in cm/s^2)
+        if (i.eq.pver) then
+          dz(i) = (zmid(i-1) - zmid(i))*100.0
+        else
+          dz(i) = (zmid(i) - zmid(i+1))*100.0
+        endif
+     enddo
+
+     als = 1.0      
+     bgyr = 0.5
+     diam = rad*2.0
+     proton = 1.6725e-24       ! (mass in grams)
+     mass = vol*rho
+     vis = 1.31e-6*t(1,pver)**0.867  ! (units of dyne-s/cm^2)
+     vsed0 = grav(pver)/(6*pi*vis)   ! (units of cm^2/g/s)
+     rgyr = diam*bgyr
+     sigs = pi/4.0
+     xsecrat = pi*rgyr*rgyr/(sigs*diam*diam)
+     crosec = pi*(1.58e-8)**2
+     ph0 = 1.0
+     n2phi = sqrt((pi*crosec*crosec)/(8.0+28.0*proton*boltz))*     &
+             1.31e-6*t(1,pver)**0.367
+     ased = 9.0/2.0*n2phi/ph0
+
+! Convert haze production to units of particles cm^-3 s^-1
+     do j=1,ncol
+        do i=1,pver
+           hprod(j,i) = hprod(j,i)*mwg(j,i)/avo/rho/vol
+        enddo
+     enddo
+
+     do j=1,ncol   
+        do i=1,pver
+! coagulation
+
+! coagulation kernel in units of cm^3 s^-1
+           kern(j,i)=als*sqrt(4.0*pi/3.0)*bgyr**2*sqrt(6.0*boltz*t(j,i)/rho)* &
+                     diam**2*sqrt(2.0/vol)
+           tcoag(j,i) = (hden(j,i)*kern(j,i))**(-1.0)
+
+! sedimentation
+           mfp = 28.0*proton/nd(j,i)/crosec
+           kn = mfp/rgyr
+!           vel(j,i) = rho*grav(i)*rad/2.0/hden(j,i)*    &
+!                      sqrt(pi/(2.0/mass/boltz/t(j,i)))
+           vel(j,i) = vsed0*mass/rgyr*(1.0+ased*xsecrat*kn*exp(-2.0/kn))
+           if (i.eq.pver) then
+              sh(j,i) = sh(j,i-1)
+           else
+              sh(j,i) = -((hden(j,i)-hden(j,i+1))/dz(i)/  &
+                       (hden(j,i)+hden(j,i+1)/2.0))**(-1.0)
+           endif
+           sh(j,i) = max(1.0d5,sh(j,i))
+           tsed(j,i) = sh(j,i)/vel(j,i)
+           hloss(j,i) = 1.0/(min(tcoag(j,i),tsed(j,i)))
+        enddo
+     enddo
+
+
+  end subroutine microphys
+
+!##############################################################################
+
+  subroutine reaction_rates(j, i)
+
+      !----------------------------------------------------------------------- 
+      ! Purpose: 
+      ! Compute rate coefficients for each gas-phase reaction
+      ! Author: E. Wilson
+      !----------------------------------------------------------------------- 
+
+      implicit none
+
+      integer, intent(in) :: &
+	j,i
+      ! Local variables:
+      integer :: m, l, n, r1, r2, p1, p2, p3
+      real(r8) ::  &
+	kzero,kinfin,fcent
+
+
+! Initialize parameters
+
+      call chem_initialize
+
+
+!   Assign rate coefficients
+      do m=1,ind
+         r1=reac1(m)
+         r2=reac2(m)
+         p1=prod1(m)
+         p2=prod2(m)
+         p3=prod3(m)
+         if (code(m).eq.1) then             ! Bimolecular, pressure-independent
+            rates(r1,r2)=rates(r1,r2)+ &
+              k(m)*exp(-ea(m)/t(j,i))*t(j,i)**(-nn(m))
+            if (p1.ne.0) then
+               fa(p1,r1,r2)=fa(p1,r1,r2)+ &
+                 k(m)*exp(-ea(m)/t(j,i))*t(j,i)**(-nn(m))
+            endif
+            if (p2.ne.0) then
+               fa(p2,r1,r2)=fa(p2,r1,r2)+ &
+                 k(m)*exp(-ea(m)/t(j,i))*t(j,i)**(-nn(m))
+            endif
+            if (p3.ne.0) then
+               fa(p3,r1,r2)=fa(p3,r1,r2)+ &
+                 k(m)*exp(-ea(m)/t(j,i))*t(j,i)**(-nn(m))
+            endif
+            fa(r1,r1,r2)=fa(r1,r1,r2)- &
+              k(m)*exp(-ea(m)/t(j,i))*t(j,i)**(-nn(m))
+            fa(r2,r1,r2)=fa(r2,r1,r2)- &
+              k(m)*exp(-ea(m)/t(j,i))*t(j,i)**(-nn(m))
+         elseif (code(m).eq.3) then      ! Unimolecular
+            unim(r2)=unim(r2)+ &
+              k(m)*exp(-ea(m)/t(j,i))*t(j,i)**(-nn(m))
+            fb(r2,r2)=fb(r2,r2)- &
+              k(m)*exp(-ea(m)/t(j,i))*t(j,i)**(-nn(m))
+            fb(p2,r2)=fb(p2,r2)+ &
+              k(m)*exp(-ea(m)/t(j,i))*t(j,i)**(-nn(m))
+         elseif (code(m).eq.2) then        ! Bimolecular, pressure-dependent
+            kzero=k0(m)*exp(-ea0(m)/t(j,i))*t(j,i)**(-nn0(m))
+            if ((r1.eq.8).and.(r2.eq.8)) then                  !Special case
+               kinfin=k(m)*exp(-ea(m)*t(j,i))*t(j,i)**(-nn(m))
+            else
+               kinfin=k(m)*exp(-ea(m)/t(j,i))*t(j,i)**(-nn(m))
+            endif
+            fcent=f1(m)-f2(m)*t(j,i)
+            rates(r1,r2)=rates(r1,r2)+10.0d0** &
+              (log10(kzero*kinfin*nd(j,i)/(kinfin+(kzero*nd(j,i))))&
+              + log10(fcent)/(1+(log10(kzero*nd(j,i)/kinfin))**2))
+               if (p1.ne.0) then
+                  fa(p1,r1,r2)=fa(p1,r1,r2)+10.0d0** &
+                    (log10(kzero*kinfin*nd(j,i)/(kinfin+(kzero*nd(j,i))))&
+                    + log10(fcent)/(1+(log10(kzero*nd(j,i)/kinfin))**2))
+               endif
+               if (p2.ne.0) then
+                  fa(p2,r1,r2)=fa(p2,r1,r2)+10.0d0** &
+                    (log10(kzero*kinfin*nd(j,i)/(kinfin+(kzero*nd(j,i))))&
+                    + log10(fcent)/(1+(log10(kzero*nd(j,i)/kinfin))**2))
+               endif
+               if (p3.ne.0) then
+                  fa(p3,r1,r2)=fa(p3,r1,r2)+10.0d0** &
+                    (log10(kzero*kinfin*nd(j,i)/(kinfin+(kzero*nd(j,i))))&
+                    + log10(fcent)/(1+(log10(kzero*nd(j,i)/kinfin))**2))
+               endif
+               fa(r1,r1,r2)=fa(r1,r1,r2)-10.0d0** &
+                 (log10(kzero*kinfin*nd(j,i)/(kinfin+(kzero*nd(j,i))))&
+                 + log10(fcent)/(1+(log10(kzero*nd(j,i)/kinfin))**2))
+               fa(r2,r1,r2)=fa(r2,r1,r2)-10.0d0** &
+                 (log10(kzero*kinfin*nd(j,i)/(kinfin+(kzero*nd(j,i))))&
+                 + log10(fcent)/(1+(log10(kzero*nd(j,i)/kinfin))**2))
+         endif
+      enddo
+      do m=1,num_spec
+         do l=1,nr(m)
+            r1=int(index_r(m,l)/100)
+            r2=mod(index_r(m,l),100)
+            fa(m,r1,r2)=fa(m,r1,r2)/rates(r1,r2)
+         enddo
+         do l=1,nr2(m)
+            r1=index_r2(m,l)
+            fb(m,r1)=fb(m,r1)/unim(r1)
+         enddo
+      enddo
+
+  end subroutine reaction_rates
+
+
+!##############################################################################
+
+  subroutine chem_initialize
+
+      implicit none
+
+      ! Local variables:
+      integer :: i, j, k, l, m
+
+!    Initialize rate variables
+
+     fa = 0.0
+     rates = 0.0
+     fb = 0.0
+     unim = 0.0
+
+   end subroutine chem_initialize
+
+
+!##############################################################################
+
+  subroutine vapor_pressure(ncol)
+
+      implicit none
+
+      integer, intent(in) :: ncol
+      
+     ! Local variables
+      real(r8) :: xx,p(ncol,pver)
+      integer  :: i,j,k
+
+
+     do j=1,ncol
+        do i=1,pver
+           if (i.eq.pver) then
+              p(j,i)=10.0d0**(2.0d0*log10(pmid(j,i))-log10(pmid(j,i-1)))/100d0
+           else
+              p(j,i)=10.0d0**((log10(pmid(j,i))+log10(pmid(j,i+1)))/2.0d0)/100d0
+           endif
+        enddo
+      enddo
+
+      saturation = 0.0
+
+      do j=1,ncol
+        do i=1,pver
+
+! CH4 
+           if (t(j,i) .le. 90.0) then ! (in torr) (Allen and Nelson, 1998)
+             xx = 20.427d0-(720.1d0/t(j,i))-(5.383d0*log10(t(j,i)))
+             if (i.ge.55) then
+               saturation(j,i,1) = 10.0d0**xx/760.0d0*1013.0d0*0.94d0/p(j,i)
+             else
+               saturation(j,i,1) = 10.0d0**xx/760.0d0*1013.0d0*1.00d0/p(j,i)
+             endif
+           else                ! (in atmospheres) (Kirk and Ziegler, 1965)
+             xx = 3.901408d0-(437.54809d0/t(j,i))+(1598.8512d0/t(j,i)**2) &
+              -(154567.02d0/t(j,i)**3)
+             saturation(j,i,1) =10.0d0**xx*1013.0d0*1.00d0/p(j,i)
+           endif
+! C2H2            (Allen and Nelson, 1998)
+           if (t(j,i) .le.150.0) then
+             xx = 15.213d0-(1342.5d0/t(j,i))-2.301d0*log10(t(j,i))
+           endif
+           saturation(j,i,3) = 10.0d0**xx*(1013.0d0/760.0d0)/p(j,i)
+! C2H4  (Allen and Nelson, 1998)
+! Vapor over liquid
+           if ((t(j,i) .gt. 104.0) .and. (t(j,i) .le. 150.0)) then
+             xx = 24.58d0-(1140.0d0/t(j,i))-6.8d0*log10(t(j,i))
+! Vapor over ice
+           elseif (t(j,i) .le. 104.0) then
+             xx = 13.64d0-(1004.0d0/t(j,i))-2.0d0*log10(t(j,i))
+           endif
+           saturation(j,i,4) = 10.0d0**xx*(1013.0d0/760.0d0)/p(j,i)
+! C2H6          (Romani and Atreya,1988),(Ziegler,1964)
+           if ((t(j,i) .gt. 90.0) .and. (t(j,i) .le. 140.0)) then
+             xx = 5.9366d0-(1086.17d0/t(j,i))+3.83464d0*log10(1000d0/t(j,i))
+           elseif (t(j,i) .le. 90.0) then
+             xx = 10.01d0 - (1085.0d0/(t(j,i)-0.561d0))
+           endif
+           saturation(j,i,5) = 10.0d0**xx*(1013.0d0/760.0d0)/p(j,i)
+! C4H2           (Tanneberger,1933),(Khanna et al,1990)
+           xx = 5.3817d0-(3300.5d0/t(j,i))+16.63415d0*log10(1000d0/t(j,i))
+           saturation(j,i,10) = 10.0d0**xx*(1013.0d0/760.0d0)/p(j,i)
+! CH3C2H             (Stull,1947),others
+           xx = 7.7759d0-(1240.32d0/t(j,i))
+           saturation(j,i,6) = 10.0d0**xx*(1013.0d0/760.0d0)/p(j,i)
+! CH2CCH2
+           xx = 31.6598d0-1930.05d0/t(j,i)-8.69972d0*log10(t(j,i))
+           saturation(j,i,7) = 10.0d0**xx*(1013.0d0/760.0d0)/p(j,i)
+! C3H6
+           xx = 20.607d0-(1454.21d0/t(j,i))-4.79151d0*log10(t(j,i))
+           saturation(j,i,8) = 10.0d0**xx*(1013.0d0/760.0d0)/p(j,i)
+! C3H8           (Tickner and Lossing, 1951),(Ziegler,1959)
+           xx = 8.16173d0-(1176.0d0/t(j,i))
+           saturation(j,i,9) = 10.0d0**xx*(1013.0d0/760.0d0)/p(j,i)
+! C4H4   
+           xx = 21.8768d0-(1948.96d0/t(j,i))-4.89223d0*log10(t(j,i))
+           saturation(j,i,33) = 10.0d0**xx*(1013.0d0/760.0d0)/p(j,i)
+! C4H6            (Schlessinger,1970)
+           xx = 8.032581d0-(1441.42d0/t(j,i))
+           saturation(j,i,11) = 10.0d0**xx*(1013.0d0/760.0d0)/p(j,i)
+! HCN
+           xx = 11.41d0-(2318.0d0/t(j,i))
+           saturation(j,i,12) = 10.0d0**xx*(1013.0d0/760.0d0)/p(j,i)
+! HC3N               (Sagan and Thompson, 1984)
+           xx = 6.222d0-(1913.0d0/t(j,i))
+           saturation(j,i,13) = 10.0d0**xx*(1013.0d0/760.0d0)/p(j,i)
+! C2H3CN
+           xx = 21.7871d0-2316.46d0/t(j,i)-4.83794d0*log10(t(j,i))
+           saturation(j,i,14) = 10.0d0**xx*(1013.0d0/760.0d0)/p(j,i)
+
+        enddo
+      enddo
+
+  end subroutine vapor_pressure
+
+!##############################################################################
+
+  subroutine zenith_diurnal_av(day_in_year, clat, ncol, diurnal_ave, h)
+!----------------------------------------------------------------------- 
+! 
+! Purpose: 
+! Compute cosine of diurnal averaged solar zenith angle for radiation
+!   computations.  Based on zenith routine.
+! 
+! 
+! Author: E.Wilson
+! 
+!-----------------------------------------------------------------------
+
+
+   use shr_kind_mod, only: r8 => shr_kind_r8
+   use shr_orb_mod
+
+   implicit none
+
+#include <misc.h>
+#include <params.h>
+#include <crdcon.h>
+#include <comsol.h>
+
+!------------------------------Arguments--------------------------------
+!
+! Input arguments
+!
+   integer, intent(in) :: ncol                 ! number of positions
+   real(r8), intent(in) :: day_in_year
+   real(r8), intent(in) :: clat(ncol)          ! Current centered latitude (radians)
+!
+! Output arguments
+!
+   real(r8), intent(out) :: diurnal_ave(ncol) ! Cos d_aved solar zenith angle
+   real(r8), intent(out) :: h(ncol)           ! fraction of illumination in rad
+!
+!---------------------------Local variables-----------------------------
+!
+   integer i         ! Position loop index
+   real(r8) declin   ! Solar declination angle  in radians
+   real(r8) eccf     ! Earth orbit eccentricity factor
+   
+!
+!-----------------------------------------------------------------------
+!
+
+    ! need to modify eccen, mvelpp, lambm0, and obliqr for titan
+   call shr_orb_decl (day_in_year  ,eccen     ,mvelpp  ,lambm0  ,obliqr  , &
+                      declin   ,eccf      )
+!
+! Compute diurnally averaged local cosine solar zenith angle,
+!
+   
+   do i=1,ncol
+      h(i) = -tan(clat(i))*tan(declin)
+      if (h(i).gt.1.0) then
+        h(i) = 0.0
+      elseif (h(i).lt.-1.0) then
+        h(i) = pi
+      else
+        h(i) = acos(h(i))
+      endif
+      if (h(i).eq.0.0) then
+         h(i) = 1.0e-3                       ! Minimum h
+      endif
+      diurnal_ave(i) = cos(clat(i))*cos(declin)*sin(h(i))/h(i) + &
+                       sin(clat(i))*sin(declin)
+      if (diurnal_ave(i).lt.1.0d-2) then
+         diurnal_ave(i) = 1.0d-2              ! Minimum cos(SZA)
+      endif
+   end do
+
+   return
+end subroutine zenith_diurnal_av
+
+!##############################################################################
+  subroutine write_radical
+
+     use ioFileMod, only: opnfil
+     use time_manager, only: get_curr_date
+     use filenames, only: interpret_filename_spec
+
+!---------------------------Local workspace-----------------------------
+     integer :: ichnk, ierr
+     character(len=256) :: radfilename_spec = '%c.cam2.rr.%y-%m-%d-%s.nc'
+     character(len=256) :: fname  ! netcdf local filename for radicals
+     integer, parameter :: lun = 20
+!-----------------------------------------------------------------------
+
+
+    fname = interpret_filename_spec( radfilename_spec )
+    fname = 'radicals_'//fname
+     if (masterproc) then
+        call opnfil (fname,lun,'u')
+        write(lun,iostat=ierr) radchnk_fld
+        close(lun)
+     endif
+
+     
+     return
+  end subroutine write_radical
+
+!##############################################################################
+  subroutine two_stream(num,tau_tot,tau,ssa,mu_0,flux,i_ave,ssa0,src, &
+                        lw1,lw2,lw1_0,lw2_0,wvl,zflux,lat,lon)
+
+      implicit none
+
+
+!   Local variables
+      real(r8) :: g,ssa0
+      real(r8) :: a(3*pver,pver),f(3*pver),dx(3*pver),i_ave(pver),src(pver)
+      real(r8) :: t,tau_tot(0:pver),tau(pver),ssa(pver),mu,mu_0,flux
+      real(r8) :: delt,k,k1,k2,iup,gamma1,gamma2,zflux(pver)
+      real(r8) :: lw1(pver),lw2(pver),w11,w12,w21,w22
+      real(r8) :: h1up,h1down,h2up,h2down,lw1_0,lw2_0,lat,lon
+      integer  :: i,n,num,l,j,offset,ierr,wvl,y,z
+      logical  :: conservative(pver)
+
+         ierr=0
+         l = 2
+         mu = sqrt(1.0d0/3.0d0)
+         g = 0.0d0
+         call eps(delt)
+         do 5 j = 1,2*num+2
+            do 6 i = 1,100!2*num+2
+               a(j,i) = 0.0d0
+    6       continue
+            f(j) = 0.0d0
+    5    continue
+
+
+         do 10 i=1,num
+            if (ssa(i) .ge. (1.0d0-1.0d-12)) then
+               conservative(i) = .true.
+               lw1(i) = lw1(i)/ssa(i)
+               lw2(i) = lw2(i)/ssa(i)
+               ssa(i) = 1.0d0 - 1.0d-12!*delt
+               lw1(i) = lw1(i)*ssa(i)
+               lw2(i) = lw2(i)*ssa(i)
+            else
+               conservative(i) = .false.
+            endif
+            if (tau_tot(i) .le. 30.0d0) then
+               n = i
+            endif
+   10    continue
+
+         if (ssa0 .ge. (1.0d0-1.0d-12)) then
+            lw1_0 = lw1_0/ssa0
+            lw2_0 = lw2_0/ssa0
+            ssa0 = 1.0d0 - 1.0d-12!*delt
+            lw1_0 = lw1_0*ssa0
+            lw2_0 = lw2_0*ssa0
+         endif
+         w11 = lw1_0
+         w21 = lw2_0
+
+         k1 = 1.0d0/mu*sqrt((1.0d0-ssa0)*(1.0d0-w11*mu*mu))
+         h1up = (mu_0+mu)/(1.0d0+k1*mu_0)/mu
+         h1down = (-mu_0+mu)/(1.0d0-k1*mu_0)/mu
+         gamma1 = h1up*h1down
+         w12 = lw1(1)
+         w22 = lw2(1)
+         k2 = 1.0d0/mu*sqrt((1.0d0-ssa(1))*(1.0d0-w12*mu*mu))
+         h2up = (mu_0+mu)/(1.0d0+k2*mu_0)/mu
+         h2down = (-mu_0+mu)/(1.0d0-k2*mu_0)/mu
+         gamma2 = h2up*h2down
+         offset = 1-(l+1)
+         a(1,1-offset) = 1.0d0/(1.0d0-mu*k1)*(ssa0+w11*(1.0d0-ssa0)/k1*mu)* &
+                          flux/4.0d0
+         a(1,2-offset) = exp(-k1*tau_tot(1))/(1.0d0+mu*k1)*      &
+           (ssa0-w11*(1.0d0-ssa0)/k1*mu)*flux/4.0d0
+         f(1) = - 1.0d0/(1.0d0-mu/mu_0)*                         &
+           gamma1*(ssa0+w11*(1.0d0-ssa0)*mu_0*mu)*flux/4.0d0
+
+         offset = 2-(l+1)
+         a(2,1-offset) = exp(-k1*tau_tot(1))/(1.0d0+mu*k1)*      &
+           (ssa0-w11*(1.0d0-ssa0)/k1*mu)*flux/4.0d0
+         a(2,2-offset) = 1.0d0/(1.0d0-mu*k1)*(ssa0+w11*(1.0d0-ssa0)/k1*mu)* &
+                          flux/4.0d0
+         a(2,3-offset) = -1.0d0/(1.0d0+mu*k2)*                     &
+           (ssa(1)-w12*(1.0d0-ssa(1))/k2*mu)*flux/4.0d0
+         a(2,4-offset) = -exp(-k2*tau(1))/(1.0d0-mu*k2)*         &
+           (ssa(1)+w12*(1.0d0-ssa(1))/k2*mu)*flux/4.0d0
+         f(2) = (- exp(-(tau_tot(1))/mu_0)/(1.0d0+mu/mu_0)*gamma1*           &
+           (ssa0-w11*(1.0d0-ssa0)*mu_0*mu) +                                 &
+            exp(-(tau_tot(1))/mu_0)/                                         &
+            (1.0d0+mu/mu_0)*gamma2*(ssa(1)-w12*(1.0d0-ssa(1))*mu_0*mu))*     &
+            flux/4.0d0+src(1)/(1.0d0-ssa(1))*flux
+         offset = 3-(l+1)
+         a(3,1-offset) = exp(-k1*tau_tot(1))/(1.0d0-mu*k1)*      &
+          (ssa0+w11*(1.0d0-ssa0)/k1*mu)*flux/4.0d0
+         a(3,2-offset) = 1.0d0/(1.0d0+mu*k1)*(ssa0-w11*(1.0d0-ssa0)/k1*mu)*  &
+                          flux/4.0d0
+         a(3,3-offset) = -1.0d0/(1.0d0-mu*k2)*                     &
+           (ssa(1)+w12*(1.0d0-ssa(1))/k2*mu)*flux/4.0d0
+         a(3,4-offset) = -exp(-k2*tau(1))/(1.0d0+mu*k2)*         &
+          (ssa(1)-w12*(1.0d0-ssa(1))/k2*mu)*flux/4.0d0
+         f(3) = (- exp(-(tau_tot(1))/mu_0)/(1.0d0-mu/mu_0)*        &
+           gamma1*(ssa0+w11*(1.0d0-ssa0)*mu_0*mu)                      &
+           + exp(-(tau_tot(1))/mu_0)/(1.0d0-mu/mu_0)*              &
+           gamma2*(ssa(1)+w12*(1.0d0-ssa(1))*mu_0*mu))*flux/4.0d0        &
+           +src(1)/(1.0d0-ssa(1))*flux
+         do 20 i=1,n-1
+            w11 = lw1(i)
+            w21 = lw2(i)
+            w12 = lw1(i+1)
+            w22 = lw2(i+1)
+               k1 = 1.0d0/mu*sqrt((1.0d0-ssa(i))*(1.0d0-w11*mu*mu))
+               h1up = (mu_0+mu)/(1.0d0+k1*mu_0)/mu
+               h1down = (-mu_0+mu)/(1.0d0-k1*mu_0)/mu
+               gamma1 = h1up*h1down
+               k2 = 1.0d0/mu*sqrt((1.0d0-ssa(i+1))*(1.0d0-w12*mu*mu))
+               h2up = (mu_0+mu)/(1.0d0+k2*mu_0)/mu
+               h2down = (-mu_0+mu)/(1.0d0-k2*mu_0)/mu
+               gamma2 = h2up*h2down
+               offset = (2*i+2)-l-1
+               a(2*i+2,2*i+1-offset) = exp(-k1*tau(i))/            &
+                (1.0d0+mu*k1)*(ssa(i)-w11*(1.0d0-ssa(i))/k1*mu)*flux/4.0d0
+               a(2*i+2,2*i+2-offset) = 1.0d0/(1.0d0-mu*k1)*          &
+                (ssa(i)+w11*(1.0d0-ssa(i))/k1*mu)*flux/4.0d0
+               a(2*i+2,2*i+3-offset) = -1.0d0/(1.0d0+mu*k2)*         &
+                (ssa(i+1)-w12*(1.0d0-ssa(i+1))/k2*mu)*flux/4.0d0
+               a(2*i+2,2*i+4-offset) = -exp(-k2*tau(i+1))/(1.0d0-mu*k2)* &
+                (ssa(i+1)+w12*(1.0d0-ssa(i+1))/k2*mu)*flux/4.0d0
+               f(2*i+2) = (- exp(-(tau_tot(i)+tau(i))/mu_0)/            &
+                 (1.0d0+mu/mu_0)*gamma1*(ssa(i)-w11*(1.0d0-ssa(i))*mu_0*mu) &
+                 + exp(-(tau_tot(i+1))/mu_0)/(1.0d0+mu/mu_0)            &
+                 *gamma2*(ssa(i+1)-w12*(1.0d0-ssa(i+1))*mu_0*mu))*flux/4.0d0  &
+                 -src(i)/(1.0d0-ssa(i))*flux                              &
+                 +src(i+1)/(1.0d0-ssa(i+1))*flux
+               offset = (2*i+3)-l-1
+               a(2*i+3,2*i+1-offset) = exp(-k1*tau(i))/(1.0d0-mu*k1)*   &
+                (ssa(i)+w11*(1.0d0-ssa(i))/k1*mu)*flux/4.0d0
+               a(2*i+3,2*i+2-offset) = 1.0d0/(1.0d0+mu*k1)*           &
+                (ssa(i)-w11*(1.0d0-ssa(i))/k1*mu)*flux/4.0d0
+               a(2*i+3,2*i+3-offset) = -1.0d0/(1.0d0-mu*k2)*          &
+                (ssa(i+1)+w12*(1.0d0-ssa(i+1))/k2*mu)*flux/4.0d0
+               a(2*i+3,2*i+4-offset) = -exp(-k2*tau(i+1))/(1.0d0+mu*k2)* &
+                (ssa(i+1)-w12*(1.0d0-ssa(i+1))/k2*mu)*flux/4.0d0
+               f(2*i+3) = (- exp(-(tau_tot(i)+tau(i))/mu_0)/            &
+                 (1.0d0-mu/mu_0)*gamma1*(ssa(i)+w11*(1.0d0-ssa(i))*mu_0*mu) &
+                 + exp(-(tau_tot(i+1))/mu_0)/(1.0d0-mu/mu_0)*           &
+                 gamma2*(ssa(i+1)+w12*(1.0d0-ssa(i+1))*mu_0*mu))*flux/4.0d0   &
+                 -src(i)/(1.0d0-ssa(i))*flux                              &  
+                 +src(i+1)/(1.0d0-ssa(i+1))*flux
+   20    continue
+               offset = (2*n+2)-l-1
+               a(2*n+2,2*n+1-offset) = 0.0d0
+               a(2*n+2,2*n+2-offset) = 1.0d0
+               f(2*n+2) = 0.0d0
+!               if ((masterproc).and.(wvl.eq.83)) then
+!                  do 18 y=1,2*n+2
+!                     write(83,*) y/2,tau(y/2),tau_tot(y/2),ssa(y/2),flux
+!                     write(83,*) mu,mu_0,lw1(y/2+1)
+!                     write(83,16) (a(y,z),z=1,6)
+! 16                  format(6(d10.3,2x))
+!                     write(83,*)
+! 18               continue
+!               endif
+!               close(unit=83,status='keep')
+         call cluspp(2*n+2,2,2,.false.,a,f,dx,ierr)
+         if (ierr.eq.1) then
+            write(*,*) 'wavelength = ',wvl
+            write(*,*) 'latitude = ',lat
+            write(*,*) 'longitude = ',lon
+!            if (masterproc) then
+!               do 25 i=1,num
+!                  write(*,*) i,tau(i),tau_tot(i),zflux(i)
+!   25          continue
+               stop
+!            endif
+         endif
+         do 30 i=1,n-1
+            t = tau(i)/2.0d0
+            w11 = lw1(i)
+            w21 = lw2(i)
+            k1 = 1.0d0/mu*sqrt((1.0d0-ssa(i))*(1.0d0-w11*mu*mu))
+            h1up = (mu_0+mu)/(1.0d0+k1*mu_0)/mu
+            h1down = (-mu_0+mu)/(1.0d0-k1*mu_0)/mu
+            gamma1 = h1up*h1down
+            i_ave(i) = (dx(2*i+1)*exp(-k1*t)/(1.0d0+mu*k1)*        &
+              (ssa(i)-w11*(1.0d0-ssa(i))/k1*mu)                        &
+              + dx(2*i+2)*exp(-k1*(tau(i)-t))/(1.0d0-mu*k1)*       &
+              (ssa(i)+w11*(1.0d0-ssa(i))/k1*mu)                        &
+              + dx(2*i+1)*exp(-k1*t)/(1.0d0-mu*k1)*                &
+              (ssa(i)+w11*(1.0d0-ssa(i))/k1*mu)                        &
+              + dx(2*i+2)*exp(-k1*(tau(i)-t))/(1.0d0+mu*k1)*       &
+              (ssa(i)-w11*(1.0d0-ssa(i))/k1*mu)                        &
+              + exp(-(tau_tot(i)+t)/mu_0)/(1.0d0+mu/mu_0)*         &
+              gamma1*(ssa(i)-w11*(1.0d0-ssa(i))*mu_0*mu)               &
+              + exp(-(tau_tot(i)+t)/mu_0)/(1.0d0-mu/mu_0)*         &
+              gamma1*(ssa(i)+w11*(1.0d0-ssa(i))*mu_0*mu))*             &
+              flux/4.0d0*2.0d0*pi                                  &
+              +src(i)/(1.0d0-ssa(i))*4.0d0*pi*flux
+
+   30    continue
+         do 40 i=n,num
+            t = tau(i)/2.0d0+tau_tot(i)-tau_tot(n)
+            w11 = lw1(n)
+            w21 = lw2(n)
+            k1 = 1.0d0/mu*sqrt((1.0d0-ssa(n))*(1.0d0-w11*mu*mu))
+            h1up = (mu_0+mu)/(1.0d0+k1*mu_0)/mu
+            h1down = (-mu_0+mu)/(1.0d0-k1*mu_0)/mu
+            gamma1 = h1up*h1down
+            i_ave(i) = (dx(2*n+1)*exp(-k1*t)/(1.0d0+mu*k1)*        &
+             (ssa(n)-w11*(1.0d0-ssa(n))/k1*mu)                         &
+             + dx(2*n+1)*exp(-k1*t)/(1.0d0-mu*k1)*                 &
+             (ssa(n)+w11*(1.0d0-ssa(n))/k1*mu)                         &
+             + exp(-(tau_tot(n)+t)/mu_0)/(1.0d0+mu/mu_0)*          &
+             gamma1*(ssa(n)-w11*(1.0d0-ssa(n))*mu_0*mu)                &
+             + exp(-(tau_tot(n)+t)/mu_0)/(1.0d0-mu/mu_0)*          &
+             gamma1*(ssa(n)+w11*(1.0d0-ssa(n))*mu_0*mu))*              &
+             flux/4.0d0*2.0d0*pi                                   &
+             +src(i)/(1.0d0-ssa(i))*4.0d0*pi*flux
+
+   40    continue
+
+      end subroutine two_stream
+
+!##############################################################################
+      subroutine cluspp(n,l,u,pr,a,f,dx,ierr)
+
+      implicit none
+      real*8 a(3*pver,pver),delt,pivot
+      real*8 f(3*pver),dx(3*pver),s(3*pver),sum,temp
+      integer*4 i,j,k,m,n,ipoint(3*pver),itemp,p,ip,jp,kp,mp,l,u,y,z,ierr
+      logical pr
+
+         do 5 i=1,n
+            ipoint(i) = i
+    5       dx(i) = f(i)
+         do 10 i=1,n
+            s(i) = 0.0
+            do 11 j=max(1,i-l),min(n,i+u)
+ 11            s(i) = max(s(i),abs(a(i,j-i+l+1)))
+   10    continue
+
+         call eps(delt)
+         do 20 m=1,n
+            pivot = 0.0
+            p = m
+            do 30 i=m,min(n,m+l)
+
+               ip = ipoint(i)
+               sum = 0.0
+               do 40 j=max(1,max(i-l,m-u)),m-1 
+                  jp = ipoint(j)
+                  sum = sum + a(ip,j-i+l+1)*a(jp,m-j+l+1)
+ 40            continue
+                  a(ip,m-i+l+1) = a(ip,m-i+l+1) - sum
+               if (abs(a(ip,m-i+l+1))/s(ip) .gt. pivot) then
+                  pivot = abs(a(ip,m-i+l+1))/s(ip)
+                  p = i
+               endif
+               
+   30       continue
+            if (pivot.eq.0) then
+               write(*,*) 'Matrix is Singular',m
+               do 8 y=m,m+5
+                  write(*,6) (a(y,z),z=1,15)
+ 6                format(15(d10.3,2x))
+ 8             continue
+               ierr=1
+               return
+            endif
+            goto 301
+            if (p.ne.m) then
+               itemp = ipoint(p)
+               ipoint(p) = ipoint(m)
+               ipoint(m) = itemp
+               temp = dx(p)
+               dx(p) = dx(m)
+               dx(m) = temp
+            endif
+  301       continue
+            mp = ipoint(m)
+            do 50 j=m+1,min(n,m+u)
+               sum = 0.0
+               do 60 k=max(1,max(m-l,j-u)),m-1
+                  kp = ipoint(k)
+                  sum = sum + a(mp,k-m+l+1)*a(kp,j-k+l+1)
+ 60            continue
+               a(mp,j-m+l+1) = (a(mp,j-m+l+1)-sum)/a(mp,m-m+l+1)
+   50       continue
+   20    continue
+! Forward Substitution
+         do 70 i=1,n
+            sum = 0.0
+            ip = ipoint(i)
+            do 80 j=max(1,i-l),i-1
+   80          sum = sum + a(ip,j-i+l+1)*dx(j)
+   70       dx(i) = (dx(i) - sum)/a(ip,i-i+l+1)
+! Backward Substitution
+         do 90 i=n,1,-1
+            ip = ipoint(i)
+            sum = 0.0
+            do 100 j=i+1,min(n,i+u)
+  100          sum = sum + a(ip,j-i+l+1)*dx(j)
+   90       dx(i) = dx(i) - sum
+
+      end subroutine cluspp
+!##############################################################################
+      subroutine eps(e)
+      implicit none
+
+      real*8 e
+
+         e=1.0d0
+   10    continue
+         if ((e+1.0d0).gt.1.0d0) then
+            e=e/2.0d0
+            goto 10
+         else
+            e=e*2.0d0
+            return
+         endif
+
+      end subroutine eps
+!##############################################################################
+        FUNCTION erf(X)
+!
+!       =========================================
+!       Purpose: Compute error function erf(x)
+!       Input:   x   --- Argument of erf(x)
+!       Output:  ERR --- erf(x)
+!       =========================================
+!
+        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+        REAL*8 X,ER,S,X2,EP,C0,ERR,erf
+        INTEGER*4 I
+ 
+        CALL EPS(EP)
+        X2=X*X
+        IF (DABS(X).LT.3.5D0) THEN
+           ER=1.0D0
+           S=1.0D0
+           DO 10 I=1,50
+              S=S*X2/(I+0.5D0)
+              ER=ER+S
+              IF (DABS(S).LE.DABS(ER)*EP) GO TO 15
+10         CONTINUE
+15         C0=2.0D0/DSQRT(PI)*X*DEXP(-X2)
+           ERR=C0*ER
+        ELSE
+           ER=1.0D0
+           S=1.0D0
+           DO 20 I=1,12
+              S=-S*(I-0.5D0)/X2
+20            ER=ER+S
+           C0=DEXP(-X2)/(DABS(X)*DSQRT(PI))
+           ERR=1.0D0-C0*ER
+           IF (X.LT.0.0) ERR=-ERR
+        ENDIF
+        erf = ERR
+        RETURN
+        END FUNCTION erf
+!##############################################################################
+  subroutine openfile(path1,path2,u)
+
+     implicit none
+ 
+     character(len=*), intent(in) :: path1,path2
+      
+     ! Local variables
+     character*80 :: path
+     integer  :: u,l1
+
+!     write(*,*) 'path1 = ',path1
+!     write(*,*) 'path2 = ',path2
+     l1=index(path1,' ')
+!     write(*,*) l1
+     path = path1
+     path(l1:)=path2
+     open(unit=u,file=path,status='old')
+
+  
+  end subroutine openfile
+
+
+!##############################################################################
+
+!##############################################################################
+!   1) CH4          2) H2         3) C2H2        4) C2H4          5) C2H6
+!   6) CH3C2H       7) CH2CCH2    8) C3H6        9) C3H8         10) C4H2
+!  11) C4H6        12) HCN       13) HC3N       14) C2H3CN       15) CH4nonad
+!  16) C2H2nonad   17) C2H4nonad 18) C2H6nonad  19) HCNnonad     20) H
+!  21) CH3         22) C2        23) C2H        24) C2H3         25) C2H5
+!  26) C3H2        27) C3H3      28) C3H5       29) C3H7         30) C4H
+!  31) C4H2*       32) C4H3      33) C4H4       34) C4H5         35) C6H2
+!  36) N(4s)       37) N(2d)     38) NH         39) CN           40) H2CN
+!  41) C3N         42) H2C3N     43) N2
+!##############################################################################
+
+!##############################################################################
+  end module tracrchem
+

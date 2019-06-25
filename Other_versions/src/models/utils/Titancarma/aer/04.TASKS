@@ -1,0 +1,17 @@
+12/9/96
+   x-flags for selecting nucleation processes
+   x-timing tests
+
+4/14/97
+   -option of calculating coagulation rates infrequently
+    (a.a. has done this for HUSKI version)
+   x-output based on time rather than itime
+   x-horizontal and vertical metrics
+
+8/27/97
+   -thoroughly debug latest modifications 
+    (so far done only superficially)
+  x-systematically change name to
+    Community Aerosol and Radiation Model from Ames (CARMA)
+  x-update 00.README, 02.CODEGUIDE, and 03.CALLMAP to reflect
+    latest modifications

@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/Darwin_absoft
+END
+base_variables
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/Darwin_absoft/base_variables
+END
+ESMF_conf.h
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/Darwin_absoft/ESMF_conf.h
+END
+base
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/Darwin_absoft/base
+END
+fix.h
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/Darwin_absoft/fix.h
+END
+base.site
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/Darwin_absoft/base.site
+END

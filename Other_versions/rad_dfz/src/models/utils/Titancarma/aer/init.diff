@@ -1,0 +1,355 @@
+19a20,24
+> c  Declare local variables
+> c
+>       logical all_ok
+> c
+> c
+27a33,36
+>     7 format('Error--(init) ',a,'=',i5,' not max of ',
+>      $  a,'=',i5,3x,a,'=',i5)
+>     8 format('Warning--(init): ',a,' because do_parcel = .true.')
+>     9 format(/,'End of model initialization')
+29d37
+< c
+31a40
+> c
+44,45c53,54
+<       ibtime = 20250
+<       ietime = 25250
+---
+>       ibtime = 0
+>       ietime = 50000
+64d72
+< c     do_netcdf = .true.
+70c78
+<       resifil = 'model_res.ia.in'	! Restart input file
+---
+>       resifil = 'carma_res.in'		! Restart input file
+72c80
+<       trhoifil = 'Files/Trho.mid'  	! Temperature/Density input file
+---
+>       trhoifil = '../data/Trho.mid'       ! Temperature/Density input file
+74,75d81
+<       iniifil = 'model_ini.in'          ! Cold start initialization file
+< 
+77c83
+< c     tempofil = 'Files/diffusion'	! Output for graphing
+---
+>       tempofil = 'Files/diffusion'      ! Output for graphing
+82c88
+<       tempofil = 'Files/rates'		! Production and Loss rates
+---
+> c     tempofil = 'Files/rates'          ! Production and Loss rates
+87c93
+<       fluxifil = 'Files/flux100'	! Aerosol flux input file
+---
+>       fluxifil = '../data/flux100'        ! Aerosol flux input file
+89c95
+<       apcifil  = 'Files/pcinp'	        ! Aerosol particles input file
+---
+>       apcifil  = '../data/pcinp'          ! Aerosol particles input file
+92c98
+<       prtofil = 'Files/test'     	! Output print file
+---
+>       prtofil = 'Files/carma.p'         ! Output print file
+95c101
+<        hisofil = 'model_his.cdf'        ! Output history file (netcdf)
+---
+>        hisofil = 'carma_his.cdf'        ! Output history file (netcdf)
+97c103
+<        hisofil = 'model_his.bin'        ! Output history file (binary)
+---
+>        hisofil = 'carma_his.bin'        ! Output history file (binary)
+100c106
+<       resofil = 'model_res.out'         ! Restart output file
+---
+>       resofil = 'carma_res.out'         ! Restart output file
+103c109,112
+<       stepofil = 'varstep.out'          ! Timestepping output file
+---
+>       stepofil = 'substep.out'          ! Timestepping output file
+> c     stepofil = '/dev/null'            ! Timestepping output file
+> 
+>       radofil = 'carma_rad.out'         ! Radiation submodel print output
+106c115,117
+< c  Define # timestep cycles for print & history output.
+---
+> c  Define frequencies of print and history output:
+> c  use timestep period (nprint, nhist, nrest) when > 0, otherwise
+> c  use time period (pprint, phist, prest).
+108,110d118
+<       nprint = 25         ! frequency of output to print file
+<       nhist =  ietime      ! frequency of output to history file
+<       nrest =  ietime    ! frequency of output to restart file
+111a120,126
+>       nprint = -1          ! timestep period between outputs to print file
+>       nhist  = ietime     ! timestep period between outputs to history file
+>       nrest  = ietime     ! timestep period between outputs to restart file
+> 
+>       pprint = 8.64d4     ! time period between outputs to print file [s]
+>       phist  = -1.        ! time period between outputs to history file [s]
+>       prest  = -1.        ! time period between outputs to restart file [s]
+112a128,134
+> c
+> c  Define frequency for radiation calcs (same convention as above)
+> c
+>       nrad   = -1         ! timestep period between radiation calcs
+>       prad   =  60.       ! time period between radiation calcs [s]
+> c
+> c
+115a138,162
+> c  Define flags for overall timestepping output to
+> c   print, history, & restart files
+> c
+>       do_print = .true.
+>       do_hist = .true.
+>       do_rest = .true.
+> c
+> c
+> c  Define flag to control whether radiative transfer is to be computed
+> c
+>       do_rad = .false.
+> c
+> c
+> c  Define flag to control whether layers below the model domain are included in
+> c  the radiative transfer model
+> c
+>       do_below = .false.
+> c
+> c
+> c  Define flag to control whether the model is to be run as a parcel simulation
+> c  (multiple parcels may be simulated by allowing NZ > 1).
+> c
+>       do_parcel = .false.
+> c
+> c
+127c174
+< c  Define flag to control whether temperature is updated by thermodynamics
+---
+> c  Define flag to control whether temperature is changed by latent heating.
+134d180
+< c
+139,142c185,187
+< c    <itbndpart> = I_DIFFUSION: Allow concentrations in top layer to diffuse
+< c                             or advect across top boundary
+< c                = I_FLUX_SPEC: use flux specified for top layer of model <ftoppart>
+< c    <ibbndpart>: same as <itbndpart>, but for bottom boundary;
+---
+> c    <itbnd_pc> = I_DIFFUSION:  allow concentrations to diffuse and advect across boundary
+> c               = I_FLUX_SPEC:  use specified flux
+> c    <ibbnd_pc>: same as <itbnd_pc>, but for bottom boundary;
+146,152c191,196
+<       itbndpart = I_FLUX_SPEC
+<       ibbndpart = I_FLUX_SPEC
+< 
+<       itbndgas = I_FLUX_SPEC
+<       ibbndgas = I_FLUX_SPEC
+<       itbndtheta = I_DIFFUSION
+<       ibbndtheta = I_DIFFUSION
+---
+>       itbnd_pc  = I_FLUX_SPEC
+>       ibbnd_pc  = I_FLUX_SPEC
+>       itbnd_gc  = I_FLUX_SPEC
+>       ibbnd_gc  = I_FLUX_SPEC
+>       itbnd_ptc = I_FLUX_SPEC
+>       ibbnd_ptc = I_FLUX_SPEC
+156c200
+< c  east-west or north-south directions.
+---
+> c  east-west or north-south directions (always .false. for a parcel simulation).
+166d209
+< c  ******NOTE: Only PPM algorithm is currently coded
+168c211
+<       ihoradv = I_GALERKIN
+---
+>       ihoradv = I_PPM
+179,180c222,228
+<       if( .not. do_varstep ) do_step = .true.
+< 
+---
+> c
+> c
+> c  Set up things that depend on variable timestepping
+> c
+>       maxsubsteps = 1000
+>       minsubsteps = 2
+>       conmax = 1.e-1
+182,183c230,231
+<         dtmin = 0.5    !1.e-20
+<         dtmax =	3.6d3    !8.64d4      !6.048d5		!20.
+---
+>         dtmin  = 0.5
+>         dtmax  = 3.6d3
+186a235,236
+>       else
+>         do_step = .true.
+190a241
+> c   (May have no effect on some systems.  Mainly useful for sunos.)
+206a258
+>       if( do_hist )then
+210a263
+>       endif
+214a268
+>       if( do_hist )then
+216a271
+>       endif
+223a279,283
+> c  Open file for radiation submodel print output
+> c
+>       open(unit=LUNORAD,file=radofil,status='unknown')
+> c
+> c
+260a321
+>       call prtsep
+263a325,338
+> c  Check critical symbolic constants for consistency
+> c 
+>       all_ok = .true.
+>       if( NXORNY .ne. max(NX,NY) )then
+>        write(LUNOPRT,7) 'NXORNY',NXORNY, 'NX',NX, 'NY',NY
+>        all_ok = .false.
+>       endif
+>       if( NXORNYP1 .ne. max(NXP1,NYP1) )then
+>        write(LUNOPRT,7) 'NXORNYP1',NXORNYP1, 'NXP1',NXP1, 'NYP1',NYP1
+>        all_ok = .false.
+>       endif
+>       if( .not. all_ok ) stop 1
+> c
+> c
+266,273c341,343
+< c  This block commented out since we are not trying error trapping
+< c  PRC (6/10/97)
+< c      if( do_error )then
+< c       call setuperr
+< c      endif
+< 
+< 
+< 
+---
+>       if( do_error )then
+>        call setuperr
+>       endif
+291a362,389
+> c  Ensure consistency of control flags
+> c 
+>       if( do_parcel )then
+> 
+>         if( NXY .ne. 1 )then
+>           write(LUNOPRT,'(/,a)')
+>      $      'do_parcel = .true. requires NXY = 1'
+>           stop 1
+>         endif
+>           
+>         if( do_vtran )then
+>           do_vtran = .false.
+>           write(LUNOPRT,8) 'do_vtran set to .false.'
+>         endif
+> 
+>         if( do_ns )then
+>           do_ns = .false.
+>           write(LUNOPRT,8) 'do_ns set to .false.'
+>         endif
+> 
+>         if( do_ew )then
+>           do_ew = .false.
+>           write(LUNOPRT,8) 'do_ew set to .false.'
+>         endif
+> 
+>       endif
+> c
+> c
+293c391,392
+< c  is .true.
+---
+> c  is .true., <NX> is at least 5 if <do_ew> is .true., and <NY>
+> c  is at least 5 if <do_ns> is .true.
+299a399,410
+> 
+>       if( do_ew .and. NX.lt.5 )then
+>         write(LUNOPRT,'(/,a)')
+>      $    'Cannot do east-west transport with NX < 5'
+>         stop 1
+>       endif
+> 
+>       if( do_ns .and. NY.lt.5 )then
+>         write(LUNOPRT,'(/,a)')
+>      $    'Cannot do north-south transport with NY < 5'
+>         stop 1
+>       endif
+304a416
+> 
+307,309c419,420
+<       write(LUNOPRT,2) 'nprint', nprint
+<       write(LUNOPRT,2) 'nhist', nhist
+<       write(LUNOPRT,2) 'nrest', nrest
+---
+>       write(LUNOPRT,3) 'endtime', endtime
+> 
+312a424
+> 
+315a428
+> 
+316a430,431
+>       write(LUNOPRT,6) 'do_netcdf', do_netcdf
+>       write(LUNOPRT,6) 'do_parcel', do_parcel
+318a434,474
+>       write(LUNOPRT,6) 'do_thermo', do_thermo
+>       write(LUNOPRT,6) 'do_vtran', do_vtran
+>       write(LUNOPRT,6) 'do_ew', do_ew
+>       write(LUNOPRT,6) 'do_ns', do_ns
+> 
+>       write(LUNOPRT,6) 'do_rad', do_rad
+>       if( do_rad )then
+>         if( nrad .gt. 0 )then
+>           write(LUNOPRT,2) 'nrad', nrad
+>         else
+>           write(LUNOPRT,3) 'prad', prad
+>         endif
+>       endif
+> 
+>       write(LUNOPRT,6) 'do_print', do_print
+>       if( do_print )then
+>         if( nprint .gt. 0 )then
+>           write(LUNOPRT,2) 'nprint', nprint
+>         else
+>           write(LUNOPRT,3) 'pprint', pprint
+>         endif
+>       endif
+> 
+>       write(LUNOPRT,6) 'do_hist', do_hist
+>       if( do_hist )then
+>         if( nhist .gt. 0 )then
+>           write(LUNOPRT,2) 'nhist', nhist
+>         else
+>           write(LUNOPRT,3) 'phist', phist
+>         endif
+>       endif
+> 
+>       write(LUNOPRT,6) 'do_rest', do_rest
+>       if( do_rest) then
+>         if( nrest .gt. 0 )then
+>           write(LUNOPRT,2) 'nrest', nrest
+>         else
+>           write(LUNOPRT,3) 'prest', prest
+>         endif
+>       endif
+> 
+323c479
+< c  Write initial state to print file and history file
+---
+> c  Possibly write initial state to print file and history file
+324a481
+>       if( do_print )then
+325a483,485
+>       endif
+> 
+>       if( do_hist )then
+326a487
+>       endif
+328a490,495
+> c  Report end of initialization
+> c
+>       write(LUNOPRT,9)
+>       call prtsep
+> c
+> c

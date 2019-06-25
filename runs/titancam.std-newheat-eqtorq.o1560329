@@ -1,0 +1,30 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/nodes/node0446/mom_priv/jobs/1560329.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/nodes/node0446/mom_priv/jobs/1560329.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/nodes/node0446/mom_priv/jobs/1560329.moab.rc.colorado.edu.SC:  Running on node0446
+/curc/torque/nodes/node0446/mom_priv/jobs/1560329.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/nodes/node0446/mom_priv/jobs/1560329.moab.rc.colorado.edu.SC:  Set run to std-newheat-eqtorq
+/curc/torque/nodes/node0446/mom_priv/jobs/1560329.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/nodes/node0446/mom_priv/jobs/1560329.moab.rc.colorado.edu.SC:  Set runtype to INITIAL
+/curc/torque/nodes/node0446/mom_priv/jobs/1560329.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/nodes/node0446/mom_priv/jobs/1560329.moab.rc.colorado.edu.SC:  copying cam from /home/larsonej/titancam/build_std-newheat-eqtorq ...
+/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/namelist: No such file or directory.
+mv: cannot stat `/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/tmp.namelist': No such file or directory
+/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/namelist: No such file or directory.
+mv: cannot stat `/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/tmp.namelist': No such file or directory
+/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/namelist: No such file or directory.
+mv: cannot stat `/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/tmp.namelist': No such file or directory
+/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/namelist: No such file or directory.
+mv: cannot stat `/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/tmp.namelist': No such file or directory
+/curc/torque/nodes/node0446/mom_priv/jobs/1560329.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/std-newheat-eqtorq using MPI
+/curc/torque/nodes/node0446/mom_priv/jobs/1560329.moab.rc.colorado.edu.SC:  Started at Sun Dec 16 17:58:59 MST 2012
+/curc/torque/nodes/node0446/mom_priv/jobs/1560329.moab.rc.colorado.edu.SC: Running on nodes ...
+node0446 node0446 node0446 node0446 node0446 node0446 node0446 node0446 node0446 node0446 node0446 node0446 node0453 node0453 node0453 node0453 node0453 node0453 node0453 node0453 node0453 node0453 node0453 node0453 node0457 node0457 node0457 node0457 node0457 node0457 node0457 node0457 node0457 node0457 node0457 node0457 node0347 node0347 node0347 node0347 node0347 node0347 node0347 node0347 node0347 node0347 node0347 node0347
+/curc/torque/nodes/node0446/mom_priv/jobs/1560329.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    4  48  /curc/torque/nodes/node0446/aux//1560329.moab.rc.colorado.edu 
+/curc/torque/nodes/node0446/mom_priv/jobs/1560329.moab.rc.colorado.edu.SC:  CAM run failed
+cat: /tmp/diagnose/start_time: No such file or directory
+/curc/torque/nodes/node0446/mom_priv/epilogue: line 69: /tmp/diagnose/start_time: No such file or directory
+/curc/torque/nodes/node0446/mom_priv/epilogue: line 71: /tmp/diagnose/start_time: No such file or directory
+/curc/torque/nodes/node0446/mom_priv/epilogue: line 72: /tmp/diagnose/start_time: No such file or directory

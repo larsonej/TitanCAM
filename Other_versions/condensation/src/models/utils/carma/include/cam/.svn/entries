@@ -1,0 +1,40 @@
+8
+
+dir
+536
+http://subversion/projects/ncar_models/cam/branches/carma/source/cam1/models/utils/carma/include/cam
+http://subversion/projects/ncar_models
+
+
+
+2005-11-15T09:31:20.896572Z
+21
+cbardeen
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+da9afe6c-c304-0410-a6c7-c3545174c7c5
+
+precision.h
+file
+
+
+
+
+2009-05-14T00:38:40.000000Z
+cc690384b966bfc1086caa1a932c5435
+2005-11-15T09:31:20.896572Z
+21
+cbardeen
+

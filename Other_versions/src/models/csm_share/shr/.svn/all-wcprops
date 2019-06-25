@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/csm_share/shr
+END
+shr_alarm_mod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/csm_share/shr/shr_alarm_mod.F90
+END
+shr_date_mod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/csm_share/shr/shr_date_mod.F90
+END
+shr_sys_mod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/csm_share/shr/shr_sys_mod.F90
+END
+shr_vmath_mod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/csm_share/shr/shr_vmath_mod.F90
+END
+shr_cal_mod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/csm_share/shr/shr_cal_mod.F90
+END
+shr_file_mod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/csm_share/shr/shr_file_mod.F90
+END
+shr_timer_mod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/csm_share/shr/shr_timer_mod.F90
+END
+shr_orb_mod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/csm_share/shr/shr_orb_mod.F90
+END
+shr_vmath_fwrap.c
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/csm_share/shr/shr_vmath_fwrap.c
+END
+shr_mpi_mod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/csm_share/shr/shr_mpi_mod.F90
+END
+shr_kind_mod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/csm_share/shr/shr_kind_mod.F90
+END
+shr_msg_mod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/csm_share/shr/shr_msg_mod.F90
+END
+shr_const_mod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/csm_share/shr/shr_const_mod.F90
+END

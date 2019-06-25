@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/dom
+END
+sst_data.F90
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/dom/sst_data.F90
+END
+albocean.F90
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/dom/albocean.F90
+END
+print_coverage.F90
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/dom/print_coverage.F90
+END
+camoce.F90
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/dom/camoce.F90
+END
+parpbl.h
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/dom/parpbl.h
+END
+albedo.h
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/dom/albedo.h
+END
+flxoce.F90
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/dom/flxoce.F90
+END
+srfoce.F90
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/dom/srfoce.F90
+END

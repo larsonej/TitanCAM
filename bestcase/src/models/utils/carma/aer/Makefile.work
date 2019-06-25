@@ -1,0 +1,386 @@
+#  @(#) Makefile.work  McKie  Oct-1995
+#  This is the make file for manipulating the aerosol submodel code.
+#
+#  Since critical symbols are passed into this make file from the top
+#  level make file, these symbol values are not defined here.
+#
+#  A pseudo make file in file Makefile exists in this subdirectory.
+#  It is invoked by default if make commands are issued in this
+#  directory, and it invokes the top level Makefile, which passes
+#  the critical symbols back to this makefile.work for action.
+#
+#  Critical symbols are listed near the top of this Makefile.work file
+#  to show their symbol names, but they are given nonsense values in
+#  this file so that this Makefile.work will only work properly when
+#  called from the top level Makefile, and the meaningful values for
+#  the various symbols are passed to this Makefile.work from the top
+#  level Makefile.
+#
+#  Modified to use Makefile and Makefile.work and top level Makefile
+#  control, Sep-1999, for carma v1.18.  -bm
+#
+#
+#  Begin target list
+#
+#  Targets:
+#
+#    default     No action
+#    library     Ensure include files are consistent, compile, and build library 
+#    compile     Ensure each latest source module is compiled
+#    clean       Remove all compiler object files
+#    tar         Build distribution tar for aerosol only code
+#    do_chekres  Build & run program to check restart i/o source code against commons
+#
+#  End target list
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#
+#  Define program version tag string 
+#
+PROGTAG=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define symbolic Makefile constants that might change from system to system
+#
+#
+#  Define the name of the Fortran compiler
+#
+FORTRAN=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define Fortran compiler option
+#
+FFLAGS=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define the name of the linker
+#
+LINK=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define linker flags
+#
+LFLAGS=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define name of path of tar archiving program
+#
+TARPROG=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define name of path of file delete program
+#
+RM=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define name of path of shell to use in the make actions below
+#   (Should be sh for unix systems)
+#
+SHELL=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Under Cray multi-cpu unicos systems, NPROC=1 forces
+#  sequential make using a single cpu
+#
+NPROC=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define name of object library archiver, its flags, & its randomizer
+#    On bsd systems,   RANLIB=ranlib
+#    On sys-V systems, RANLIB=touch
+#
+AR=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+ARFLAGS=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+RANLIB=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define the parent relative directory containing the include files shared
+#  with other submodels
+#
+INCLUDE_DIR=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define relative path to include files used by all component submodels
+#   (These paths are relative to the submodel subdirectories)
+#
+PRECISION_H=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+AERAD_H=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define alternative generic intrinsic function for imag()
+#
+GENERIC_IMAG=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define the path to be searched for files, since the source and header
+#  file may not be in the build directory.
+#
+VPATH    := $(AER_SRCDIR):$(INCLUDE_DIR):$(INCLUDE_DIR)/carma 
+#
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#  Define things that will probably not change from system to system
+#
+#
+#  Define name of the aerosol only tar distribution file
+#
+TARFILE=	./aer_$(PROGTAG).tar
+#
+#
+#  Define list of appropriate suffixes
+#
+.SUFFIXES:
+.SUFFIXES:   .h .ff .f .o
+#
+#
+#  Define method for compiling .f file into .o file
+#
+.f.o :
+	$(FORTRAN) $(FFLAGS) -I$(AER_SRCDIR) -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/carma -I../.. $<
+	
+#
+#
+#  Define list of compiled object files for aerosol model
+#
+OFILES=		main.o \
+        charge.o \
+		coagl.o \
+		coagp.o \
+                csolve.o \
+		dblank.o \
+		defineaer.o \
+                evapp.o \
+                evap_ingrp.o \
+                evap_mono.o \
+                evap_poly.o \
+                downgevapply.o \
+                freezaerl.o \
+                freezdropl.o \
+                freezmixedl.o \
+                meltmixedl.o \
+                melticel.o \
+                coremelt.o \
+                gasexchange.o \
+                growevapl.o \
+                gsolve.o \
+		hydrostat.o \
+		init.o \
+                initaer.o \
+		initatm.o \
+		initgas.o \
+		initnew.o \
+		initrad.o \
+		lognormal.o \
+                microfast.o \
+                microslow.o \
+		newstate.o \
+		newckern.o \
+                growp.o \
+                upgxfer.o \
+                downgxfer.o \
+                actdropl.o \
+		outprt.o \
+		parcel.o \
+		postrad.o \
+		postep.o \
+		prerad.o \
+		prestep.o \
+		print2d.o \
+		project.o \
+		prtsep.o \
+                psolve.o \
+		quit.o \
+		endcarma.o \
+		rescale.o \
+                rhopart.o \
+		setupckern.o \
+		setupcoag.o \
+		setuperr.o \
+		setupaer.o \
+		setupbins.o \
+		setupgrow.o \
+		setupgkern.o \
+		setupnuc.o \
+		setupvf.o \
+		smallconc.o \
+		step.o \
+		supersat.o \
+                tsolve.o \
+                vaporp.o \
+		varstep.o \
+		nsubsteps.o \
+                verpsolve.o \
+                vertadv.o \
+                vertdif.o \
+                vertical.o \
+                zeromicro.o \
+                glkcoef.o \
+                horizont.o \
+                hordif.o  \
+                htranglk.o \
+                htranfosl.o \
+                htranppm.o \
+                zerorad.o
+#
+#
+#  Test routines
+#
+#                smoluchowski.o \
+#                seinfeld86.o 
+#
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#  Define make targets
+#
+#
+#  The <default> target does nothing
+#
+default:	library
+		@ echo " "
+		@ echo "================ WARNING ================="
+		@ echo "This Makefile.work has no default target"
+		@ echo "    Unexpected make with no target"
+		@ echo "=========================================="
+		@ echo " "
+#
+#
+#  The <globaer.h> target checks the aerosol common-block include file
+#
+globaer.h:	$(AERAD_H) $(PRECISION_H)
+		touch globaer.h
+#
+#
+#  The <tar> target generates a source distribution for this program
+#
+tar:		;
+		( $(RM) $(TARFILE) ; \
+		  $(TARPROG) cf $(TARFILE) \
+		    80 \
+		    [0-9][0-9].* \
+		    Makefile* \
+		    *.h \
+		    *.f \
+		    *.f.* ; \
+		  exit 0; )
+#
+#
+#  The <clean> target removes compiler object files
+#
+clean:		;
+		$(RM)  $(OFILES)  $(LIB_AER) work.pc*
+#
+#
+#  The <help> target lists the possible targets in this Makefile
+#
+help:
+		@ sed -n '/^#  Begin target list/,/^#  End target list/p'  Makefile.work
+#
+#
+#  The <compile> target compiles each source code file
+#
+compile:	globaer.h $(OFILES)
+#
+#
+#  The <library> target compiles the source code & builds a library
+#
+library:	$(LIB_AER)
+#
+$(LIB_AER):	compile
+		$(RM) $(LIB_AER)
+		$(AR) $(ARFLAGS) $(LIB_AER) $(OFILES)
+		$(RANLIB) $(LIB_AER)
+#
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#  Define source code file dependencies
+#
+main.o:		main.f		globaer.h	$(PRECISION_H)
+charge.o:	charge.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+coagl.o:	coagl.f		globaer.h	$(PRECISION_H)	$(AERAD_H)
+coagp.o:	coagp.f		globaer.h	$(PRECISION_H)	$(AERAD_H)
+csolve.o:	csolve.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+dblank.o:	dblank.f
+defineaer.o:	defineaer.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+evapp.o:	evapp.f		globaer.h	$(PRECISION_H)	$(AERAD_H)
+evap_ingrp.o:	evap_ingrp.f		globaer.h	$(PRECISION_H)	$(AERAD_H)
+evap_mono.o:	evap_mono.f		globaer.h	$(PRECISION_H)	$(AERAD_H)
+evap_poly.o:	evap_poly.f		globaer.h	$(PRECISION_H)	$(AERAD_H)
+downgevapply.o:	downgevapply.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+freezaerl.o:	freezaerl.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+freezdropl.o:	freezdropl.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+freezmixedl.o:	freezmixedl.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+meltmixedl.o:	meltmixedl.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+melticel.o:	melticel.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+coremelt.o:	coremelt.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+gasexchange.o:	gasexchange.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+postrad.o:	postrad.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+glkcoef.o:	glkcoef.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+growevapl.o:	growevapl.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+gsolve.o:	gsolve.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+hordif.o:	hordif.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+horizont.o:	horizont.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+htranfosl.o:	htranfosl.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+htranglk.o:	htranglk.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+htranppm.o:	htranppm.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+hydrostat.o:	hydrostat.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+init.o:		init.f		globaer.h	$(PRECISION_H)	$(AERAD_H)
+initaer.o:	initaer.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+initatm.o:	initatm.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+initgas.o:	initgas.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+initnew.o:	initnew.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+initrad.o:	initrad.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+lognormal.o:	lognormal.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+prerad.o:	prerad.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+microfast.o:	microfast.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+microslow.o:	microslow.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+newstate.o:	newstate.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+newckern.o: newckern.f  globaer.h   $(PRECISION_H)  $(AERAD_H)
+growp.o:	growp.f		globaer.h	$(PRECISION_H)	$(AERAD_H)
+upgxfer.o:	upgxfer.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+downgxfer.o:	downgxfer.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+actdropl.o:	actdropl.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+outprt.o:	outprt.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+parcel.o:	parcel.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+postep.o:	postep.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+prestep.o:	prestep.f	globaer.h	$(PRECISION_H)
+print2d.o:	print2d.f
+project.o:	project.f
+prtsep.o:	prtsep.f
+psolve.o:	psolve.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+quit.o:		quit.f		globaer.h	$(PRECISION_H)	$(AERAD_H)
+endcarma.o:	endcarma.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+rescale.o:      rescale.f       globaer.h       $(PRECISION_H)	$(AERAD_H)
+rhopart.o:      rhopart.f       globaer.h	$(PRECISION_H)	$(AERAD_H)
+setupaer.o:	setupaer.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+setupbins.o:	setupbins.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+setupckern.o:	setupckern.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+setupcoag.o:	setupcoag.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+setuperr.o:	setuperr.f
+setupgkern.o:	setupgkern.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+setupgrow.o:	setupgrow.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+setupnuc.o:	setupnuc.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+setupvf.o:	setupvf.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+smallconc.o:	smallconc.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+step.o:		step.f		globaer.h	$(PRECISION_H)	$(AERAD_H)
+supersat.o:	supersat.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+tsolve.o:	tsolve.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+vaporp.o:	vaporp.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+varstep.o:	varstep.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+nsubsteps.o:	nsubsteps.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+verpsolve.o:	verpsolve.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+vertadv.o:	vertadv.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+vertdif.o:	vertdif.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+vertical.o:	vertical.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+zeromicro.o:	zeromicro.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+zerorad.o:	zerorad.f	globaer.h	$(PRECISION_H)	$(AERAD_H)
+
+#
+#
+#  Test routines
+#
+# smoluchowski.o:	smoluchowski.f	globaer.h
+# seinfeld86.o:		seinfeld86.f	globaer.h

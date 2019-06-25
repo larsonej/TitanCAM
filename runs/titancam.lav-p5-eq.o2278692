@@ -1,0 +1,4 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0827/mom_priv/jobs/2278692.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+mpirun: Undefined variable.

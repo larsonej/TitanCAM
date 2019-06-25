@@ -1,0 +1,142 @@
+6c6,8
+< c  growth, and evaporation <gpd> [g/cm^3/s].
+---
+> c  growth, and evaporation <gasprod> [g/x_units/y_units/z_units/s].
+> c  It also calculates the latent heating rate from a condensing gas
+> c  <rlheat> [deg_K/s]
+7a10,12
+> c  Modified  Sep-1997  (McKie)
+> c  To calculate at one spatial point per call.
+> c  Globals <ix>, <iy>, <iz>, <ixy>, <ixyz> specify current spatial pt's indices.
+9d13
+< c  Argument list input:
+11,14d14
+< c
+< c  Argument list output:
+< c
+< c
+25a26
+> c
+29c30
+< c  First calculate gas lost to nucleation.
+---
+> c  Metric scale factor
+31,32c32,37
+< c	print *,'gasexchange'
+<       do igroup = 1,ngroups
+---
+>       xyzmet = xmet3(ixyz)*ymet3(ixyz)*zmet3(ixyz)
+>       rhoa_cgs = rhoa3(ixyz) /  xyzmet
+> c
+> c  First calculate gas loss and latent heat gain rates due to nucleation.
+> c
+>       do igroup = 1,NGROUP
+45c50
+<            do i = 1,nbins
+---
+>            do i = 1,NBIN
+49,50c54,55
+< c		print *,i2,ig2,i,igroup
+<             do ixyz = 1,nxyz
+---
+>             gasprod(igas) = gasprod(igas) - pc3(ixyz,i,ielem)
+>      $          * rnuclg(i,igroup,ig2) * diffmass(i2,ig2,i,igroup)
+52,53c57,68
+<              gpd(ixyz,igas) = gpd(ixyz,igas) - pc3(ixyz,i,ielem)
+<      $          * rnuclg(ixyz,i,igroup,ig2) * diffmass(i2,ig2,i,igroup)
+---
+>            enddo    
+> c          if(zl3(ixyz).eq.0.) 
+> c    $       print *,'gasprod1:  ',gasprod(igas)
+> c
+> c  Latent heating rate from condensing gas: <rlh> is latent heat of evaporation 
+> c  ( + fusion, for ice deposition ) [erg/g]
+> c
+>            if( inucproc(ielem,ienuc2) .eq. I_DROPACT )then
+>              rlh = rlhe(iz,igas)
+>            elseif( inucproc(ielem,ienuc2) .eq. I_AERFREEZE )then
+>              rlh = rlhe(iz,igas) + rlhm(iz,igas)
+>            endif
+54a70,71
+>            rlheat = rlheat - rlh * gasprod(igas) / xyzmet /
+>      $              ( CP * rhoa_cgs )
+56,57d72
+<             enddo
+<            enddo    
+59c74
+<          enddo
+---
+>          enddo     ! igroup=1,NGROUP
+61,62d75
+< 
+< c		print *,'end'
+65c78,79
+< c  Next calculate gas lost/gained due to growth/evaporation.
+---
+> c  Next calculate gas lost/gained due to and heat gained/lost from 
+> c  growth/evaporation.
+71,72c85
+<           do i = 1,nbins-1
+<            do ixyz = 1,nxyz
+---
+>           do i = 1,NBIN-1
+78,79c91,92
+<              if( totevap(ixyz,i+1,igroup) )then
+<                gasgain = ( 1. - cmf(ixyz,i+1,igroup) )*rmass(i+1,igroup)
+---
+>             if( totevap(i+1,igroup) )then
+>               gasgain = ( 1. - cmf(i+1,igroup) )*rmass(i+1,igroup)
+84,86c97,99
+<              gpd(ixyz,igas) = gpd(ixyz,igas) + gasgain *
+<      $           ( evaplg(ixyz,i+1,igroup) * pc3(ixyz,i+1,ielem) )
+<      $         - ( growlg(ixyz,i  ,igroup) * pc3(ixyz,i  ,ielem) ) *
+---
+>             gasprod(igas) = gasprod(igas) + gasgain *
+>      $          ( evaplg(i+1,igroup) * pc3(ixyz,i+1,ielem) )
+>      $        - ( growlg(i  ,igroup) * pc3(ixyz,i  ,ielem) ) *
+87a101,104
+> c           if(zl3(ixyz).eq.0.) print *,r(i,igroup)*1.e4,igroup,
+> c    $        evaplg(i+1,igroup)*pc3(ixyz,i+1,ielem),
+> c    $        pc3(ixyz,i+1,ielem),
+> c    $        growlg(i,igroup)* pc3(ixyz,i  ,ielem) 
+90c107,108
+<           enddo    
+---
+> c          if(zl3(ixyz).eq.0.) 
+> c    $       print *,'gasprod2:  ',gasprod(igas),dtime
+95c113,126
+<           do ixyz = 1,nxyz
+---
+>           gasprod(igas) = gasprod(igas) +
+>      $      evaplg(1,igroup) * pc3(ixyz,1,ielem) *
+>      $      ( 1. - cmf(1,igroup) ) * rmass(1,igroup)
+> c          if(zl3(ixyz).eq.0.) 
+> c    $       print *,'gasprod3:  ',gasprod(igas)
+> c
+> c  Latent heating rate from condensing gas: <rlh> is latent heat of evaporation 
+> c  ( + fusion, for ice deposition ) [erg/g]
+> c
+>           if( is_grp_ice(igroup) )then
+>             rlh = rlhe(iz,igas) + rlhm(iz,igas)
+>           else
+>             rlh = rlhe(iz,igas)
+>           endif
+97,99c128,129
+<              gpd(ixyz,igas) = gpd(ixyz,igas) +
+<      $         evaplg(ixyz,1,igroup) * pc3(ixyz,1,ielem) *
+<      $         ( 1. - cmf(ixyz,1,igroup) ) * rmass(1,igroup)
+---
+>           rlheat = rlheat - rlh * gasprod(igas) / xyzmet /
+>      $              ( CP * rhoa_cgs )
+101,102d130
+<           enddo    
+< 
+104c132,133
+<       enddo        ! igroup=1,ngroups
+---
+> 
+>       enddo        ! igroup=1,NGROUP
+107c136
+< c  Return to caller with <gpd> evaluated.
+---
+> c  Return to caller with <gasprod> evaluated.

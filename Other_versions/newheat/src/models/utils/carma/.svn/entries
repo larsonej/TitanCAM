@@ -1,0 +1,103 @@
+8
+
+dir
+536
+http://subversion/projects/ncar_models/cam/branches/carma/source/cam1/models/utils/carma
+http://subversion/projects/ncar_models
+
+
+
+2008-03-15T15:22:45.893964Z
+409
+bardeen
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+da9afe6c-c304-0410-a6c7-c3545174c7c5
+
+include
+dir
+
+doc
+dir
+
+rad
+dir
+
+aer
+dir
+
+Makefile.darwin.xlf
+file
+
+
+
+
+2009-05-14T00:38:42.000000Z
+99ed5ac7c27195b543c49a52296b7a91
+2006-10-17T17:43:03.701958Z
+168
+bardeen
+
+data
+dir
+
+Makefile.darwin.intel
+file
+
+
+
+
+2009-05-14T00:38:42.000000Z
+a724a8770416f39ebb18daa79b4f5846
+2008-03-15T15:22:45.893964Z
+409
+bardeen
+
+00.README
+file
+
+
+
+
+2009-05-14T00:38:42.000000Z
+2a9f0153ef58e7d33cd83d76fe327acc
+2005-11-14T02:39:34.406740Z
+17
+cbardeen
+
+Makefile
+file
+
+
+
+
+2009-05-14T00:38:42.000000Z
+86df509e2436a69a9b44da79e730c83d
+2005-11-14T02:39:34.406740Z
+17
+cbardeen
+
+Makefile.linux.pathscale
+file
+
+
+
+
+2009-05-14T00:38:42.000000Z
+985c172aad1452495177528bdf3e5b59
+2006-10-17T17:43:03.701958Z
+168
+bardeen
+

@@ -1,0 +1,61 @@
+#! /bin/sh
+#  @(#) create_miess  McKie  Nov-1999
+#  This Bourne script creates the miess.f source file
+#  from the miess.f.template file.
+#
+#  Expecting 2 arguments:
+#
+#   Arg 1:  Path to rm command
+#
+#   Arg 2:  Name of generic intrinsic function to take imaginary part
+#           of complex number
+#
+#
+#  Define name of this script
+#
+THIS_SCRIPT="create_miess"
+#
+#
+#  Check for unexpected number of command line arguments
+#
+if [ $# -ne 2 ] ; then
+ echo "${THIS_SCRIPT}:  Error--Unexpected # command line args" 
+ exit 1
+fi
+#
+#
+#  Assign command line args to convenient symbols
+#
+RM="$1"
+IMAG="$2"
+#
+#
+#  Report what will happen
+#
+echo "${THIS_SCRIPT}: Creating miess.f from miess.f.template"
+echo "${THIS_SCRIPT}: Using $IMAG as generic intrinsic imag() function"
+#
+#
+#  If alternative generic intrinsic is "imag" then use template file as is
+#
+if [ \( "$IMAG" = "imag" \) -o \( "$IMAG" = "IMAG" \) ] ; then
+ echo "${THIS_SCRIPT}:" "cp miess.f.template miess.f"
+ cp miess.f.template miess.f
+#
+#
+#  If alternative generic intrinsic is not "imag", activate stmt function
+#  in template file to use alternative function in place of imag()
+#
+else
+ E1="/^c--alt_imag/s/alt_function/$IMAG/"
+ E2="/^c--alt_imag/s/c--alt_imag//"
+ echo "${THIS_SCRIPT}:"  $RM miess.f
+ $RM miess.f
+ echo "${THIS_SCRIPT}:"  sed -e "$E1" -e "$E2" miess.f.template 
+ sed -e "$E1" -e "$E2" miess.f.template  > miess.f
+fi
+#
+#
+#  Terminate normally
+#
+exit 0

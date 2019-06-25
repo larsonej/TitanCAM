@@ -1,0 +1,334 @@
+BalanceCheckMod.o : BalanceCheckMod.F90 time_manager.o abortutils.o clmtype.o shr_kind_mod.o subgridAveMod.o misc.h preproc.h
+BareGroundFluxesMod.o : BareGroundFluxesMod.F90 clm_varpar.o clm_varcon.o clmtype.o shr_kind_mod.o FrictionVelocityMod.o shr_const_mod.o misc.h preproc.h
+Biogeophysics1Mod.o : Biogeophysics1Mod.F90 clm_varpar.o clm_varcon.o clmtype.o shr_kind_mod.o QSatMod.o spmdMod.o shr_const_mod.o misc.h preproc.h
+Biogeophysics2Mod.o : Biogeophysics2Mod.F90 clm_varpar.o time_manager.o clm_varcon.o clmtype.o shr_kind_mod.o subgridAveMod.o SoilTemperatureMod.o misc.h preproc.h
+BiogeophysicsLakeMod.o : BiogeophysicsLakeMod.F90 clm_varpar.o time_manager.o clm_varcon.o clmtype.o shr_kind_mod.o QSatMod.o FrictionVelocityMod.o TridiagonalMod.o misc.h preproc.h
+CanopyFluxesMod.o : CanopyFluxesMod.F90 clm_varpar.o time_manager.o abortutils.o clm_varcon.o clmtype.o shr_kind_mod.o QSatMod.o FrictionVelocityMod.o shr_const_mod.o misc.h preproc.h
+DGVMAllocationMod.o : DGVMAllocationMod.F90 clmtype.o shr_kind_mod.o shr_const_mod.o misc.h preproc.h
+DGVMEcosystemDynMod.o : DGVMEcosystemDynMod.F90 time_manager.o clm_varpar.o shr_kind_mod.o clmtype.o pftvarcon.o nanMod.o shr_const_mod.o decompMod.o misc.h preproc.h
+DGVMEstablishmentMod.o : DGVMEstablishmentMod.F90 clm_varpar.o shr_kind_mod.o abortutils.o pftvarcon.o clm_varcon.o clmtype.o shr_const_mod.o misc.h preproc.h
+DGVMFireMod.o : DGVMFireMod.F90 shr_kind_mod.o clmtype.o misc.h preproc.h
+DGVMKillMod.o : DGVMKillMod.F90 shr_kind_mod.o clmtype.o misc.h preproc.h
+DGVMLightMod.o : DGVMLightMod.F90 shr_kind_mod.o clmtype.o misc.h preproc.h
+DGVMMod.o : DGVMMod.F90 time_manager.o clm_varsur.o shr_kind_mod.o spmdGathScatMod.o spmdMod.o SurfaceAlbedoMod.o DGVMMortalityMod.o DGVMAllocationMod.o DGVMEcosystemDynMod.o DGVMKillMod.o DGVMEstablishmentMod.o DGVMReproductionMod.o clm_varcon.o clmtype.o shr_const_mod.o DGVMLightMod.o decompMod.o clm_varpar.o shr_sys_mod.o DGVMTurnoverMod.o clm_varctl.o abortutils.o pftvarcon.o fileutils.o DGVMFireMod.o ncdio.o misc.h preproc.h
+DGVMMortalityMod.o : DGVMMortalityMod.F90 shr_kind_mod.o clmtype.o misc.h preproc.h
+DGVMReproductionMod.o : DGVMReproductionMod.F90 shr_kind_mod.o clmtype.o misc.h preproc.h
+DGVMRestMod.o : DGVMRestMod.F90 shr_kind_mod.o spmdMod.o clmtype.o iobinary.o DGVMMod.o decompMod.o abortutils.o misc.h preproc.h
+DGVMTurnoverMod.o : DGVMTurnoverMod.F90 shr_kind_mod.o clmtype.o misc.h preproc.h
+DriverInitMod.o : DriverInitMod.F90 shr_kind_mod.o clmtype.o clm_varpar.o misc.h preproc.h
+FracWetMod.o : FracWetMod.F90 shr_kind_mod.o clmtype.o misc.h preproc.h
+FrictionVelocityMod.o : FrictionVelocityMod.F90 shr_kind_mod.o clm_varcon.o clmtype.o shr_const_mod.o misc.h preproc.h
+Hydrology1Mod.o : Hydrology1Mod.F90 time_manager.o shr_kind_mod.o subgridAveMod.o clm_varcon.o clmtype.o FracWetMod.o misc.h preproc.h
+Hydrology2Mod.o : Hydrology2Mod.F90 time_manager.o shr_kind_mod.o clm_varcon.o clmtype.o SoilHydrologyMod.o clm_varpar.o SnowHydrologyMod.o misc.h preproc.h
+HydrologyLakeMod.o : HydrologyLakeMod.F90 time_manager.o shr_kind_mod.o clm_varcon.o clmtype.o misc.h preproc.h
+QSatMod.o : QSatMod.F90 shr_kind_mod.o shr_const_mod.o misc.h preproc.h
+RtmMod.o : RtmMod.F90 time_manager.o clm_varsur.o shr_kind_mod.o spmdGathScatMod.o spmdMod.o clmtype.o clm_varcon.o shr_const_mod.o decompMod.o clm_varpar.o shr_sys_mod.o clm_varctl.o RunoffMod.o abortutils.o areaMod.o misc.h preproc.h
+RunoffMod.o : RunoffMod.F90 shr_kind_mod.o spmdMod.o abortutils.o misc.h preproc.h
+STATICEcosysDynMod.o : STATICEcosysDynMod.F90 time_manager.o clm_varsur.o shr_kind_mod.o spmdMod.o clmtype.o decompMod.o clm_varpar.o clm_varctl.o abortutils.o fileutils.o ncdio.o nanMod.o misc.h preproc.h
+SnowHydrologyMod.o : SnowHydrologyMod.F90 time_manager.o shr_kind_mod.o clm_varcon.o clmtype.o misc.h preproc.h
+SoilHydrologyMod.o : SoilHydrologyMod.F90 time_manager.o shr_kind_mod.o clm_varcon.o clmtype.o shr_const_mod.o clm_varpar.o TridiagonalMod.o misc.h preproc.h
+SoilTemperatureMod.o : SoilTemperatureMod.F90 time_manager.o shr_kind_mod.o clm_varcon.o clmtype.o clm_varpar.o TridiagonalMod.o misc.h preproc.h
+SurfaceAlbedoMod.o : SurfaceAlbedoMod.F90 time_manager.o shr_kind_mod.o shr_orb_mod.o clm_varcon.o clmtype.o clm_varpar.o shr_sys_mod.o misc.h preproc.h
+SurfaceRadiationMod.o : SurfaceRadiationMod.F90 time_manager.o shr_kind_mod.o clm_varcon.o clmtype.o clm_varpar.o misc.h preproc.h
+TridiagonalMod.o : TridiagonalMod.F90 shr_kind_mod.o misc.h preproc.h
+VOCEmissionMod.o : VOCEmissionMod.F90 shr_kind_mod.o clmtype.o shr_const_mod.o abortutils.o misc.h preproc.h
+abortutils.o : abortutils.F90 shr_sys_mod.o mpishorthand.o misc.h
+acbnd.o : acbnd.F90 shr_kind_mod.o phys_grid.o ppgrid.o abortutils.o pmgrid.o error_messages.o mpishorthand.o misc.h
+accFldsMod.o : accFldsMod.F90 time_manager.o shr_kind_mod.o clm_varcon.o clmtype.o shr_const_mod.o decompMod.o clm_varctl.o abortutils.o pftvarcon.o accumulMod.o nanMod.o misc.h preproc.h
+accumulMod.o : accumulMod.F90 time_manager.o shr_kind_mod.o spmdMod.o clm_varcon.o iobinary.o shr_const_mod.o decompMod.o abortutils.o nanMod.o misc.h preproc.h
+advnce.o : advnce.F90 time_manager.o shr_kind_mod.o chemistry.o ghg_surfvals.o aerosol_intr.o carma.o tracers.o prescribed_aerosols.o ramp_scon.o volcanicmass.o comctl.h misc.h comlun.h params.h
+aer_optics.o : aer_optics.F90 shr_kind_mod.o ioFileMod.o filenames.o pmgrid.o mpishorthand.o params.h
+aerosol_intr.o : aerosol_intr.F90 time_manager.o physconst.o physics_types.o shr_kind_mod.o dust_intr.o wetdep.o history.o caer.o seasalt_intr.o phys_grid.o ppgrid.o prescribed_aerosols.o abortutils.o constituents.o scyc.o pmgrid.o carbon_intr.o sulfur_intr.o misc.h params.h
+albice.o : albice.F90 shr_kind_mod.o ppgrid.o comsrf.o dycore.o ice_constants.o misc.h params.h
+albocean.o : albocean.F90 shr_kind_mod.o ppgrid.o comsrf.o misc.h params.h
+areaMod.o : areaMod.F90 shr_kind_mod.o clm_varcon.o shr_const_mod.o abortutils.o misc.h preproc.h
+atm_lndMod.o : atm_lndMod.F90 time_manager.o shr_kind_mod.o lp_coupling.o commap.o initializeMod.o shr_const_mod.o history.o rgrid.o filenames.o phys_grid.o ppgrid.o comsrf.o abortutils.o pmgrid.o mpishorthand.o comctl.h misc.h preproc.h comsol.h
+atmdrvMod.o : atmdrvMod.F90 time_manager.o clm_varsur.o shr_kind_mod.o spmdMod.o clm_varcon.o clmtype.o shr_const_mod.o decompMod.o clm_varpar.o clm_varctl.o abortutils.o fileutils.o areaMod.o ncdio.o nanMod.o misc.h preproc.h
+benergy.o : benergy.F90 shr_kind_mod.o parutilitiesmodule.o dynamics_vars.o spmd_dyn.o mod_comm.o pmgrid.o misc.h
+bilin.o : bilin.F90 shr_kind_mod.o abortutils.o misc.h params.h
+binary_io.o : binary_io.F90 shr_kind_mod.o spmd_dyn.o abortutils.o pmgrid.o mpishorthand.o misc.h params.h
+bnddyi.o : bnddyi.F90 shr_kind_mod.o abortutils.o misc.h params.h
+buffer.o : buffer.F90 shr_kind_mod.o infnan.o ppgrid.o constituents.o prognostics.o misc.h params.h
+caer.o : caer.F90 shr_kind_mod.o ppgrid.o caerbnd.o pmgrid.o params.h
+caerbnd.o : caerbnd.F90 shr_kind_mod.o ioFileMod.o filenames.o abortutils.o pmgrid.o error_messages.o 
+cam.o : cam.F90 time_manager.o shr_kind_mod.o restart.o runtime_opts.o history.o shr_sys_mod.o ppgrid.o comsrf.o abortutils.o shr_msg_mod.o dycore.o pmgrid.o units.o mpishorthand.o gpt.inc comctl.h misc.h comlun.h params.h
+camice.o : camice.F90 time_manager.o shr_kind_mod.o ice_dh.o phys_grid.o ppgrid.o comsrf.o ice_globalcalcs.o pmgrid.o ice_constants.o comctl.h misc.h params.h
+camoce.o : camoce.F90 time_manager.o shr_kind_mod.o sst_data.o pspect.o phys_grid.o ppgrid.o comsrf.o comctl.h misc.h params.h
+carbon_intr.o : carbon_intr.F90 physics_types.o shr_kind_mod.o ppgrid.o constituents.o abortutils.o misc.h params.h
+carbonscales.o : carbonscales.F90 time_manager.o shr_kind_mod.o ioFileMod.o filenames.o abortutils.o pmgrid.o mpishorthand.o misc.h params.h
+carma.o : carma.F90 time_manager.o physconst.o physics_types.o shr_kind_mod.o ioFileMod.o wetdep.o phys_buffer.o shr_const_mod.o history.o filenames.o timeinterp.o phys_grid.o ppgrid.o abortutils.o constituents.o pmgrid.o error_messages.o mpishorthand.o misc.h comhyb.h params.h
+ccsm_msg.o : ccsm_msg.F90 time_manager.o physconst.o shr_kind_mod.o commap.o shr_const_mod.o history.o rgrid.o infnan.o shr_sys_mod.o phys_grid.o ppgrid.o comsrf.o constituents.o abortutils.o dycore.o pmgrid.o mpishorthand.o comctl.h misc.h comlun.h comsol.h params.h
+cd_core.o : cd_core.F90 physconst.o shr_kind_mod.o pft_module.o sw_core.o dynamics_vars.o spmd_dyn.o mod_comm.o pmgrid.o misc.h
+check_energy.o : check_energy.F90 time_manager.o physconst.o physics_types.o shr_kind_mod.o phys_gmean.o phys_buffer.o history.o ppgrid.o abortutils.o constituents.o pmgrid.o misc.h
+chemistry.o : chemistry.F90 time_manager.o physconst.o physics_types.o shr_kind_mod.o ioFileMod.o commap.o history.o ghg_surfvals.o filenames.o timeinterp.o phys_grid.o ppgrid.o abortutils.o constituents.o pmgrid.o mpishorthand.o comctl.h misc.h comlun.h comhyb.h params.h
+cldcond.o : cldcond.F90 physconst.o physics_types.o shr_kind_mod.o phys_buffer.o pkg_cld_sediment.o history.o ppgrid.o constituents.o abortutils.o cldwat.o pmgrid.o misc.h
+cldconst.o : cldconst.F90  misc.h params.h
+cldinti.o : cldinti.F90 shr_kind_mod.o cldconst.o abortutils.o pmgrid.o misc.h comhyb.h params.h
+cldnrh.o : cldnrh.F90 shr_kind_mod.o cloud_fraction.o ppgrid.o misc.h params.h
+cldsav.o : cldsav.F90 shr_kind_mod.o ppgrid.o misc.h params.h
+cldwat.o : cldwat.F90 physconst.o shr_kind_mod.o wv_saturation.o phys_grid.o ppgrid.o comsrf.o abortutils.o dycore.o pmgrid.o misc.h comadj.h comhyb.h params.h
+clm_csmMod.o : clm_csmMod.F90 time_manager.o clm_varsur.o shr_kind_mod.o spmdGathScatMod.o spmdMod.o mpiinc.o clm_varcon.o clmtype.o shr_const_mod.o decompMod.o clm_varpar.o shr_sys_mod.o RtmMod.o lnd2atmMod.o clm_varctl.o RunoffMod.o abortutils.o system_messages.o nanMod.o misc.h preproc.h
+clm_varcon.o : clm_varcon.F90 shr_kind_mod.o shr_const_mod.o clm_varpar.o misc.h preproc.h
+clm_varctl.o : clm_varctl.F90 shr_kind_mod.o misc.h preproc.h
+clm_varpar.o : clm_varpar.F90 shr_kind_mod.o misc.h preproc.h
+clm_varsur.o : clm_varsur.F90 shr_kind_mod.o clm_varpar.o abortutils.o misc.h preproc.h
+clmtype.o : clmtype.F90 shr_kind_mod.o clm_varpar.o misc.h preproc.h
+clmtypeInitMod.o : clmtypeInitMod.F90 shr_kind_mod.o clmtype.o decompMod.o clm_varpar.o nanMod.o misc.h preproc.h
+cloud_fraction.o : cloud_fraction.F90 physconst.o shr_kind_mod.o cldconst.o wv_saturation.o phys_grid.o ppgrid.o dycore.o misc.h params.h
+cloudsimulator.o : cloudsimulator.F90 physics_types.o shr_kind_mod.o history.o ppgrid.o icarus_scops.o misc.h params.h
+cmparray_mod.o : cmparray_mod.F90 shr_kind_mod.o 
+comhd.o : comhd.F90 shr_kind_mod.o pspect.o infnan.o abortutils.o dycore.o pmgrid.o 
+commap.o : commap.F90 shr_kind_mod.o pmgrid.o 
+comozp.o : comozp.F90 shr_kind_mod.o pmgrid.o misc.h params.h
+comspe.o : comspe.F90 shr_kind_mod.o pspect.o pmgrid.o misc.h params.h
+comsrf.o : comsrf.F90 time_manager.o physconst.o shr_kind_mod.o infnan.o phys_grid.o ppgrid.o abortutils.o constituents.o pmgrid.o misc.h params.h
+comsrfdiag.o : comsrfdiag.F90 time_manager.o shr_kind_mod.o history.o infnan.o phys_grid.o ppgrid.o comsrf.o constituents.o pmgrid.o misc.h params.h
+constituents.o : constituents.F90 physconst.o shr_kind_mod.o abortutils.o pmgrid.o misc.h params.h
+controlMod.o : controlMod.F90 time_manager.o shr_kind_mod.o spmdMod.o shr_const_mod.o decompMod.o shr_sys_mod.o clm_csmMod.o histFileMod.o clm_varctl.o abortutils.o misc.h preproc.h
+convtran.o : convtran.F90 shr_kind_mod.o ppgrid.o constituents.o misc.h params.h
+cpslec.o : cpslec.F90 shr_kind_mod.o ppgrid.o misc.h params.h
+d2a3dijk.o : d2a3dijk.F90 shr_kind_mod.o parutilitiesmodule.o spmd_dyn.o mod_comm.o pmgrid.o misc.h
+d2a3dikj.o : d2a3dikj.F90 shr_kind_mod.o parutilitiesmodule.o spmd_dyn.o mod_comm.o pmgrid.o misc.h
+d_ave.o : d_ave.F90 shr_kind_mod.o shr_orb_mod.o shr_const_mod.o crdcon.h comsol.h
+dadadj.o : dadadj.F90 physconst.o shr_kind_mod.o phys_grid.o ppgrid.o abortutils.o misc.h comadj.h params.h
+datetime.o : datetime.F90  misc.h
+debugutilitiesmodule.o : debugutilitiesmodule.F90  
+decompMod.o : decompMod.F90 clm_varsur.o shr_kind_mod.o spmdMod.o clmtype.o clm_varpar.o shr_sys_mod.o spmd_dyn.o abortutils.o pmgrid.o misc.h preproc.h
+decompinit.o : decompinit.F90 spmd_dyn.o spmd_phys.o misc.h
+decompmodule.o : decompmodule.F90  debugutilitiesmodule.o debug.h
+diagnostics.o : diagnostics.F90 time_manager.o physconst.o physics_types.o shr_kind_mod.o history.o wv_saturation.o ccsm_msg.o ppgrid.o comsrf.o constituents.o pmgrid.o misc.h params.h
+dmsbnd.o : dmsbnd.F90 shr_kind_mod.o ioFileMod.o filenames.o phys_grid.o ppgrid.o abortutils.o pmgrid.o error_messages.o mpishorthand.o misc.h
+do_close_dispose.o : do_close_dispose.F90 time_manager.o shr_kind_mod.o clm_csmMod.o misc.h preproc.h
+do_restwrite.o : do_restwrite.F90 time_manager.o histFileMod.o clm_csmMod.o misc.h preproc.h
+dp_coupling.o : dp_coupling.F90 physconst.o physics_types.o shr_kind_mod.o parutilitiesmodule.o phys_buffer.o rgrid.o dynamics_vars.o phys_grid.o ppgrid.o spmd_dyn.o tracers.o mod_comm.o constituents.o check_energy.o pmgrid.o geopotential.o mpishorthand.o misc.h
+driver.o : driver.F90 time_manager.o SurfaceAlbedoMod.o spmdMod.o clm_varcon.o clmtype.o Biogeophysics1Mod.o CanopyFluxesMod.o VOCEmissionMod.o DGVMMod.o Hydrology2Mod.o restFileMod.o shr_sys_mod.o clm_csmMod.o histFileMod.o RtmMod.o lnd2atmMod.o clm_varctl.o abortutils.o Hydrology1Mod.o BalanceCheckMod.o SurfaceRadiationMod.o shr_kind_mod.o STATICEcosysDynMod.o BiogeophysicsLakeMod.o DGVMEcosystemDynMod.o BareGroundFluxesMod.o decompMod.o filterMod.o accFldsMod.o inicFileMod.o DriverInitMod.o HydrologyLakeMod.o pft2colMod.o Biogeophysics2Mod.o misc.h preproc.h
+dryairm.o : dryairm.F90 physconst.o parutilitiesmodule.o spmd_dyn.o pmgrid.o shr_kind_mod.o misc.h
+drydep_mod.o : drydep_mod.F90 pmgrid.o shr_kind_mod.o ppgrid.o constituents.o params.h
+dust.o : dust.F90  misc.h params.h
+dust_intr.o : dust_intr.F90 abortutils.o physics_types.o shr_kind_mod.o ppgrid.o constituents.o misc.h params.h
+dust_sediment_mod.o : dust_sediment_mod.F90 physconst.o shr_kind_mod.o ppgrid.o 
+dycore.o : dycore.F90 pmgrid.o 
+dyn_grid.o : dyn_grid.F90 rgrid.o spmd_dyn.o abortutils.o pmgrid.o shr_kind_mod.o misc.h
+dynamics_vars.o : dynamics_vars.F90 parutilitiesmodule.o spmd_dyn.o pmgrid.o shr_kind_mod.o ghostmodule.o misc.h
+dynconst.o : dynconst.F90 shr_kind_mod.o shr_const_mod.o 
+dynpkg.o : dynpkg.F90 physconst.o dynamics_vars.o spmd_dyn.o pmgrid.o shr_kind_mod.o mod_comm.o misc.h
+error_messages.o : error_messages.F90 abortutils.o 
+esinti.o : esinti.F90 shr_kind_mod.o wv_saturation.o misc.h params.h
+f_wrappers.o : f_wrappers.c  gpt.h cfort.h
+fft99.o : fft99.F  misc.h params.h
+filenames.o : filenames.F90 time_manager.o string_utils.o shr_sys_mod.o abortutils.o dycore.o shr_kind_mod.o comctl.h
+fileutils.o : fileutils.F90 shr_sys_mod.o abortutils.o units.o misc.h preproc.h
+fill_module.o : fill_module.F90 shr_kind_mod.o 
+filterMod.o : filterMod.F90 clm_varcon.o clmtype.o abortutils.o shr_kind_mod.o decompMod.o misc.h preproc.h
+flxoce.o : flxoce.F90 physconst.o shr_kind_mod.o ppgrid.o misc.h parpbl.h params.h
+fv_prints.o : fv_prints.F90 parutilitiesmodule.o commap.o dynamics_vars.o phys_grid.o spmd_dyn.o pmgrid.o physics_types.o shr_kind_mod.o ppgrid.o comsrf.o misc.h
+gauaw_mod.o : gauaw_mod.F90 abortutils.o shr_kind_mod.o misc.h
+geopk.o : geopk.F90 parutilitiesmodule.o spmd_dyn.o pmgrid.o decompmodule.o shr_kind_mod.o mod_comm.o misc.h
+geopotential.o : geopotential.F90 dycore.o shr_kind_mod.o ppgrid.o misc.h params.h
+get_cpustamp.o : get_cpustamp.c  gpt.h
+get_memusage.o : get_memusage.c  cfort.h misc.h
+get_thread_num.o : get_thread_num.c  gpt.h
+getdatetime.o : getdatetime.F90  misc.h preproc.h
+gffgch.o : gffgch.F90 physconst.o abortutils.o shr_kind_mod.o misc.h params.h
+ghg_surfvals.o : ghg_surfvals.F90 time_manager.o physconst.o infnan.o abortutils.o pmgrid.o mpishorthand.o shr_kind_mod.o ioFileMod.o timeinterp.o misc.h
+ghostmodule.o : ghostmodule.F90 decompmodule.o debugutilitiesmodule.o pilgrim.h debug.h
+gmean.o : gmean.F90 parutilitiesmodule.o commap.o spmd_dyn.o pmgrid.o shr_kind_mod.o misc.h
+gw_drag.o : gw_drag.F90 history.o phys_grid.o dycore.o pmgrid.o physics_types.o shr_kind_mod.o ppgrid.o misc.h params.h
+histFileMod.o : histFileMod.F90 time_manager.o clm_varsur.o subgridAveMod.o spmdMod.o clmtype.o clm_varcon.o iobinary.o clm_varpar.o shr_sys_mod.o RtmMod.o clm_varctl.o RunoffMod.o abortutils.o fileutils.o shr_kind_mod.o shr_const_mod.o decompMod.o ncdio.o misc.h preproc.h
+histFldsMod.o : histFldsMod.F90 clm_varcon.o clmtype.o histFileMod.o clm_varctl.o RunoffMod.o shr_kind_mod.o misc.h preproc.h
+history.o : history.F90 time_manager.o parutilitiesmodule.o commap.o phys_buffer.o rgrid.o shr_sys_mod.o phys_grid.o spmd_dyn.o abortutils.o iop.o prognostics.o dycore.o pmgrid.o mpishorthand.o restart_dynamics.o shr_kind_mod.o sst_data.o ioFileMod.o binary_io.o ghg_surfvals.o pspect.o buffer.o filenames.o ppgrid.o comsrf.o icarus_scops.o constituents.o comctl.h misc.h comlun.h comsol.h comadj.h comhyb.h params.h
+hycoef.o : hycoef.F90 physconst.o pmgrid.o shr_kind_mod.o misc.h comhyb.h params.h
+icarus_scops.o : icarus_scops.F90 marsaglia.o abortutils.o pmgrid.o mpishorthand.o shr_kind_mod.o ioFileMod.o filenames.o misc.h params.h
+ice_constants.o : ice_constants.F ice_kinds_mod.o pmgrid.o shr_const_mod.o comsrf.o 
+ice_data.o : ice_data.F90 time_manager.o physconst.o commap.o ice_dh.o rgrid.o phys_grid.o abortutils.o pmgrid.o error_messages.o mpishorthand.o ice_constants.o shr_kind_mod.o sst_data.o ppgrid.o comsrf.o comctl.h misc.h comlun.h params.h
+ice_dh.o : ice_dh.F ice_kinds_mod.o ice_diagnostics.o abortutils.o ice_constants.o comsrf.o misc.h
+ice_diagnostics.o : ice_diagnostics.F time_manager.o ice_kinds_mod.o phys_grid.o ice_constants.o comsrf.o 
+ice_globalcalcs.o : ice_globalcalcs.F90 commap.o ice_dh.o history.o rgrid.o phys_grid.o pmgrid.o mpishorthand.o ice_constants.o shr_kind_mod.o ppgrid.o comsrf.o misc.h
+ice_kinds_mod.o : ice_kinds_mod.F  
+ice_ocn_flux.o : ice_ocn_flux.F ice_dh.o ice_kinds_mod.o ice_constants.o comsrf.o misc.h
+ice_sfc_flux.o : ice_sfc_flux.F ice_kinds_mod.o ice_constants.o shr_const_mod.o ppgrid.o 
+ice_srf.o : ice_srf.F90 ice_dh.o history.o ice_ocn_flux.o ice_constants.o shr_kind_mod.o ice_sfc_flux.o ppgrid.o comsrf.o constituents.o ice_tstm.o misc.h
+ice_tstm.o : ice_tstm.F ice_kinds_mod.o ice_constants.o 
+infnan.o : infnan.F90 shr_kind_mod.o 
+iniTimeConst.o : iniTimeConst.F90 time_manager.o clm_varsur.o clm_varcon.o clmtype.o clm_varpar.o clm_varctl.o abortutils.o shr_kind_mod.o decompMod.o pftvarcon.o nanMod.o misc.h preproc.h
+iniTimeVar.o : iniTimeVar.F90 time_manager.o SurfaceAlbedoMod.o spmdMod.o clm_varcon.o clmtype.o DGVMMod.o clm_varpar.o STATICEcosysDynMod.o shr_kind_mod.o DGVMEcosystemDynMod.o shr_const_mod.o FracWetMod.o decompMod.o filterMod.o inicFileMod.o misc.h preproc.h
+inicFileMod.o : inicFileMod.F90 time_manager.o spmdMod.o clm_varcon.o clmtype.o DGVMMod.o clm_varpar.o shr_sys_mod.o RtmMod.o clm_varctl.o RunoffMod.o abortutils.o fileutils.o shr_kind_mod.o decompMod.o ncdio.o misc.h preproc.h
+inidat.o : inidat.F90 physconst.o parutilitiesmodule.o commap.o phys_buffer.o history.o aerosol_intr.o rgrid.o phys_grid.o carma.o spmd_dyn.o abortutils.o prognostics.o pmgrid.o mpishorthand.o cldcond.o shr_kind_mod.o chemistry.o buffer.o pspect.o tracers.o comsrf.o constituents.o perturb.h comqfl.h comctl.h misc.h comlun.h params.h
+initGridCellsMod.o : initGridCellsMod.F90 clm_varsur.o spmdMod.o clm_varcon.o clmtype.o clm_varpar.o shr_sys_mod.o abortutils.o shr_kind_mod.o spmdGathScatMod.o shr_const_mod.o decompMod.o pftvarcon.o misc.h preproc.h
+inital.o : inital.F90 time_manager.o phys_buffer.o radae.o dynamics_vars.o phys_grid.o prognostics.o pmgrid.o shr_kind_mod.o ioFileMod.o ghg_surfvals.o pspect.o buffer.o filenames.o ccsm_msg.o inidat.o comsrf.o constituents.o comqfl.h comctl.h misc.h comlun.h params.h
+initcom.o : initcom.F90 physconst.o dynconst.o commap.o abortutils.o pmgrid.o shr_kind_mod.o pspect.o comctl.h misc.h params.h
+initext.o : initext.F90 time_manager.o physconst.o shr_orb_mod.o commap.o rgrid.o phys_grid.o abortutils.o pmgrid.o mpishorthand.o ice_constants.o shr_kind_mod.o sst_data.o ioFileMod.o ice_data.o shr_const_mod.o pspect.o filenames.o ccsm_msg.o ppgrid.o comsrf.o atm_lndMod.o comctl.h misc.h comlun.h comsol.h params.h
+initializeMod.o : initializeMod.F90 time_manager.o clm_varsur.o lp_coupling.o spmdMod.o initGridCellsMod.o DGVMMod.o restFileMod.o clm_varpar.o clm_csmMod.o RtmMod.o atmdrvMod.o controlMod.o clm_varctl.o mksrfdatMod.o histFldsMod.o STATICEcosysDynMod.o shr_kind_mod.o DGVMEcosystemDynMod.o decompMod.o accFldsMod.o filterMod.o pftvarcon.o surfFileMod.o clmtypeInitMod.o misc.h preproc.h
+initindx.o : initindx.F90 physconst.o phys_buffer.o aerosol_intr.o carma.o abortutils.o iop.o check_energy.o cldcond.o shr_kind_mod.o chemistry.o tracers.o constituents.o comctl.h misc.h
+inti.o : inti.F90 physconst.o aer_optics.o aerosol_intr.o moistconvection.o carma.o prescribed_aerosols.o abortutils.o check_energy.o pmgrid.o radcnst.o cloudsimulator.o cldcond.o shr_kind_mod.o cloud_fraction.o chemistry.o zm_conv.o vertical_diffusion.o shr_const_mod.o gw_drag.o param_cldoptics.o tracers.o comctl.h misc.h comhyb.h params.h
+intp_util.o : intp_util.F90 phys_grid.o abortutils.o shr_kind_mod.o ppgrid.o misc.h
+ioFileMod.o : ioFileMod.F90 shr_sys_mod.o abortutils.o shr_kind_mod.o misc.h
+iobinary.o : iobinary.F90 spmdMod.o clmtype.o RunoffMod.o abortutils.o shr_kind_mod.o spmdGathScatMod.o decompMod.o misc.h preproc.h
+iop.o : iop.F90 string_utils.o pmgrid.o shr_kind_mod.o ppgrid.o constituents.o misc.h params.h
+ir_rad_mod.o : ir_rad_mod.F90 shr_kind_mod.o ppgrid.o 
+linebuf_stdout.o : linebuf_stdout.c  cfort.h misc.h
+lininterp.o : lininterp.F90 abortutils.o shr_kind_mod.o misc.h
+lnd2atmMod.o : lnd2atmMod.F90 clm_varcon.o clmtype.o shr_kind_mod.o decompMod.o misc.h preproc.h
+lp_coupling.o : lp_coupling.F90 spmdMod.o clmtype.o clm_varcon.o lnd2atmMod.o phys_grid.o spmd_dyn.o abortutils.o pmgrid.o mpishorthand.o shr_kind_mod.o decompMod.o ppgrid.o comsrf.o constituents.o misc.h preproc.h
+mapz_module.o : mapz_module.F90 shr_kind_mod.o 
+marsaglia.o : marsaglia.F90 shr_kind_mod.o 
+memstuff.o : memstuff.c  
+mkglacier.o : mkglacier.F90 clm_varsur.o clm_varpar.o shr_sys_mod.o clm_varctl.o abortutils.o fileutils.o shr_kind_mod.o ncdio.o areaMod.o misc.h preproc.h
+mkgridMod.o : mkgridMod.F90 clm_varsur.o spmdMod.o clm_varpar.o clm_varctl.o abortutils.o fileutils.o shr_kind_mod.o ncdio.o areaMod.o misc.h preproc.h
+mklai.o : mklai.F90 clm_varsur.o clm_varpar.o shr_sys_mod.o clm_varctl.o abortutils.o fileutils.o shr_kind_mod.o ncdio.o areaMod.o misc.h preproc.h
+mklanwat.o : mklanwat.F90 clm_varsur.o clm_varpar.o shr_sys_mod.o clm_varctl.o abortutils.o fileutils.o shr_kind_mod.o ncdio.o areaMod.o misc.h preproc.h
+mkpft.o : mkpft.F90 clm_varsur.o clm_varpar.o shr_sys_mod.o clm_varctl.o abortutils.o fileutils.o shr_kind_mod.o ncdio.o areaMod.o misc.h preproc.h
+mkrank.o : mkrank.F90 abortutils.o shr_kind_mod.o misc.h preproc.h
+mksoicol.o : mksoicol.F90 clm_varsur.o clm_varpar.o shr_sys_mod.o clm_varctl.o abortutils.o fileutils.o shr_kind_mod.o ncdio.o areaMod.o misc.h preproc.h
+mksoitex.o : mksoitex.F90 clm_varsur.o clm_varpar.o shr_sys_mod.o clm_varctl.o abortutils.o fileutils.o shr_kind_mod.o ncdio.o areaMod.o misc.h preproc.h
+mksrfdatMod.o : mksrfdatMod.F90 time_manager.o mkpft.o clm_varsur.o spmdMod.o mkgridMod.o mklai.o clm_varpar.o shr_sys_mod.o clm_varctl.o abortutils.o fileutils.o shr_kind_mod.o pftvarcon.o ncdio.o areaMod.o nanMod.o misc.h preproc.h
+mkurban.o : mkurban.F90 clm_varsur.o clm_varpar.o shr_sys_mod.o clm_varctl.o abortutils.o fileutils.o shr_kind_mod.o ncdio.o areaMod.o misc.h preproc.h
+mod_comm.o : mod_comm.F90 shr_kind_mod.o pilgrim.h misc.h params.h
+moistconvection.o : moistconvection.F90 phys_grid.o dycore.o pmgrid.o shr_kind_mod.o wv_saturation.o ppgrid.o constituents.o misc.h comhyb.h params.h
+mp_assign_to_cpu.o : mp_assign_to_cpu.c  
+mpiinc.o : mpiinc.F90  misc.h preproc.h
+mpishorthand.o : mpishorthand.F  misc.h
+nanMod.o : nanMod.F90 shr_kind_mod.o 
+ncdio.o : ncdio.F90 spmdMod.o clm_varcon.o clmtype.o shr_sys_mod.o RunoffMod.o abortutils.o shr_kind_mod.o spmdGathScatMod.o decompMod.o nanMod.o misc.h preproc.h
+oznini.o : oznini.F90 time_manager.o comozp.o commap.o rgrid.o phys_grid.o abortutils.o pmgrid.o mpishorthand.o shr_kind_mod.o pspect.o ppgrid.o comctl.h misc.h comlun.h params.h
+oznint.o : oznint.F90 time_manager.o comozp.o commap.o rgrid.o phys_grid.o abortutils.o pmgrid.o mpishorthand.o shr_kind_mod.o pspect.o timeinterp.o ppgrid.o comctl.h misc.h comlun.h params.h
+p_d_adjust.o : p_d_adjust.F90 parutilitiesmodule.o dynamics_vars.o spmd_dyn.o pmgrid.o shr_kind_mod.o mod_comm.o constituents.o misc.h
+par_vecsum.o : par_vecsum.F90 parutilitiesmodule.o shr_kind_mod.o misc.h
+par_xsum.o : par_xsum.F90 parutilitiesmodule.o spmd_dyn.o pmgrid.o shr_kind_mod.o misc.h
+param_cldoptics.o : param_cldoptics.F90 physconst.o pkg_cldoptics.o history.o physics_types.o shr_kind_mod.o ppgrid.o constituents.o 
+parutilitiesmodule.o : parutilitiesmodule.F90 decompmodule.o shr_kind_mod.o ghostmodule.o mod_comm.o debugutilitiesmodule.o pilgrim.h debug.h misc.h
+pft2colMod.o : pft2colMod.F90 subgridAveMod.o clmtype.o shr_kind_mod.o misc.h preproc.h
+pft_module.o : pft_module.F90 shr_kind_mod.o misc.h
+pftvarcon.o : pftvarcon.F90 spmdMod.o clm_varpar.o clm_varctl.o abortutils.o fileutils.o shr_kind_mod.o misc.h preproc.h
+phys_adiabatic.o : phys_adiabatic.F90 physconst.o diagnostics.o phys_grid.o geopotential.o physics_types.o shr_kind_mod.o ppgrid.o constituents.o misc.h params.h
+phys_buffer.o : phys_buffer.F90 string_utils.o infnan.o phys_grid.o abortutils.o prognostics.o pmgrid.o mpishorthand.o shr_kind_mod.o ppgrid.o misc.h params.h
+phys_gmean.o : phys_gmean.F90 commap.o rgrid.o phys_grid.o pmgrid.o mpishorthand.o shr_kind_mod.o ppgrid.o misc.h
+phys_grid.o : phys_grid.F90 dyn_grid.o spmd_utils.o commap.o rgrid.o spmd_dyn.o abortutils.o dycore.o pmgrid.o mpishorthand.o shr_kind_mod.o pspect.o ppgrid.o swap_comm.o mod_comm.o misc.h
+phys_idealized.o : phys_idealized.F90 physconst.o diagnostics.o phys_grid.o geopotential.o physics_types.o shr_kind_mod.o buffer.o ppgrid.o comsrf.o misc.h params.h
+physconst.o : physconst.F90 infnan.o shr_kind_mod.o shr_const_mod.o 
+physics_types.o : physics_types.F90 physconst.o dycore.o geopotential.o shr_kind_mod.o ppgrid.o constituents.o misc.h
+physpkg.o : physpkg.F90 physconst.o time_manager.o tmp_qrs_mod.o taulw_cam.o diagnostics.o phys_buffer.o history.o phys_grid.o dycore.o check_energy.o pmgrid.o radcnst.o ice_constants.o mpishorthand.o shr_kind_mod.o physics_types.o sst_data.o phys_gmean.o comsrfdiag.o ice_data.o buffer.o ccsm_msg.o ppgrid.o tracers.o comsrf.o constituents.o atm_lndMod.o comctl.h misc.h comsol.h params.h
+pkez.o : pkez.F90 shr_kind_mod.o 
+pkg_cld_sediment.o : pkg_cld_sediment.F90 physconst.o pkg_cldoptics.o abortutils.o cldwat.o shr_kind_mod.o ppgrid.o 
+pkg_cldoptics.o : pkg_cldoptics.F90 physconst.o shr_kind_mod.o ppgrid.o 
+pmgrid.o : pmgrid.F90 decompmodule.o misc.h params.h
+ppgrid.o : ppgrid.F90  misc.h params.h
+prescribed_aerosols.o : prescribed_aerosols.F90 physconst.o time_manager.o aer_optics.o history.o infnan.o carbonscales.o phys_grid.o abortutils.o pmgrid.o mpishorthand.o physics_types.o shr_kind_mod.o ioFileMod.o filenames.o timeinterp.o ppgrid.o constituents.o volcanicmass.o comctl.h misc.h ptrrgrid.h comhyb.h params.h
+print_coverage.o : print_coverage.F90 commap.o rgrid.o phys_grid.o pmgrid.o shr_kind_mod.o shr_const_mod.o ppgrid.o misc.h params.h
+print_memusage.o : print_memusage.F90 pmgrid.o misc.h
+prognostics.o : prognostics.F90 infnan.o dynamics_vars.o pmgrid.o shr_kind_mod.o constituents.o misc.h params.h
+program_csm.o : program_csm.F90 time_manager.o spmdMod.o shr_orb_mod.o clm_varpar.o clm_csmMod.o clm_varctl.o shr_msg_mod.o shr_kind_mod.o initializeMod.o gpt.inc misc.h preproc.h
+program_off.o : program_off.F90 time_manager.o shr_orb_mod.o spmdMod.o clm_varpar.o atmdrvMod.o clm_varctl.o shr_kind_mod.o initializeMod.o gpt.inc misc.h preproc.h
+pspect.o : pspect.F90  misc.h params.h
+puminterfaces.o : puminterfaces.F90 parutilitiesmodule.o decompmodule.o shr_kind_mod.o pilgrim.h misc.h
+qneg3.o : qneg3.F90 shr_kind_mod.o misc.h params.h
+qneg4.o : qneg4.F90 physconst.o phys_grid.o shr_kind_mod.o ppgrid.o constituents.o misc.h params.h
+quicksort.o : quicksort.F90  
+radae.o : radae.F90 infnan.o prescribed_aerosols.o abortutils.o pmgrid.o mpishorthand.o shr_kind_mod.o ioFileMod.o volcrad.o ghg_surfvals.o filenames.o ppgrid.o crdcon.h misc.h params.h
+radclwmx.o : radclwmx.F90 radae.o shr_kind_mod.o volcrad.o quicksort.o ppgrid.o comctl.h crdcon.h misc.h params.h
+radclwmx_titan.o : radclwmx_titan.F90 taulw_cam.o pmgrid.o radcnst.o shr_kind_mod.o ir_rad_mod.o shr_const_mod.o ppgrid.o constituents.o misc.h params.h
+radcnst.o : radcnst.F90 abortutils.o pmgrid.o mpishorthand.o shr_kind_mod.o ioFileMod.o filenames.o ppgrid.o misc.h params.h
+radcswmx.o : radcswmx.F90 physconst.o commap.o aer_optics.o history.o phys_grid.o carma.o prescribed_aerosols.o abortutils.o pmgrid.o radcnst.o cmparray_mod.o mpishorthand.o shr_kind_mod.o shr_const_mod.o ghg_surfvals.o quicksort.o ppgrid.o crdcon.h misc.h params.h
+radctl.o : radctl.F90 tmp_qrs_mod.o time_manager.o physconst.o commap.o aer_optics.o history.o aerosol_intr.o carma.o phys_grid.o prescribed_aerosols.o abortutils.o pmgrid.o radcnst.o physics_types.o shr_kind_mod.o chemistry.o ir_rad_mod.o pspect.o wv_saturation.o ppgrid.o constituents.o comctl.h misc.h ptrrgrid.h comsol.h params.h
+raddedmx.o : raddedmx.F90 radcnst.o shr_kind_mod.o ppgrid.o 
+radheat.o : radheat.F90 physics_types.o shr_kind_mod.o ppgrid.o misc.h params.h
+radini.o : radini.F90 physconst.o comozp.o radae.o pmgrid.o mpishorthand.o shr_kind_mod.o ppgrid.o comctl.h crdcon.h misc.h comhyb.h params.h
+radinp.o : radinp.F90 time_manager.o shr_orb_mod.o shr_kind_mod.o ppgrid.o crdcon.h misc.h comsol.h params.h
+radoz2.o : radoz2.F90 comozp.o shr_kind_mod.o ppgrid.o misc.h params.h
+radozn.o : radozn.F90 comozp.o phys_grid.o abortutils.o shr_kind_mod.o ppgrid.o misc.h params.h
+ramp_scon.o : ramp_scon.F90 time_manager.o abortutils.o pmgrid.o mpishorthand.o shr_kind_mod.o ioFileMod.o timeinterp.o misc.h comsol.h
+readinitial.o : readinitial.F90 time_manager.o rgrid.o abortutils.o pmgrid.o mpishorthand.o shr_kind_mod.o pspect.o comctl.h misc.h comhyb.h params.h
+redistributemodule.o : redistributemodule.F90 parutilitiesmodule.o decompmodule.o shr_kind_mod.o debugutilitiesmodule.o pilgrim.h debug.h misc.h
+restFileMod.o : restFileMod.F90 time_manager.o spmdMod.o clm_varcon.o clmtype.o iobinary.o clm_varpar.o clm_csmMod.o histFileMod.o RtmMod.o controlMod.o clm_varctl.o abortutils.o fileutils.o shr_kind_mod.o decompMod.o DGVMRestMod.o accumulMod.o misc.h preproc.h
+restart.o : restart.F90 time_manager.o history.o rgrid.o restart_physics.o phys_grid.o abortutils.o pmgrid.o mpishorthand.o restart_dynamics.o shr_kind_mod.o ioFileMod.o ghg_surfvals.o filenames.o comtfc.h comctl.h misc.h comlun.h comhyb.h params.h
+restart_dynamics.o : restart_dynamics.F90 time_manager.o parutilitiesmodule.o dynamics_vars.o spmd_dyn.o abortutils.o prognostics.o pmgrid.o decompmodule.o mpishorthand.o shr_kind_mod.o ppgrid.o constituents.o comqfl.h comctl.h misc.h params.h
+restart_physics.o : restart_physics.F90 phys_buffer.o radae.o phys_grid.o abortutils.o prognostics.o pmgrid.o shr_kind_mod.o ioFileMod.o buffer.o filenames.o ccsm_msg.o ppgrid.o comsrf.o comctl.h misc.h params.h
+rgrid.o : rgrid.F90 infnan.o pmgrid.o pspect.o misc.h
+rstwr.o : rstwr.F90 time_manager.o history.o pmgrid.o shr_kind_mod.o ccsm_msg.o comctl.h misc.h params.h
+runtime_opts.o : runtime_opts.F90 time_manager.o shr_orb_mod.o restart.o soxbnd.o string_utils.o ice_dh.o history.o rgrid.o aerosol_intr.o infnan.o carma.o phys_grid.o spmd_dyn.o prescribed_aerosols.o abortutils.o dycore.o pmgrid.o mpishorthand.o cloudsimulator.o shr_kind_mod.o chemistry.o comhd.o ghg_surfvals.o pspect.o filenames.o tracers.o swap_comm.o constituents.o ramp_scon.o units.o comtfc.h perturb.h comctl.h misc.h comlun.h comsol.h comadj.h params.h
+scyc.o : scyc.F90  params.h
+seasalt_intr.o : seasalt_intr.F90 abortutils.o physics_types.o shr_kind_mod.o ppgrid.o misc.h params.h
+sgexx.o : sgexx.F  misc.h params.h
+shr_alarm_mod.o : shr_alarm_mod.F90 shr_sys_mod.o shr_date_mod.o shr_kind_mod.o shr_cal_mod.o 
+shr_cal_mod.o : shr_cal_mod.F90 shr_kind_mod.o 
+shr_const_mod.o : shr_const_mod.F90 shr_kind_mod.o 
+shr_date_mod.o : shr_date_mod.F90 shr_sys_mod.o shr_kind_mod.o shr_cal_mod.o 
+shr_file_mod.o : shr_file_mod.F90 shr_sys_mod.o shr_kind_mod.o 
+shr_kind_mod.o : shr_kind_mod.F90  
+shr_mpi_mod.o : shr_mpi_mod.F90 shr_kind_mod.o 
+shr_msg_mod.o : shr_msg_mod.F90 shr_sys_mod.o shr_kind_mod.o 
+shr_orb_mod.o : shr_orb_mod.F90 shr_sys_mod.o shr_kind_mod.o shr_const_mod.o 
+shr_sys_mod.o : shr_sys_mod.F90 shr_kind_mod.o shr_mpi_mod.o 
+shr_timer_mod.o : shr_timer_mod.F90 shr_sys_mod.o shr_kind_mod.o 
+shr_vmath_fwrap.o : shr_vmath_fwrap.c  
+shr_vmath_mod.o : shr_vmath_mod.F90 shr_kind_mod.o 
+snowdp2lev.o : snowdp2lev.F90 clmtype.o clm_varpar.o shr_kind_mod.o misc.h preproc.h
+soxbnd.o : soxbnd.F90 infnan.o phys_grid.o abortutils.o pmgrid.o error_messages.o mpishorthand.o shr_kind_mod.o ioFileMod.o filenames.o ppgrid.o misc.h
+spmdGathScatMod.o : spmdGathScatMod.F90 spmdMod.o clmtype.o RunoffMod.o abortutils.o decompMod.o misc.h preproc.h
+spmdMod.o : spmdMod.F90 mpiinc.o spmd_dyn.o pmgrid.o mpishorthand.o shr_kind_mod.o misc.h preproc.h
+spmd_dyn.o : spmd_dyn.F90 parutilitiesmodule.o infnan.o abortutils.o pmgrid.o decompmodule.o mpishorthand.o shr_kind_mod.o ghostmodule.o mod_comm.o constituents.o misc.h params.h
+spmd_phys.o : spmd_phys.F90 pmgrid.o shr_kind_mod.o ppgrid.o misc.h params.h
+spmd_utils.o : spmd_utils.F90  
+spmdinit.o : spmdinit.F90 spmd_dyn.o dycore.o pmgrid.o mpishorthand.o swap_comm.o misc.h params.h
+srchutil.o : srchutil.F90 shr_kind_mod.o misc.h params.h
+srfoce.o : srfoce.F90 shr_kind_mod.o ppgrid.o comsrf.o constituents.o comtsc.h misc.h params.h
+srfxfer.o : srfxfer.F90 shr_kind_mod.o ccsm_msg.o ppgrid.o comsrf.o comtsc.h misc.h params.h
+sst_data.o : sst_data.F90 time_manager.o physconst.o commap.o rgrid.o phys_grid.o abortutils.o pmgrid.o error_messages.o mpishorthand.o shr_kind_mod.o timeinterp.o ppgrid.o comsrf.o comctl.h misc.h comlun.h params.h
+stepon.o : stepon.F90 time_manager.o physconst.o dynconst.o parutilitiesmodule.o restart.o commap.o phys_buffer.o history.o rgrid.o dynamics_vars.o spmd_dyn.o abortutils.o prognostics.o pmgrid.o physics_types.o shr_kind_mod.o dp_coupling.o ccsm_msg.o ppgrid.o comsrf.o mod_comm.o constituents.o fv_prints.o comctl.h misc.h comlun.h comsta.h comhyb.h params.h
+string_utils.o : string_utils.F90  
+subgridAveMod.o : subgridAveMod.F90 clm_varcon.o clmtype.o clm_varpar.o abortutils.o shr_kind_mod.o misc.h preproc.h
+sulbnd.o : sulbnd.F90 abortutils.o pmgrid.o error_messages.o shr_kind_mod.o 
+sulchem.o : sulchem.F90 history.o abortutils.o pmgrid.o acbnd.o shr_kind_mod.o wetdep.o ppgrid.o 
+sulemis.o : sulemis.F90 sulbnd.o soxbnd.o dmsbnd.o history.o scyc.o pmgrid.o shr_kind_mod.o ppgrid.o 
+sulfur_intr.o : sulfur_intr.F90 time_manager.o physconst.o commap.o soxbnd.o dmsbnd.o history.o sulchem.o phys_grid.o abortutils.o scyc.o volcemission.o pmgrid.o sulemis.o physics_types.o acbnd.o shr_kind_mod.o ioFileMod.o drydep_mod.o shr_const_mod.o filenames.o ppgrid.o constituents.o misc.h params.h
+surfFileMod.o : surfFileMod.F90 clm_varsur.o spmdMod.o clm_varpar.o clm_varctl.o abortutils.o fileutils.o shr_kind_mod.o pftvarcon.o areaMod.o ncdio.o misc.h preproc.h
+sw_core.o : sw_core.F90 tp_core.o pmgrid.o shr_kind_mod.o pft_module.o 
+swap_comm.o : swap_comm.F90 spmd_dyn.o abortutils.o pmgrid.o mpishorthand.o shr_kind_mod.o misc.h params.h
+system_messages.o : system_messages.F90 abortutils.o 
+t_error.o : t_error.c  
+t_initialize.o : t_initialize.c  gpt.h
+t_pclstr.o : t_pclstr.c  gpt.h
+t_pr.o : t_pr.c  gpt.h
+t_reset.o : t_reset.c  gpt.h
+t_setoption.o : t_setoption.c  gpt.h
+t_stamp.o : t_stamp.c  gpt.h
+t_start.o : t_start.c  gpt.h
+t_stop.o : t_stop.c  gpt.h
+taulw_cam.o : taulw_cam.F90 pmgrid.o radcnst.o physics_types.o shr_kind_mod.o phys_gmean.o shr_const_mod.o ppgrid.o constituents.o 
+te_map.o : te_map.F90 parutilitiesmodule.o dynamics_vars.o spmd_dyn.o pmgrid.o shr_kind_mod.o mapz_module.o mod_comm.o misc.h
+tides_titan.o : tides_titan.F90 time_manager.o physconst.o history.o phys_grid.o abortutils.o dycore.o pmgrid.o geopotential.o physics_types.o shr_kind_mod.o vertical_diffusion.o ppgrid.o constituents.o misc.h comhyb.h params.h
+time_manager.o : time_manager.F90 string_utils.o abortutils.o dycore.o pmgrid.o mpishorthand.o shr_kind_mod.o shr_const_mod.o misc.h
+timeinterp.o : timeinterp.F90 abortutils.o shr_kind_mod.o misc.h
+tmp_qrs_mod.o : tmp_qrs_mod.F90 shr_kind_mod.o ppgrid.o misc.h
+tp_core.o : tp_core.F90 pmgrid.o shr_kind_mod.o 
+tphysac.o : tphysac.F90 time_manager.o physconst.o phys_buffer.o aerosol_intr.o phys_grid.o carma.o abortutils.o dycore.o check_energy.o pmgrid.o physics_types.o shr_kind_mod.o chemistry.o vertical_diffusion.o gw_drag.o ppgrid.o tracers.o constituents.o comctl.h misc.h params.h
+tphysbc.o : tphysbc.F90 time_manager.o physconst.o diagnostics.o phys_buffer.o history.o aerosol_intr.o moistconvection.o carma.o phys_grid.o abortutils.o dycore.o pmgrid.o check_energy.o geopotential.o cloudsimulator.o cldcond.o physics_types.o shr_kind_mod.o zm_conv.o param_cldoptics.o ppgrid.o comsrf.o constituents.o radheat.o comctl.h misc.h params.h
+tphysidl.o : tphysidl.F90 time_manager.o physconst.o history.o phys_grid.o abortutils.o dycore.o pmgrid.o geopotential.o physics_types.o shr_kind_mod.o vertical_diffusion.o ppgrid.o constituents.o misc.h comhyb.h params.h
+trac2d.o : trac2d.F90 parutilitiesmodule.o tp_core.o fill_module.o dynamics_vars.o spmd_dyn.o pmgrid.o shr_kind_mod.o mod_comm.o misc.h
+tracers.o : tracers.F90 physconst.o history.o tracers_suite.o pmgrid.o physics_types.o shr_kind_mod.o ppgrid.o constituents.o misc.h comhyb.h params.h
+tracers_suite.o : tracers_suite.F90 abortutils.o pmgrid.o shr_kind_mod.o ppgrid.o constituents.o misc.h comhyb.h params.h
+trcab.o : trcab.F90 shr_kind_mod.o volcrad.o ppgrid.o crdcon.h misc.h params.h
+trcabn.o : trcabn.F90 shr_kind_mod.o volcrad.o ppgrid.o crdcon.h misc.h params.h
+trcems.o : trcems.F90 shr_kind_mod.o volcrad.o ppgrid.o crdcon.h misc.h params.h
+trcmix.o : trcmix.F90 physconst.o phys_grid.o shr_kind_mod.o ghg_surfvals.o ppgrid.o misc.h params.h
+trcplk.o : trcplk.F90 shr_kind_mod.o ppgrid.o crdcon.h misc.h params.h
+trcpth.o : trcpth.F90 shr_kind_mod.o ghg_surfvals.o ppgrid.o crdcon.h misc.h params.h
+trunc.o : trunc.F90  
+tsinti.o : tsinti.F90 shr_kind_mod.o comtsc.h misc.h params.h
+turbulence.o : turbulence.F90 history.o pmgrid.o shr_kind_mod.o ppgrid.o constituents.o misc.h params.h
+units.o : units.F90 abortutils.o misc.h params.h
+uv3s_update.o : uv3s_update.F90 parutilitiesmodule.o history.o pmgrid.o shr_kind_mod.o mod_comm.o misc.h
+vertical_diffusion.o : vertical_diffusion.F90 physconst.o history.o dycore.o pmgrid.o radcnst.o physics_types.o shr_kind_mod.o shr_const_mod.o turbulence.o ppgrid.o constituents.o comctl.h misc.h params.h
+vertinterp.o : vertinterp.F90 abortutils.o shr_kind_mod.o misc.h params.h
+virtem.o : virtem.F90 shr_kind_mod.o misc.h params.h
+volcanicmass.o : volcanicmass.F90 time_manager.o commap.o rgrid.o phys_grid.o abortutils.o pmgrid.o mpishorthand.o shr_kind_mod.o ioFileMod.o filenames.o timeinterp.o ppgrid.o misc.h comhyb.h params.h
+volcemission.o : volcemission.F pmgrid.o error_messages.o shr_kind_mod.o params.h
+volcrad.o : volcrad.F90 infnan.o prescribed_aerosols.o pmgrid.o shr_kind_mod.o ppgrid.o crdcon.h misc.h params.h
+vrtmap.o : vrtmap.F90 srchutil.o abortutils.o shr_kind_mod.o misc.h params.h
+wetdep.o : wetdep.F90 shr_kind_mod.o shr_const_mod.o ppgrid.o 
+wrap_mpi.o : wrap_mpi.F90 abortutils.o mpishorthand.o shr_kind_mod.o misc.h
+wrap_nf.o : wrap_nf.F90 abortutils.o shr_kind_mod.o misc.h
+wv_saturation.o : wv_saturation.F90 abortutils.o pmgrid.o shr_kind_mod.o 
+xpavg.o : xpavg.F90 shr_kind_mod.o 
+zenith.o : zenith.F90 shr_orb_mod.o shr_kind_mod.o crdcon.h misc.h comsol.h params.h
+zm_conv.o : zm_conv.F90 physconst.o history.o moistconvection.o phys_grid.o cldwat.o dycore.o pmgrid.o physics_types.o shr_kind_mod.o wv_saturation.o ppgrid.o constituents.o misc.h params.h

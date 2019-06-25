@@ -1,0 +1,50 @@
+#! /bin/sh
+#  @(#) create_outhis_ncdf  McKie  Nov-1999
+#  This Bourne script creates the outhis_ncdf.f source file
+#  from the outhis_ncdf.f.template file.
+#
+#  Expecting 2 arguments:
+#
+#   Arg 1:  Path to rm command
+#
+#   Arg 2:  Name netcdf include file
+#
+#
+#  Define name of this script
+#
+THIS_SCRIPT="create_outhis_ncdf"
+#
+#
+#  Check for unexpected number of command line arguments
+#
+if [ $# -ne 2 ] ; then
+ echo "create_outhis_ncdf:  Error--Unexpected # command line args" 
+ exit 1
+fi
+#
+#
+#  Assign command line args to convenient symbols
+#
+RM="$1"
+INC="$2"
+#
+#
+#  Report what will happen
+#
+echo "${THIS_SCRIPT}: Creating outhis_ncdf.f from outhis_ncdf.f.template"
+echo "${THIS_SCRIPT}: Using $INC as netcdf include file"
+#
+#
+#  Edit specified include file into the template file to create fortran source file
+#
+E1="/^c--netcdf_inc/s,_X_,$INC,"
+E2="/^c--netcdf_inc/s,c--netcdf_inc,,"
+echo "${THIS_SCRIPT}:"  $RM outhis_ncdf.f
+$RM outhis_ncdf.f
+echo "${THIS_SCRIPT}:"  sed -e "$E1" -e "$E2" outhis_ncdf.f.template 
+sed -e "$E1" -e "$E2" outhis_ncdf.f.template  > outhis_ncdf.f
+#
+#
+#  Terminate normally
+#
+exit 0

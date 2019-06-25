@@ -1,0 +1,210 @@
+1c1
+<        subroutine vertadv(ixy)
+---
+>        subroutine vertadv
+5c5
+< c  This routine calculates vertical advection rates using
+---
+> c  This routine calculates vertrical advection rates using
+12a13,16
+> c  Modified  Sep-1997  (McKie)
+> c  Remove <ixy> from arg list
+> c  <ixy> now available as a global var in common block.
+> c
+14c18
+< c    ixy
+---
+> c    None.
+27,28c31,32
+<       dimension dela(MAXNZ), delma(MAXNZ), aju(MAXNZ),
+<      $  ar(MAXNZ), al(MAXNZ), a6(MAXNZ), cold(MAXNZ) 
+---
+>       dimension dela(NZ), delma(NZ), aju(NZ),
+>      $  ar(NZ), al(NZ), a6(NZ), cold(NZ)
+56,64c60,68
+<         dpc = cvert(k) / delz2(ixy,k)
+<         dpc1 = cvert(k+1) / delz2(ixy,k+1)
+<         dpcm1 = cvert(k-1) / delz2(ixy,k-1)
+<         ratt1 = delz2(ixy,k) /
+<      $    ( delz2(ixy,k-1) + delz2(ixy,k) + delz2(ixy,k+1) )
+<         ratt2 = ( 2.*delz2(ixy,k-1) + delz2(ixy,k) ) /
+<      $          ( delz2(ixy,k+1) + delz2(ixy,k) )
+<         ratt3 = ( 2.*delz2(ixy,k+1) + delz2(ixy,k) ) /
+<      $          ( delz2(ixy,k-1) + delz2(ixy,k) )
+---
+>         dpc = cvert(k) / dz2(ixy,k)
+>         dpc1 = cvert(k+1) / dz2(ixy,k+1)
+>         dpcm1 = cvert(k-1) / dz2(ixy,k-1)
+>         ratt1 = dz2(ixy,k) /
+>      $    ( dz2(ixy,k-1) + dz2(ixy,k) + dz2(ixy,k+1) )
+>         ratt2 = ( 2.*dz2(ixy,k-1) + dz2(ixy,k) ) /
+>      $          ( dz2(ixy,k+1) + dz2(ixy,k) )
+>         ratt3 = ( 2.*dz2(ixy,k+1) + dz2(ixy,k) ) /
+>      $          ( dz2(ixy,k-1) + dz2(ixy,k) )
+67d70
+<         delma(k) = 0.
+69,70c72,73
+<         if( (dpc1-dpc)*(dpc-dpcm1) .gt. 0. )
+<      $     delma(k) = min( abs(dela(k)), 2.*abs(dpc-dpc1),
+---
+>         if( (dpc1-dpc)*(dpc-dpcm1) .gt. 0. .and. dela(k) .ne. 0. ) then
+>           delma(k) = min( abs(dela(k)), 2.*abs(dpc-dpc1),
+71a75,77
+>         else
+>           delma(k) = 0.
+>         endif
+77,89c83,95
+<         dpc = cvert(k) / delz2(ixy,k)
+<         dpc1 = cvert(k+1) / delz2(ixy,k+1)
+<         dpcm1 = cvert(k-1) / delz2(ixy,k-1)
+<         rat1 = delz2(ixy,k) /
+<      $          ( delz2(ixy,k) + delz2(ixy,k+1) )
+<         rat2 = 2. * delz2(ixy,k+1) * delz2(ixy,k) /
+<      $         ( delz2(ixy,k) + delz2(ixy,k+1) )
+<         rat3 = ( delz2(ixy,k-1) + delz2(ixy,k) ) /
+<      $         ( 2.*delz2(ixy,k) + delz2(ixy,k+1) )
+<         rat4 = ( delz2(ixy,k+2) + delz2(ixy,k+1) ) /
+<      $         ( 2.*delz2(ixy,k+1) + delz2(ixy,k) )
+<         den1 = delz2(ixy,k-1) + delz2(ixy,k) +
+<      $         delz2(ixy,k+1) + delz2(ixy,k+2)
+---
+>         dpc = cvert(k) / dz2(ixy,k)
+>         dpc1 = cvert(k+1) / dz2(ixy,k+1)
+>         dpcm1 = cvert(k-1) / dz2(ixy,k-1)
+>         rat1 = dz2(ixy,k) /
+>      $          ( dz2(ixy,k) + dz2(ixy,k+1) )
+>         rat2 = 2. * dz2(ixy,k+1) * dz2(ixy,k) /
+>      $         ( dz2(ixy,k) + dz2(ixy,k+1) )
+>         rat3 = ( dz2(ixy,k-1) + dz2(ixy,k) ) /
+>      $         ( 2.*dz2(ixy,k) + dz2(ixy,k+1) )
+>         rat4 = ( dz2(ixy,k+2) + dz2(ixy,k+1) ) /
+>      $         ( 2.*dz2(ixy,k+1) + dz2(ixy,k) )
+>         den1 = dz2(ixy,k-1) + dz2(ixy,k) +
+>      $         dz2(ixy,k+1) + dz2(ixy,k+2)
+96,97c102,103
+<      $           delz2(ixy,k)*rat3*delma(k+1) +
+<      $           delz2(ixy,k+1)*rat4*delma(k) )
+---
+>      $           dz2(ixy,k)*rat3*delma(k+1) +
+>      $           dz2(ixy,k+1)*rat4*delma(k) )
+114,118c120,124
+<       al(2) = cvert(1)/delz2(ixy,1) +
+<      $        (alt2(ixy,2)-alt_mid2(ixy,1)) /
+<      $        (alt_mid2(ixy,2)-alt_mid2(ixy,1)) *
+<      $        (cvert(2)/delz2(ixy,2)-
+<      $        cvert(1)/delz2(ixy,1))
+---
+>       al(2) = cvert(1)/dz2(ixy,1) +
+>      $        (zl2(ixy,2)-zc2(ixy,1)) /
+>      $        (zc2(ixy,2)-zc2(ixy,1)) *
+>      $        (cvert(2)/dz2(ixy,2)-
+>      $        cvert(1)/dz2(ixy,1))
+120,124c126,130
+<       al(1) = cvert(1)/delz2(ixy,1) +
+<      $        (alt2(ixy,2)-alt_mid2(ixy,1)) /
+<      $        (alt_mid2(ixy,2)-alt_mid2(ixy,1)) *
+<      $        (cvert(2)/delz2(ixy,2)-
+<      $        cvert(1)/delz2(ixy,1))
+---
+>       al(1) = cvert(1)/dz2(ixy,1) -
+>      $        (zc2(ixy,1)-zl2(ixy,1)) /
+>      $        (zc2(ixy,2)-zc2(ixy,1)) *
+>      $        (cvert(2)/dz2(ixy,2)-
+>      $        cvert(1)/dz2(ixy,1))
+127,131c133,137
+<       ar(nz-1) = cvert(nz-1)/delz2(ixy,nz-1) +
+<      $        (alt2(ixy,nz)-alt_mid2(ixy,nz-1))
+<      $        / (alt_mid2(ixy,nz)-alt_mid2(ixy,nz-1)) *
+<      $        (cvert(nz)/delz2(ixy,nz)-
+<      $        cvert(nz-1)/delz2(ixy,nz-1))
+---
+>       ar(NZ-1) = cvert(NZ-1)/dz2(ixy,NZ-1) +
+>      $        (zl2(ixy,NZ)-zc2(ixy,NZ-1))
+>      $        / (zc2(ixy,NZ)-zc2(ixy,NZ-1)) *
+>      $        (cvert(NZ)/dz2(ixy,NZ)-
+>      $        cvert(NZ-1)/dz2(ixy,NZ-1))
+133,137c139,143
+<       ar(nz) = cvert(nz-1)/delz2(ixy,nz-1) +
+<      $        (alt2(ixy,nz+1)-alt_mid2(ixy,nz-1))
+<      $        / (alt_mid2(ixy,nz)-alt_mid2(ixy,nz-1)) *
+<      $        (cvert(nz)/delz2(ixy,nz)-
+<      $        cvert(nz-1)/delz2(ixy,nz-1))
+---
+>       ar(NZ) = cvert(NZ-1)/dz2(ixy,NZ-1) +
+>      $        (zl2(ixy,NZ+1)-zc2(ixy,NZ-1))
+>      $        / (zc2(ixy,NZ)-zc2(ixy,NZ-1)) *
+>      $        (cvert(NZ)/dz2(ixy,NZ)-
+>      $        cvert(NZ-1)/dz2(ixy,NZ-1))
+138a145
+> c  Ensure that boundary values are not negative
+139a147,150
+>       al(1) = max( al(1), 0.*ONE )
+>       ar(NZ) = max( ar(NZ), 0.*ONE )
+> c
+> c
+145c156
+<         dpc = cvert(k) / delz2(ixy,k)
+---
+>         dpc = cvert(k) / dz2(ixy,k)
+166c177
+<         dpc = cvert(k) / delz2(ixy,k)
+---
+>         dpc = cvert(k) / dz2(ixy,k)
+174,175c185,186
+<         com2  = ( delz2(ixy,k) + delz2(ixy,k+1) ) / 2.
+<         x = vtrans(k+1)*dtime/delz2(ixy,k)
+---
+>         com2  = ( dz2(ixy,k) + dz2(ixy,k+1) ) / 2.
+>         x = vtrans(k+1)*dtime/dz2(ixy,k)
+180a192
+> 
+182,184c194,196
+<             vertadvu(k+1) = vtrans(k+1)/cvert(k)*com2
+<      $                 * ( ar(k) - 0.5*dela(k)*x +
+<      $                 (x/2. - x**2/3.)*a6(k) )
+---
+>             vertadvu(k+1) = ( vtrans(k+1) * com2 ) *
+>      $                 ( ( ar(k) - 0.5*dela(k)*x +
+>      $                 (x/2. - x**2/3.)*a6(k) ) / cvert(k) )
+197,200c209,211
+<             vertadvd(k+1) = -vtrans(k+1)/
+<      $                 cvert(k+1)*com2
+<      $                 * ( al(k+1) + 0.5*dela(k+1)*xpos +
+<      $                 (xpos/2. - xpos**2/3.)*a6(k+1) )
+---
+>             vertadvd(k+1) = ( -vtrans(k+1) * com2 ) *
+>      $               ( ( al(k+1) + 0.5*dela(k+1)*xpos +
+>      $               ( xpos/2. - xpos**2/3.)*a6(k+1) ) / cvert(k+1) )
+207c218
+<       enddo    ! k = 1,nz-2
+---
+>       enddo    ! k = 1,NZ-1
+210c221
+< c  Lower boundary transport rates:  If I_DIFFUSION boundary
+---
+> c  Lower boundary transport rates:  If I_OPEN_FLUX boundary
+217,218c228,229
+<         com2  = ( delz2(ixy,1) + delz2(ixy,2) ) / 2.
+<         x = vtrans(1)*dtime/delz2(ixy,1)
+---
+>         com2  = ( dz2(ixy,1) + dz2(ixy,2) ) / 2.
+>         x = vtrans(1)*dtime/dz2(ixy,1)
+220c231
+<         cvert0 = cvert(1) * cvert(1)/cvert(2)
+---
+>         cvert0 = cvert(1) * (cvert(1)/cvert(2))
+249c260
+<       if( itbnd .eq. I_DIFFUSION ) then
+---
+>       if( itbnd .eq. I_OPEN_FLUX ) then
+251,252c262,263
+<         com2  = ( delz2(ixy,nz-1) + delz2(ixy,2) ) / 2.
+<         x = vtrans(nz+1)*dtime/delz2(ixy,nz)
+---
+>         com2  = ( dz2(ixy,NZ-1) + dz2(ixy,2) ) / 2.
+>         x = vtrans(NZ+1)*dtime/dz2(ixy,NZ)
+254c265,266
+<         cvertnzp1 = cvert(nz) * cvert(nz)/cvert(nz-1)
+---
+>         cvertnzp1 = cvert(NZ) * (cvert(NZ)/cvert(NZ-1))
+>         cvertnzp1 = max( cvertnzp1, cvert(NZ) )

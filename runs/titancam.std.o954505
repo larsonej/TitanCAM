@@ -1,0 +1,19 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/nodes/node0812/mom_priv/jobs/954505.torque.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/nodes/node0812/mom_priv/jobs/954505.torque.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/nodes/node0812/mom_priv/jobs/954505.torque.rc.colorado.edu.SC:  Running on node0812
+/curc/torque/nodes/node0812/mom_priv/jobs/954505.torque.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/nodes/node0812/mom_priv/jobs/954505.torque.rc.colorado.edu.SC:  Set run to newstd
+/curc/torque/nodes/node0812/mom_priv/jobs/954505.torque.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/nodes/node0812/mom_priv/jobs/954505.torque.rc.colorado.edu.SC:  Set runtype to BRANCH
+/curc/torque/nodes/node0812/mom_priv/jobs/954505.torque.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/nodes/node0812/mom_priv/jobs/954505.torque.rc.colorado.edu.SC:  using cam from /lustre/janus_scratch/larsonej/run/newstd ...
+/curc/torque/nodes/node0812/mom_priv/jobs/954505.torque.rc.colorado.edu.SC:  using namelist from /lustre/janus_scratch/larsonej/run/newstd ...
+/curc/torque/nodes/node0812/mom_priv/jobs/954505.torque.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/newstd using MPI
+/curc/torque/nodes/node0812/mom_priv/jobs/954505.torque.rc.colorado.edu.SC:  Started at Fri Jun  1 15:06:58 MDT 2012
+/curc/torque/nodes/node0812/mom_priv/jobs/954505.torque.rc.colorado.edu.SC: Running on nodes ...
+node0812 node0812 node0812 node0812 node0812 node0812 node0812 node0812 node0812 node0812 node0812 node0812 node0343 node0343 node0343 node0343 node0343 node0343 node0343 node0343 node0343 node0343 node0343 node0343 node0359 node0359 node0359 node0359 node0359 node0359 node0359 node0359 node0359 node0359 node0359 node0359 node0376 node0376 node0376 node0376 node0376 node0376 node0376 node0376 node0376 node0376 node0376 node0376
+/curc/torque/nodes/node0812/mom_priv/jobs/954505.torque.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    4  48  /curc/torque/nodes/node0812/aux//954505.torque.rc.colorado.edu 
+/curc/torque/nodes/node0812/mom_priv/jobs/954505.torque.rc.colorado.edu.SC:  CAM run failed

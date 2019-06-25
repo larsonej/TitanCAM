@@ -1,0 +1,178 @@
+      subroutine outres
+c
+c
+c  @(#) outres.f  McKie  Oct-1995
+c  This routine outputs the current critical global model
+c  information to the output restart file.
+c
+c  Argument list input:
+c    None.
+c
+c  Argument list output:
+c    None.
+c
+c
+c  Include global constants and variables
+c
+      include 'globaer.h'
+c
+c
+c  Define formats
+c
+    1 format('Restart info written at itime = ',i6,
+     $       3x,'time=',f12.4,4x,'to file ',a)
+c
+c
+c  Announce entry to this routine
+c
+      if( DEBUG ) write(LUNOPRT,'(/,a)') 'Enter outres'
+c
+c
+c  Load safety marker value & output contents of common /aer1/
+c
+      iaer1 = ISAFETY
+      write(LUNORES)
+     $  time, dtime, itime,
+     $  NX, NY, NZ, NBIN, NGROUP, NELEM,
+     $  igelem, itype, nelemg,
+     $  ncore, ishape,
+     $  ienconc, icoag,
+     $  NXY, NXYZ, NPC4, NPC5,
+     $  ifall, icoagop, icollec, do_coag, do_grow, do_error,
+     $  NGAS, nsol, sec_mom,
+     $  igrowgas, inucgas,
+     $  inuc2elem, ievp2elem, is_grp_ice,
+     $  inuc2bin, isolelem,
+     $  ievp2bin,
+     $  icorelem,
+     $  iaer1
+c
+c
+c  Load safety marker value & output contents of common /aer1s/
+c
+      caer1s = CSAFETY
+      write(LUNORES)
+     $  simtitle, gasname,
+     $  caer1s
+c
+c
+c  Load safety marker value & output contents of common /aer2/
+c
+      iaer2 = ISAFETY
+      write(LUNORES)
+     $  rmassmin, rmrat,
+     $  r, rmass,
+     $  vol, dr,
+     $  dm, dv,
+     $  rmassup, rup, 
+     $  rlow, 
+     $  diffmass,
+     $  rhop, rhoelem, eshape,
+     $  iaer2
+c
+c
+c  Load safety marker value & output contents of common /aer3/
+c
+      iaer3 = ISAFETY
+      write(LUNORES)
+     $  pc,
+     $  gc,
+     $  iaer3
+c
+c
+c  Load safety marker value & output contents of common /rad3/
+c
+      irad3 = ISAFETY
+      write(LUNORES)
+     $  rad_stuff,
+     $  irad3
+c
+c
+c  Load safety marker value & output contents of common /aer4/
+c
+      iaer4 = ISAFETY
+      write(LUNORES)
+     $  pcl, gcl,
+     $  coaglg, coagpe
+     $  rnuclg, rnucpe, 
+     $  growlg, growpe, 
+     $  evaplg, evappe, 
+     $  gpd,
+     $  iaer4
+c
+c
+c  Load safety marker value & output contents of common /rad4/
+c
+      irad4 = ISAFETY
+      write(LUNORES)
+     $  rad_other,
+     $  irad4
+c
+c
+c  Load safety marker value & output contents of common /aer5/
+c
+      iaer5 = ISAFETY
+      write(LUNORES)
+     $  ckernel,
+     $  pkernel,
+     $  volx,
+     $  ilow,
+     $  jlow,
+     $  iup,
+     $  jup,
+     $  npairl,
+     $  npairu,
+     $  iaer5
+c
+c
+c  Load safety marker value & output contents of common /aer6/
+c
+      iaer6 = ISAFETY
+      write(LUNORES)
+     $  iglow,
+     $  jglow,
+     $  igup,
+     $  jgup,
+     $  iaer6
+c
+c
+c  Load safety marker value & output contents of common /aer7/
+c
+      iaer7 = ISAFETY
+      write(LUNORES)
+     $  bpm, vf, re,
+     $  iaer7
+c
+c
+c  Load safety marker value & output contents of common /aer8/
+c
+      iaer8 = ISAFETY
+      write(LUNORES)
+     $  alt, alt_mid,
+     $  p, rhoa,
+     $  t, 
+     $  rmu, thcond,
+     $  iaer8
+c
+c
+c  Load safety marker value & output contents of common /aer9/
+c
+      iaer9 = ISAFETY
+      write(LUNORES)
+     $  gwtmol, diffus,
+     $  pvapl, akelvin,
+     $  gro, gro1, gro2,
+     $  gvrat,
+     $  iaer8
+c
+c
+c  Report that restart info has been output
+c
+      call dblank(resofil, ns)
+      write(LUNOPRT,1) itime, time, resofil(1:ns)
+c
+c
+c  Return to caller with model info output to restart file
+c
+      return
+      end

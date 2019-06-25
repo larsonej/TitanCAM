@@ -1,0 +1,4 @@
+# $Id: README 62 2008-04-23 22:59:18Z cam_titan $
+  The build directory contains all the base makefiles that are 
+included in your actual makefile. See the users manual for a 
+description of all the flags and rules in the makefiles.

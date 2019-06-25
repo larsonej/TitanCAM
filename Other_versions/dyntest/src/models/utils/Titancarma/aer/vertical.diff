@@ -1,0 +1,382 @@
+6a7,10
+> c  Modified  Sep-1997  (McKie)
+> c  Remove <ixy> from arg list of called routines.
+> c  <ixy> now available as a global var in common block.
+> c
+19c23
+< c  Local declarations
+---
+> c  Declare local variables
+20a25
+>       dimension drho_dt(NZ)
+27c32
+<        dimension pcinit(MAXNBINS), pcinit2(MAXNBINS)
+---
+>        dimension pcinit(NBIN), pcinit2(NBIN)
+63d67
+< 
+64a69
+> c
+69a75
+>     6 format(i3,f7.1,i6,1pe13.4)
+76a83
+> c=======================================================================
+78c85,111
+<       do ixy = 1,nxy       ! Loop over horizontal grid points
+---
+> c  Determine limits for vertical loops: For 1-D simulations, we do not
+> c  want the concentration to change due to flux out of a boundary
+> c  grid box (i.e., upward motion for the bottom boundary and
+> c  downward motion for the top boundary).  This constraint ensures
+> c  that advection in a 1-D simulation will not change concentrations
+> c  at the upwind boundary.
+> c
+>       nlowlim = 1
+>       nuplim = NZ
+>       if( NXY .eq. 1 ) then
+>         if( w2(1,2) .gt. 0. ) nlowlim = 2
+>         if( w2(1,NZ) .lt. 0. ) nuplim = NZ-1
+>       endif
+> c
+> c  Loop over horizontal grid points
+> c
+>       do ixy = 1,NXY
+> c
+> c=======================================================================
+> c
+> c  Treat vertical transport of air density 
+> c
+> c
+> c  Boundary fluxes are zero
+> c
+>         itbnd = I_FLUX_SPEC
+>         ibbnd = I_FLUX_SPEC
+79a113,114
+>         ftop = 0.
+>         fbot = 0.
+82c117,119
+< c  Treat vertical transport of particles.
+---
+> c  Store temporary (work) values in <cvert>, 
+> c  evaluate vertical velocities at layer boundaries,
+> c  and set divergence correction term to zero.
+84,86c121,135
+<         itbnd = itbndpart
+<         ibbnd = ibbndpart
+<         do ielem = 1,nelem           ! Loop over particle elements
+---
+>         do k = 1,NZP1
+>           vtrans(k) = w2(ixy,k)
+>           if( k .le. NZ )then
+>             cvert(k) = rhoa2(ixy,k)
+>             divcor(k) = 0.
+>           endif
+>         enddo
+> c
+> c
+> c  Calculate particle transport rates due to vertical advection
+> c  (note: no diffusion for air density), and solve for air density
+> c  at end of time step.
+> c
+>         call vertadv
+>         call versol
+88c137,149
+<           ig = igelem(ielem)         ! particle group
+---
+>         if( NXY .eq. 1 )then
+> c
+> c
+> c  In 1D, assume assume any vertical divergence is
+> c  balanced by horizontal convergence: don't allow air density
+> c  to change in time, but calculate rate of change that would have
+> c  resulted from advection -- this tendency is then used below for
+> c  a divergence correction.
+> c
+>           do k = 1,NZ
+>             drho_dt(k) = ( rhoa2(ixy,k) - cvert(k) ) / 
+>      $                   ( rhoa2(ixy,k) * dtime )
+>           enddo
+90c151,158
+<           do ibin = 1,nbins          ! Loop over particle mass bins
+---
+>         else
+> c
+> c
+> c  Update air density when not in 1D.
+> c
+>           do k = nlowlim,nuplim
+>             rhoa2(ixy,k) = cvert(k)
+>           enddo
+92c160
+<             do k = 1,nz
+---
+>         endif
+94c162
+< c  Temporary storage of particle concentration profile in <cvert>
+---
+> c=======================================================================
+96c164,167
+<               cvert(k) = pc2(ixy,k,ibin,ielem)
+---
+> c  Treat vertical transport of particles.
+> c
+>         itbnd = itbnd_pc
+>         ibbnd = ibbnd_pc
+97a169,174
+> c  Write all fall velocites for mass flux calculation
+>  
+> c     if(time .gt. 2.*8.64d4) then
+> c     do j = 1,NGROUP
+> c       do k = 1,NZ
+> c         do i = 1,NBIN
+99c176
+< c  Vertical transport rate = (vertical wind speed) - (fallspeed)
+---
+> c           write(LUNOTEMP,6) j,zl3(k)/1.d5,i,vf(k,i,j)
+101c178,183
+<               vtrans(k) = w2(ixy,k) - vf(k,ibin,ig)
+---
+> c         enddo
+> c       enddo
+> c     enddo
+> c     close(LUNOTEMP)
+> c     stop 1
+> c     endif
+102a185,201
+>         do ielem = 1,NELEM          ! Loop over particle elements
+> 
+>           ig = igelem(ielem)        ! particle group
+> 
+>           do ibin = 1,NBIN          ! Loop over particle mass bins
+> c
+> c
+> c  Store temporary (work) values in <cvert>, 
+> c  evaluate vertical velocities at layer boundaries, and
+> c  when 1D, assign divergence correction term
+> c
+>             do k = 1,NZP1
+>               vtrans(k) = w2(ixy,k) - vf(k,ibin,ig)
+>               if( k .le. NZ )then
+>                 cvert(k) = pc2(ixy,k,ibin,ielem)
+>                 if( NXY. eq. 1 ) divcor(k) = cvert(k) * drho_dt(k)
+>               endif
+105d203
+<             vtrans(nz+1) = w2(ixy,nz+1) - vf(nz+1,ibin,ig)
+106a205
+> c
+113,115c212,214
+<               ftop = ftoppart(ibin,ielem) 
+<      $					- advfld(ibin)*pcinit(ibin)
+<      $					+ vtd(ibin)*pcinit2(ibin)
+---
+>               ftop = ftoppart(ixy,ibin,ielem)
+>      $                         + advfld(ibin)*pcinit(ibin)
+>      $                         - vtd(ibin)*pcinit2(ibin)
+120c219
+<             fbot = fbotpart(ibin,ielem)-vtrans(1)*cvert(1)
+---
+>             fbot = fbotpart(ixy,ibin,ielem)+vtrans(1)*cvert(1)
+122c221,223
+< c		if(ielem .eq. 1) print *,ibin,ftop, fbot
+---
+> 
+> c           if(ielem .eq. 1) print *,'Fluxes',ibin,ftop, fbot
+> c           print *,'Flux',ielem,r(ibin,ig),fbot
+125,126c226,227
+< c  Correction term for one-dimensional model assumes vertical divergence
+< c  is balanced by horizontal convergence.
+---
+> c  Calculate particle transport rates due to vertical advection
+> c  and vertical diffusion, and solve for concentrations at end of time step.
+128,138c229,232
+<             if( nxy .gt. 1 )then
+<               do k = 1,nz
+<                 divcor(k) = 0.
+<               enddo
+<             else
+<               do k = 1,nz
+<  		divcor(k) = 0.
+< c               divcor(k) = ( w2(ixy,k+1) - w2(ixy,k) ) / delz2(ixy,k) *
+< c    $                      cvert(k)
+<               enddo
+<             endif
+---
+>             call vertadv
+>             call vertdif
+>             call versol
+> 
+140,154d233
+< c
+< c  Calculate particle transport rates due to vertical advection.
+< c
+<             call vertadv(ixy)
+< c
+< c  Calculate particle production and loss terms due to vertical
+< c  diffusion 
+< c
+<             call vertdif(ixy)
+< c
+< c  Solve for concentrations at end of time step.
+< c
+< c           call verpsolv(ixy,ibin,ielem)
+< 	    call versol(ixy)
+< c
+161c240,241
+<                 write(LUNOPRT,*) 'Particle Vertical Transport',ielem,ibin
+---
+>                 write(LUNOPRT,*) 'Particle Vertical Transport',
+>      $                           ielem,ibin
+163c243
+<                   write(LUNOPRT,7) alt3(k)/1.d5,vertadvu(k),vertdifu(k),
+---
+>                   write(LUNOPRT,7) zl3(k)/1.d5,vertadvu(k),vertdifu(k),
+168a249
+> c
+171c252,257
+<             do k = 1,nz
+---
+>             do k = nlowlim,nuplim
+>         if(cvert(k) .lt. 0. .and. ibin.eq.1 .and. ielem.eq.1)
+>      $     print *,'****************vert',k,cvert(k)
+>         if(cvert(k) .lt. 0.) cvert(k) = SMALL_PC
+> c             if(ibin.eq.1 .and. ielem.eq.1) 
+> c    $          print *,pc2(ixy,k,ibin,ielem),cvert(k)
+173,178d258
+< 
+< c               if(cvert(k) .lt. 0.) then
+< c		print *,'vert',k,ibin,ielem,pc2(ixy,k,ibin,ielem),
+< c    $                   time
+< c               endif
+< 
+183a264
+> c=======================================================================
+185,191d265
+< c  Define vertical velocity at vertical boundaries in current column
+< c
+<         do k = 1,nz
+<           vtrans(k) = w2(ixy,k)
+<         enddo
+< c
+< c
+195,198c269,272
+<         itbnd = itbndgas
+<         ibbnd = ibbndgas
+<         do igas = 1,ngas
+<           do k = 1,nz
+---
+> c
+>         do k = 1,NZP1
+>           vtrans(k) = w2(ixy,k)
+>         enddo
+200c274,275
+<             cvert(k) = gc2(ixy,k,igas)
+---
+>         itbnd = itbnd_gc
+>         ibbnd = ibbnd_gc
+202c277
+<           enddo
+---
+>         do igas = 1,NGAS
+204,205c279,280
+<           ftop = ftopgas(igas)
+<           fbot = fbotgas(igas)
+---
+>           ftop = ftopgas(ixy,igas)
+>           fbot = fbotgas(ixy,igas)
+207,215c282,286
+<           if( nxy .gt. 1 )then
+<             do k = 1,nz
+<               divcor(k) = 0.
+<             enddo
+<           else
+<             do k = 1,nz
+<               divcor(k) = ( w2(ixy,k+1) - w2(ixy,k) ) / delz2(ixy,k) *
+<      $                    cvert(k)
+<             enddo
+---
+>           do k = 1,NZP1
+>             vtrans(k) = w2(ixy,k)
+>             if( k .le. NZ )then
+>               cvert(k) = gc2(ixy,k,igas)
+>               if( NXY. eq. 1 ) divcor(k) = cvert(k) * drho_dt(k)
+216a288
+>           enddo
+218,220c290,292
+<           call vertadv(ixy)
+<           call vertdif(ixy)
+<           call versol(ixy)
+---
+>           call vertadv
+>           call vertdif
+>           call versol
+229c301
+<                 write(LUNOPRT,7) alt3(k)/1.d5,vertadvu(k),vertdifu(k),
+---
+>                 write(LUNOPRT,7) zl3(k)/1.d5,vertadvu(k),vertdifu(k),
+234c306
+<           do k = 1,nz
+---
+>           do k = nlowlim,nuplim
+239a312
+> c=======================================================================
+244,246c317,318
+<         itbnd = itbndtheta
+<         ibbnd = ibbndtheta
+<         do k = 1,nz
+---
+>         itbnd = itbnd_ptc
+>         ibbnd = ibbnd_ptc
+248c320,321
+<           cvert(k) = ptli2(ixy,k)
+---
+>         ftop = 0.
+>         fbot = 0.
+249a323,328
+>         do k = 1,NZP1
+>           vtrans(k) = w2(ixy,k)
+>           if( k .le. NZ )then
+>             cvert(k) = ptc2(ixy,k)
+>             if( NXY. eq. 1 ) divcor(k) = cvert(k) * drho_dt(k)
+>           endif
+252,261c331,333
+<         if( nxy .gt. 1 )then
+<           do k = 1,nz
+<             divcor(k) = 0.
+<           enddo
+<         else
+<           do k = 1,nz
+<             divcor(k) = ( w2(ixy,k+1) - w2(ixy,k) ) / delz2(ixy,k) *
+<      $                  cvert(k)
+<           enddo
+<         endif
+---
+>         call vertadv
+>         call vertdif
+>         call versol
+263,268c335,336
+<         call vertadv(ixy)
+<         call vertdif(ixy)
+<         call versol(ixy)
+< 
+<         do k = 1,nz
+<           ptli2(ixy,k) = cvert(k)
+---
+>         do k = nlowlim,nuplim
+>           ptc2(ixy,k) = cvert(k)
+270c338,340
+< 
+---
+> c
+> c=======================================================================
+> c
+272d341
+< 
+273a343
+> c=======================================================================
+275d344
+< c  Return to caller with new particle and gas concentrations.
+276a346,349
+> c  Return to caller with new particle, gas, and potential temperature
+> c  concentrations and air density.
+> c
+>       print *,'VERTICAL',pc3(6,1,1)

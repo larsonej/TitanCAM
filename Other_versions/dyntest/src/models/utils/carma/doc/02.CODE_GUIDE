@@ -1,0 +1,421 @@
+@(#) 02.CODEGUIDE  Toon_group  Nov-1995
+
+This is a brief guide to coding conventions used in the Ames Aerosol
+Model.  If you are writing new code that will become a part of this
+model, following these guidelines will help keep the model code:
+
+  Consistent
+  Clear
+  Easy to modify
+  More portable
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+The model source code is in the language of standard Fortran-77.
+
+The code is intended to run on various computer hardware and operating
+systems.  We are currently targetting the code to run on the following
+systems:
+
+  Sun   SunOS 4.1.x     SunFortran (f77)
+  SGI   IRIX {4,5}.x    SGI Fortran (f77)
+  Cray  Unicos {7,8}.x  Cray Fortran-77  (cf77)
+  PC    Linux 1.x       f2c/gcc Fortran-77 or AbSoft f77 
+
+The code is distributed as a standard compressed tar file, containing
+all files relating to a particular frozen version of the model.  The
+version is named by a version tag id, currently of the form "n.m",
+where n & m are integers.  (E.g. 1.00, 1.01, 1.02)
+
+The distribution tar file package unpacks into a simple file hierarchy:
+
+  src/
+    Brief 00.README documentation.
+    Brief 01.REVISIONS record and version tag id history.
+    Brief 02.CODEGUIDE coding guide (this file).
+    Brief 03.CALLMAP calling tree.
+    Makefile for compiling, linking, generating distribution, cleanup, etc.
+    Main and subprogram source code, each routine in a separate file. (*.f)
+    Include header files (*.h) for global declarations & constants.
+    A program, chekres, which checks restart code & common block consistency.
+
+  test/
+    Test configurations.
+    Model output from tests.
+    Graphics files showing results from tests.
+
+The basic top-level structure of the model is kept very simple in the
+main program, to more easily allow the model to become a subprogram
+call from another model.  The model's top-level calling tree looks like:
+
+  main               Main overall program (could be replaced by another model).
+    init             Defines run vars & controls cold start or restart.
+      initnew        Performs cold start initialization.
+      initres        Performs a restart initialization.
+    step             Controls the taking of 1 timestep.
+      prestep        Processing that occurs before each timestep.
+      newstate       Controls calc of new values for model state variables.
+      postep         Processing that occurs after each timestep.
+        outprt       Outputs timestep info to print file at current timestep.
+        outhis       Outputs model history to history file at current timestep.
+        outres       Outputs model restart info.
+    quit             Shuts down the model at the end of a run.
+
+The initnew routine has its own hierarchy of calls to routines that
+initialize different specific structures & physical processes in the model.
+
+The newstate routine calls various other routines to handle the update of
+the model state for various physical processes.
+
+Hardware, OS, compiler, and other system dependencies are avoided
+whenever possible.  We try to write the model code without any
+particular system in mind.  In particular, we don't assume that a
+special feature on one system will be available on another system.
+
+Except for use of standard Fortran-77 library routines such as sqrt(),
+sin(), cos(), exp(), min(), len(), ichar(), etc, the model distribution
+contains the source code for all routines that are called within the
+model.
+
+A recent exception to the above is that the freely distributed
+netcdf library is used for optional history file output.
+
+If necessary, any system dependencies are isolated into separate
+instances of some subprogram files.  The appropriate
+system-dependent files are automatically incorporated into the model
+using conditional compilation controlled by a single symbol in the
+Makefile (SYSTYP).  As of version 1.02, there are no system
+dependencies.
+
+The Makefile is parameterized with several symbols that refer to
+compiler names, linker names, compiling options, paths to files and
+operating system utilities used in the Makefile.
+
+The model is purposely kept focused on numerical scientific initial
+value problem computation to help keep the model more portable.  E.g.
+there is no graphics-package-dependent picture-drawing output and no
+window-system-dependent graphical user interface control routines in
+the model.  These are assumed to be more appropriately built into
+post-processing programs that input and manipulate the model's
+fundamental output product, its history file.
+
+Standard Generic Fortran-77 library function names are used, rather than
+specific function names.  E.g. min(a,b) rather than amin1(a,b), log(r)
+rather than alog(r), exp(c) rather than cexp(c).  This allows the type
+of the argument to automatically tell the compiler which of several
+internally known versions of the function to call in the compiled code.
+
+Sharing of principal model variables is done with standard Fortran-77
+named common blocks.
+
+A single global include file containing symbolic constant parameter
+definitions and common block declarations is the focus of all variables
+and constants that will be shared by any routines in the model.
+This global include file is currently named globaer.h.
+
+A short include file, precision.h, is used to to declare the types of
+all real and integer variable names.  Standard default names beginning
+with letters a-h and o-z are for for floating point variables, and those
+beginning with letters i-n are for integers.  This provides a
+system-independent way to switch between single and double precision
+real variables by changing a single statement.  E.g.  on a 32 bit
+wordlength Sun, we would use "implicit double precision (a-h,o-z)", and
+on a 64 bit wordlength Cray we would use "implicit real (a-h,o-z)" in
+precision.h, and this would propagate this floating point precision
+automatically to all routines.
+
+We force all floating point and integer variables to be implicitly
+typed.  I.e. we never use "real", "real*4", "double precision",
+"real*8", "integer", "integer*2", or "integer*4" declarations,
+but use the default implicit declarations in precision.h to declare
+the types of ints and floats.
+
+Character, logical, and complex variables are explicitly declared.
+
+The precision.h file is included by globals.h, and by any routine
+that does not include globals.h and wishes to use the standard
+implicit floating point and integer types.
+
+If a routine needs any access to shared global variables, it includes
+the single global include file, and thus gets access to all such variables.
+
+Symbolic constants defined in parameter statements are capitalized.
+All other parts of the code (except possibly within comments) is in
+lower case.
+
+Symbolic constants that refer to the dimensions of arrays begin
+with the prefix N.  E.g. NX, NY, NBIN, etc.
+
+The lower bound of array indices is implicitly 1.
+
+We do not use the trick of placing arrays next to one another in
+common blocks and allowing indices in one array to intentionally
+cross over into the memory space of the next variable.
+
+Variable names and symbolic constant names that appear in comments are set
+off within angle brackets.  E.g. if the variable name nbins occurs in
+a comment, it is written as <nbins>.
+
+No tabs are used in the source code.  All white space consists of one
+or more simple ascii space characters.
+
+The continuation charcter is dollar sign ($) in column 6 of the standard
+Fortran-77 coding line.
+
+Format statements are grouped together near the top of a routine, after
+the global includes and local declarations, and we use small statement
+labels, e.g. 1, 2, 3, ... for these.
+
+Statement labels in the executable code are minimized.  The
+(non-standard Fortran-77) "do ... enddo"  form of do loops is used to
+help avoid the distraction of unnecessary statement labels.  Although
+non-standard, this form of do loop is available on almost all good
+Fortran-77 compilers today, and is a standard part of Fortran-90.
+
+The following older Fortran language elements are not used in the model.
+
+  assigned goto statements
+  arithmetic if statements
+  hollerith character constants
+
+The Fortran "entry" statement is not used.  All calls to a routine's
+code are made to the first executable statement in that routine.  There
+is no other way allowed into the routine. 
+
+Character strings are represented with the string enclosed within
+single quotes.
+
+Indentation of the bodies of Fortran-77 "do", "if", etc statements
+follows the convention that we attempt to indent 2 spaces for each new
+level.  If space is tight on the 72 character line limit, we use a single
+space to indent.  E.g.:
+
+  do i=1,n
+    do j=1,m
+      if( i .eq. j )then
+        x(i,j) = 1.
+      else
+        x(i,j) = 0.
+      endif
+    enddo
+  enddo
+
+Comments are used liberally, and are set off from the previous
+statement line by 2 lines with nothing but "c" in column 1, and are set
+off from the statement to which the comment applies by a single line
+with nothing but "c" in column 1.  In the executable portion of the
+code, comments are used to describe the action that is to occur in the
+following code segment.  Small groups of logical code statements are
+described by a preceding comment block.
+
+Comments in the header lines of each routine show the name of the file
+containing the routine, the file's principal author, the date of the
+creation or major changes to the routine, a brief description of what
+the routine does, and a description of the routine's input and output
+argument list variables if they exist.
+
+A typical routine's first lines are demonstrated by the following
+code fragment:
+
+ Column 1
+  |
+  V
+
+        subroutine init
+  c
+  c
+  c  @(#) init.f  McKie  Oct-1995
+  c  This routine performs all initializations at the beginning
+  c  of each run of the model.
+  c
+  c  Argument list input:
+  c    None.
+  c
+  c  Argument list output:
+  c    None.
+  c
+  c
+  c  Include global constants and variables
+  c
+        include 'globals.h'
+  c
+  c
+  c  Define formats
+  c
+      1 format('Initialization for ',a,' (Version ',a,')')
+      2 format(a,':  ',i6)
+      3 format(a,':  ',f12.2)
+      4 format(a,':  ',a)
+      5 format(/,'Model will run with the following values:')
+
+
+Comments describe each global variable in the global include file,
+including its physical dimension if it has one.
+
+Global variables are grouped into named common block structures.  Each
+separate block contains global variables that are similar in some
+logical way.
+
+Floating point, integer, and logical global variables are arranged
+together in each common block, and global character variables are kept
+in separate common blocks whose block names end with "s".
+
+No block data subprogram is used to initialize common block variables
+at compile time.  Similarly, no routine is allowed to define any
+element of any global common block with a data statement.  (This is
+to avoid the problem with some compilers and linkers in which they
+set up distinct common blocks for blocks with the same names that
+are initialized at compile time with data statements in different
+routines.)
+
+Initializations are handled at run time in the initialization routines
+with assignment statements.
+
+Arrays that are local to a routine and that have non-changing values
+may be initialized at compile time in that routine with one or
+more data statements.  These local arrays must be declared with a
+standard Fortran-77 "save" statement in that routine.
+
+Any routine that has local variables whose values are assumed to
+persist between calls to that routine, must have standard Fortran-77
+"save" statements that declare those local variables to be in
+static memory locations.
+
+The model can be restarted from the end of a previous run by using
+a restart file.  The contents of all common blocks that characterize
+the state of the model are dumped periodically to a restart file
+using unformatted i/o to preserve all the precision of those variables.
+These blocks of variables are then inputted from the restart file during
+the initialization of a subsequent restart run.
+
+A program called "chekres" is a part of the model distribution.  It
+is a stand-alone program that analyzes the restart routine's source
+code to ensure it is consistent with the global common blocks source
+code in the global include header file.  This provides a safety check
+whenever the model code is modified, so that the exact same set of
+variables are output and input by the restart routines as exist in
+the common blocks.  Chekres is run with no user input.  It reports
+"All ok" if the restart i/o source code is consistent with the
+common block source code.  Otherwise, it attempts to explain what
+is inconsistent.
+
+There is one common block whose global variables are not output or
+input to the restart file.  This common block contains variables
+that will potentially change for each run of the model.  Some of
+these variables control whether a restart or cold start will occur
+at the beginning of each model run.
+
+All file i/o is done to logical unit numbers that are symbolic
+constants declared in the global include file.
+
+All file i/o is done to files that have been opened with standard
+Fortran-77 "open" statements.  I.e. no implicitly opened files
+are allowed.
+
+Principal output from each model run includes the restart information
+described above, plus history output of the model's primary state
+variables to a history file, plus timestep progress and debugging
+information that is output to a "print" file.
+
+All output to the history file and most output to the print file is
+isolated in routines devoted to those purposes (outhis and outprt).
+These routines are conditionally called at the end of each timestep.
+
+Primary control variables for each model run include:
+
+  Begin timestep for the run. (0 implies cold start, > 0 implies restart)
+  Ending timestep for the run.
+  Number of timesteps between restart info output.
+  Number of timesteps between history info output.
+  Number of timesteps between print file info output.
+  Names of input and output files.
+
+Global symbolic constants such as maximum array dimensions and
+infrequently changing physical constants such as PI and GRAV
+are defined in parameter statements in the global include file.
+
+Floating point symbolic constants take their type from the same
+implicit statement in the precision.h header file as do floating
+point variable names.  Precision of these symbolic constants
+is thus controlled automatically to be the same as for floating
+point variables.
+
+A special floating point symbolic constant named "ONE" is defined
+to be 1.d0 in the global include file.  Its purpose is to multiply
+any subexpression involving literal floating point constants in
+arithmetic expressions.  This ensures that these subexpressions
+are evaluated with the same floating point precision as is implicitly
+declared within the precision.h include file.  (Since ONE will be
+typed with this implicit precision, and the rules of Fortran
+subexpression evaluation force all members of a subexpression to
+be of the greatest precision of members of that subexpression.)
+E.g. we would code:
+
+   x = a * b ** ( ONE * 2. / 3. )
+
+rather than:
+
+   x = a * b ** ( 2. / 3. )
+
+Most Fortran-77 compilers will precompute the subexpression ( ONE * 2. / 3. )
+above and efficiently move it outside any loop that this assignment
+statement may be within.  Note that if precision.h declares single
+precision floating point, then the compiler will convert 1.d0 to single
+precision and store it in ONE at compile time, and ONE will then force
+2. to be divided by 3. in single precision in the above.  If precision.h
+declares double precision floats, then ONE will be double precision,
+and will force 2. to be divided by 3. as if the expression were written
+as ( 2.d0 / 3.d0 ).  This is a mechanism by which we propagate the
+effect of the single floating point declaration not only to floating
+point variables, but also to floating point literal constants within
+parenthesized subexpressions.
+
+Note that floating point arithmetic expressions such as:
+
+     2. * x / 3.
+
+will automatically be done in the precision of the type of the floating
+point variable x, so no use of the special symbolic constant ONE is
+needed in that case.  The ONE symbolic constant is only needed in those
+relatively rare cases of parenthesized subexpressions involving only
+literal constants.
+
+Floating point constants defined in the global include file (or locally
+within routines) should be given values of double precision constants.
+This will ensure the greatest possible precision for those constants,
+and the compiler will convert the type of these constants as necessary
+at compile time according to the implicit floating point type in
+precision.h.
+
+Integer variable names that represent pointers to things or indices or
+subscripts begin with "i".  Integer variable names that represent
+numbers of things begin with "n".
+
+When a floating point variable might naturally begin with an
+implicit integer letter (e.g. kappa), then it is made implicitly
+floating point by prefixing with a "r" (e.g. rkappa).
+
+There are places within the code where it is efficient to be able to
+loop over all elements of the first several subscripts of an array.
+To handle this, the global include file contains declarations of
+arrays with collapsed initial dimensions, and those arrays are then
+equivalenced to the original multi-dimensional array.  E.g.
+
+      parameter(NI=50)
+      parameter(NJ=60)
+      parameter(NK=70)
+      parameter(NL=80)
+
+      parameter(NA2=NI*NJ)
+      parameter(NA3=NI*NJ*NK)
+      parameter(NA4=NI*NJ*NK*NL)
+
+      common /blokhead/ a(NI,NJ,NK,NL)
+
+      dimension a2(NA2,NK,NL)
+      dimension a3(NA3,NL)
+      dimension a4(NA4)
+
+      equivalence( a2, a )
+      equivalence( a3, a )
+      equivalence( a4, a )

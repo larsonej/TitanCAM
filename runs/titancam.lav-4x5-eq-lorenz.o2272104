@@ -1,0 +1,25 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/mom_priv/jobs/2272104.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/mom_priv/jobs/2272104.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/bin/mpirun
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/mom_priv/jobs/2272104.moab.rc.colorado.edu.SC:  Running on node0974
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/mom_priv/jobs/2272104.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/mom_priv/jobs/2272104.moab.rc.colorado.edu.SC:  Set run to lav-4x5-lorenz
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/mom_priv/jobs/2272104.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/mom_priv/jobs/2272104.moab.rc.colorado.edu.SC:  Set runtype to RESTART
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/mom_priv/jobs/2272104.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/mom_priv/jobs/2272104.moab.rc.colorado.edu.SC:  using cam from /lustre/janus_scratch/larsonej/run/lav-4x5-lorenz ...
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/mom_priv/jobs/2272104.moab.rc.colorado.edu.SC:  using namelist from /lustre/janus_scratch/larsonej/run/lav-4x5-lorenz ...
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/mom_priv/jobs/2272104.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/lav-4x5-lorenz using MPI
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/mom_priv/jobs/2272104.moab.rc.colorado.edu.SC:  Started at Mon Oct 14 08:32:24 MDT 2013
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/mom_priv/jobs/2272104.moab.rc.colorado.edu.SC: Running on nodes ...
+node0974 node0974 node0974 node0974 node0974 node0974 node0974 node0974 node0974 node0974 node0974 node0974 node0102 node0102 node0102 node0102 node0102 node0102 node0102 node0102 node0102 node0102 node0102 node0102 node0103 node0103 node0103 node0103 node0103 node0103 node0103 node0103 node0103 node0103 node0103 node0103 node0104 node0104 node0104 node0104 node0104 node0104 node0104 node0104 node0104 node0104 node0104 node0104 node0105 node0105 node0105 node0105 node0105 node0105 node0105 node0105 node0105 node0105 node0105 node0105 node0107 node0107 node0107 node0107 node0107 node0107 node0107 node0107 node0107 node0107 node0107 node0107 node0108 node0108 node0108 node0108 node0108 node0108 node0108 node0108 node0108 node0108 node0108 node0108 node0123 node0123 node0123 node0123 node0123 node0123 node0123 node0123 node0123 node0123 node0123 node0123 node0124 node0124 node0124 node0124 node0124 node0124 node0124 node0124 node0124 node0124 node0124 node0124 node0125 node0125 node0125 node0125 node0125 node0125 node0125 node0125 node0125 node0125 node0125 node0125 node0126 node0126 node0126 node0126 node0126 node0126 node0126 node0126 node0126 node0126 node0126 node0126 node0127 node0127 node0127 node0127 node0127 node0127 node0127 node0127 node0127 node0127 node0127 node0127 node0128 node0128 node0128 node0128 node0128 node0128 node0128 node0128 node0128 node0128 node0128 node0128 node0132 node0132 node0132 node0132 node0132 node0132 node0132 node0132 node0132 node0132 node0132 node0132 node0133 node0133 node0133 node0133 node0133 node0133 node0133 node0133 node0133 node0133 node0133 node0133 node0413 node0413 node0413 node0413 node0413 node0413 node0413 node0413 node0413 node0413 node0413 node0413 node0417 node0417 node0417 node0417 node0417 node0417 node0417 node0417 node0417 node0417 node0417 node0417 node0430 node0430 node0430 node0430 node0430 node0430 node0430 node0430 node0430 node0430 node0430 node0430 node0740 node0740 node0740 node0740 node0740 node0740 node0740 node0740 node0740 node0740 node0740 node0740 node0101 node0101 node0101 node0101 node0101 node0101 node0101 node0101 node0101 node0101 node0101 node0101
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/mom_priv/jobs/2272104.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    20  240  /curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/aux//2272104.moab.rc.colorado.edu 
+[node0123:02303] [[6893,0],7]-[[6893,1],91] mca_oob_tcp_msg_recv: readv failed: Connection reset by peer (104)
+[node0126:03787] [[6893,0],10]-[[6893,1],123] mca_oob_tcp_msg_recv: readv failed: Connection reset by peer (104)
+[node0124:26539] [[6893,0],8]-[[6893,1],107] mca_oob_tcp_msg_recv: readv failed: Connection reset by peer (104)
+[node0124:26539] [[6893,0],8]-[[6893,1],96] mca_oob_tcp_msg_recv: readv failed: Connection reset by peer (104)
+[node0125:09282] [[6893,0],9]-[[6893,1],112] mca_oob_tcp_msg_recv: readv failed: Connection reset by peer (104)
+[node0125:09282] [[6893,0],9]-[[6893,1],108] mca_oob_tcp_msg_recv: readv failed: Connection reset by peer (104)
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0974/mom_priv/jobs/2272104.moab.rc.colorado.edu.SC:  CAM run failed

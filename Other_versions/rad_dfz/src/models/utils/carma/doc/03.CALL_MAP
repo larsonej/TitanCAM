@@ -1,0 +1,91 @@
+Calling sequence and brief descriptions of fortran routines.
+
+
+  main                 Main overall program (could be replaced by another model).
+    init               Defines run vars & controls cold start or restart.
+      initnew          Performs cold start initialization.
+        initatm        Initializes model atmosphere variables.
+        setupaer       Defines mapping arrays & time-indep params for microphysics.
+          setupbins    Sets up particle bins and shapes.
+          setupvf      Calculates particle fall velocities.
+          setupgrow    Sets up mapping arrays for particle growth.
+          setupgkern   Calculates condensational growth kernels.
+          setupnuc     Sets up mapping arrays for nucleation.
+          setupckern   Calculates particle coagulation kernels.
+          setupcoag    Sets up mapping arrays for coagulation.
+        initaer        Initializes particle size distributions.
+        initgas        Initializes gas concentrations.
+          vaporp       Calculates vapor pressures.
+          supersat     Calculates supersaturations.
+          initrad      Defines time-independent radiative transfer variables
+            setuprad   Radiative transfer setup routine (in ../rad subdirectory).
+          prerad       Definitions prior to radtran call.
+          radtran      Radiative transfer calculation (in ../rad subdirectory).
+          postrad      Calculations after radtran call.
+          zerorad      Sets radiation variables to zero.
+      initres          Performs a restart initialization.
+      prtsep           Outputs simple print file visual separator.
+      outprt           Outputs timestep info to print file at current timestep.
+        prtsep         Outputs simple print file visual separator.
+      outhis           Outputs model history to history file at current timestep.
+        outhis_ncdf    Outputs history in netcdf format
+        outhis_bin     Outputs history in fortran binary format
+        prtsep         Outputs simple print file visual separator.
+    step               Controls the taking of 1 timestep.
+      prestep          Processing that occurs before each timestep.
+        zeromicro      Zeroes fast microphysics sinks and sources.
+      newstate         Controls calc of new values for model state variables.
+        horizont       Drives horizontal transport calculation.
+          glkcoef      Calculates coefficients needed for Galerkin method.
+          htranglk     Calculates horizontal advection rates using Galerkin method.
+          htranppm     Calculates horizontal advection rates using PPM method.
+          htranfosl    Calculates horizontal advection rates using FOSL method.
+        vertical       Drives vertical transport calculation.
+          vertadv      Calculates vertical advection transport rates.
+          vertdif      Calculates vertical diffusion fluxes.
+          versol       Solves for new concentrations after vertical diffusion.
+        parcel         Calculates convective forcings for parcel simulation.
+        microslow      Slow calc changes in concentrations due to microphysical processes.
+	  coagl        Calculates loss rates due to coagulation.
+	  coagp        Calculates production rates due to coagulation.
+          csolve       Solve for new particle concen given coag loss & production rates.
+        microfast      Fast calc changes in concentrations due to microphysical processes.
+          zeromicro    Zeroes fast microphysics sinks and sources.
+          supersat     Calculates supersaturations.
+            vaporp     Calculates vapor pressures.
+          actdropl     Calculates particle loss rates due to activation of aerosols --> droplets.
+          freezaerl    Calculates particle loss rates due to freezing nucleation of aerosols.
+          freezdropl   Calculates particle loss rates due to freezing nucleation of drops.
+          freezmixedl  Calculates particle loss rates due to total freezing of mixed hydrom.
+          meltmixedl   Calculates particle loss rates due to total melting of mixed hydrom.
+          melticel     Calculates particle loss rates due to initiation of ice melting.
+          coremeltl    Calculates core mass changes due to core freezing/melting.
+          growevapl    Calculates loss rates due to conden growth and evaporation.
+          growp        Calculates particle source terms due to condensation growth.
+          upgxfer      Calculates particle source terms due to up-grid transfer processes.
+          psolve       Solve for new particle concen given loss & production rates.
+          evapp        Calculates particle source terms due to evaporation.
+          downgxfer    Calculates particle source terms due to down-grid transfer processes.
+          gasexchange  Calculates gas loss rates due to nuc, growth, and evap.
+          downgevapply Adds evaporation and down-grid production sources to particle concen.
+          gsolve       Calculates new gas concentrations.
+          tsolve       Calculates new temperatures.
+          rhopart      Calculates new average particle densities.
+        hydrostat      Calculates new pressures and metric scale factors.
+      varstep          Adjusts time-step based on how much concentrations changed.
+      postep           Processing that occurs after each timestep.
+        prerad         Definitions prior to radtran call.
+        radtran        Radiative transfer calculation (in ../rad subdirectory).
+        postrad        Calculations after radtran call.
+        rescale        Rescales velocities and diffusion coeffs.
+        outprt         Outputs timestep info to print file at current timestep.
+          lognormal    Calculates lognormal fits to particle size distributions.
+          prtsep       Outputs simple print file visual separator.
+        outhis         Outputs model history to history file at current timestep.
+          outhis_ncdf  Outputs history in netcdf format
+          outhis_bin   Outputs history in fortran binary format
+          prtsep       Outputs simple print file visual separator.
+        outres         Outputs model restart info.
+          prtsep       Outputs simple print file visual separator.
+    quit               Shuts down the model at the end of a run.
+      prtsep           Outputs simple print file visual separator.

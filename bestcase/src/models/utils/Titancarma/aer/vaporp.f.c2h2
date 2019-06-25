@@ -1,0 +1,91 @@
+       subroutine vaporp
+c
+c
+c  @(#) vaporp.f  Ackerman  Dec-1995
+c  This routine calculates the vapor pressure for all gases 
+c  over the entire spatial grid:
+c
+c  <pvapl> and <pvapi> are vapor pressures in units of [dyne/cm^2]
+c
+c  Uses temperature <t> as input.
+c
+c  Modified  Sep-1997  (McKie)
+c  To calculate at one spatial point per call.
+c  Globals <ix>, <iy>, <iz>, <ixy>, <ixyz> specify current spatial pt's indices.
+c
+c  Argument list input:
+c    None.
+c
+c  Argument list output:
+c    None.
+c
+c
+c  Include global constants and variables
+c
+      include 'globaer.h'
+c
+c
+c  Define coefficients in saturation vapor pressures
+c
+      parameter( BAL = 20.6973 )
+      parameter( BBL = -1.1341d3 )
+      parameter( BCL = -5.2514 )
+      parameter( BDL = -9.8774d-11 )
+      parameter( BEL = 6.7329d-6 )
+c
+c
+c  Define formats
+c
+    1 format('T = ',1pe12.3,a,i6,a,1pe11.3)
+c
+c-------------------------------------------------------------------------------
+c
+c  Announce entry to this routine
+c
+      if( DEBUG ) write(LUNOPRT,'(/,a)') 'Enter vaporp'
+c
+c-------------------------------------------------------------------------------
+c
+c
+c  Loop over all gases.
+c
+      do igas = 1, NGAS
+c
+c
+c  Check for expected gas index
+c
+          if( igas .eq. 1 )then
+c
+c
+c  Saturation vapor pressure of acetylene over its ice
+c  (from Romani & Atreya., Icarus, 74, 424-445, (1988) )
+ 
+ 
+             if(t3(ixyz) .lt. 115.) then
+ 
+               pvapi3(ixyz,igas) = ( 10**( 30.895*ONE -
+     $                           8.6252*dlog10(t3(ixyz)) -
+     $                           1645.9/t3(ixyz)  ))* 1.333d3
+ 
+             else
+ 
+               pvapi3(ixyz,igas) = ( 10**( 9.130*ONE -
+     $                           1149./(t3(ixyz) -3.84 )))* 1.333d3
+ 
+             endif
+c
+c
+c  Report unexpected gas index
+c
+          else
+            write(LUNOPRT,'(/,a)') 'invalid <igas> in vaporp.f'
+            stop 1
+          endif
+ 
+      enddo
+c
+c
+c  Return to caller with vapor pressures evaluated.
+c
+      return
+      end

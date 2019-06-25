@@ -1,0 +1,98 @@
+114c114,121
+<              ag=2.*gwtmol(igas)*surfctia(ixyz,igas)/
+---
+> c        ..........
+> c          if( .not. evapfrom_nucto )then
+> c
+> c            supsati3(ixyz,igas) = 0.05
+> c            if(zl3(ixyz) .lt. 20.d5) supsati3(ixyz,igas) = 0.23 !0.05
+> c        ..........
+> 
+>              ag=2.*gwtmol(igas)*surfctia(ixyz)/
+121a129,142
+> c        ..........
+> c       Loop over supersaturations
+> c       do is = 1,30
+> c             supsati3(ixyz,igas) = supsati3(ixyz,igas) + 0.025
+> c            ag=2.*gwtmol(igas)*surfctia(ixyz)/
+> c    $             (RGAS*t3(ixyz)*RHO_I*log(supsati3(ixyz,igas)+1.))
+> c        ..........
+> c
+> c   ..contact parameter:
+> c
+>         ct=0.986      !scrit = 1.15
+> c       ct=0.9736     !scrit = 1.3     
+> c       ct=0.966      !scrit = 1.4
+> c       ct=0.9589     !scrit = 1.5
+129,130c150,151
+<         Phi=(1.-2.*ct(igas)*fx+fx*fx)**(1./2.)
+<         fm(1)=1.+((1.-ct(igas)*fx)/Phi)**3
+---
+>         Phi=(1.-2.*ct*fx+fx*fx)**(1./2.)
+>         fm(1)=1.+((1.-ct*fx)/Phi)**3
+132c153
+<         fmb=fx*fx*fx*(-3.*(fx-ct(igas))/Phi+((fx-ct(igas))/Phi)**3)
+---
+>         fmb=fx*fx*fx*(-3.*(fx-ct)/Phi+((fx-ct)/Phi)**3)
+134c155
+<         fm(3)=3.*ct(igas)*fx*fx*((fx-ct(igas))/Phi-1.)
+---
+>         fm(3)=3.*ct*fx*fx*((fx-ct)/Phi-1.)
+141c162
+< c       fm(4)=(2.+ct(igas))*(1.-ct(igas))**2/4.
+---
+> c       fm(4)=(2.+ct)*(1.-ct)**2/4.
+143c164
+<         dFg=4.*PI*ag**2*(surfctia(ixyz,igas))/3. *fm(4)
+---
+>         dFg=4.*PI*ag**2*(surfctia(ixyz))/3. *fm(4)
+169a191
+> 
+194a217,219
+> c   ..contact parameter:
+> c
+>       ct= .994
+200,201c225,226
+<         Phi=(1.-2.*ct(igas)*fx+fx*fx)**(1./2.)
+<         fm(1)=1.+((1.-ct(igas)*fx)/Phi)**3
+---
+>         Phi=(1.-2.*ct*fx+fx*fx)**(1./2.)
+>         fm(1)=1.+((1.-ct*fx)/Phi)**3
+203c228
+<         fmb=fx*fx*fx*(-3.*(fx-ct(igas))/Phi+((fx-ct(igas))/Phi)**3)
+---
+>         fmb=fx*fx*fx*(-3.*(fx-ct)/Phi+((fx-ct)/Phi)**3)
+205c230
+<         fm(3)=3.*ct(igas)*fx*fx*((fx-ct(igas))/Phi-1.)
+---
+>         fm(3)=3.*ct*fx*fx*((fx-ct)/Phi-1.)
+211c236
+< c       fm(4)=(2.+ct(igas))*(1.-ct(igas)**2)/4.
+---
+> c       fm(4)=(2.+ct)*(1.-ct**2)/4.
+221c246
+<         dFg = (16.*PI*(gwtmol(igas)**2)*((surfctia(ixyz,igas))**3)/
+---
+>         dFg = (16.*PI*(gwtmol(igas)**2)*((surfctia(ixyz))**3)/
+257a283,303
+>         if(ibin.le.40 .and.
+>      $     rnuclg(ibin,igroup,ignucto) .ge. 1.d-20) then
+>                 write(*,2) 2*ixyz-2,r(ibin,1)*1.d4,itime,
+>      $                 time/60.**2/24.,
+>      $                 dtime,pc3(ixyz,ibin,igroup),
+>      $                 rnuclg(ibin,igroup,ignucto),
+>      $                 supsati3(ixyz,igas)
+>         endif
+> c
+> c       If(ibin.eq.36) then
+> c       If(ixyz.eq.1) print*,"nuc",dFdes,dFsd,dFg,fm(4),
+> c     $ rnuclg(ibin,igroup,ignucto)
+> c       Endif
+> c
+> c       If(ibin.eq.40) then
+> c       If(rnuclg(ibin,igroup,ignucto).gt..99 .and.
+> c     $      rnuclg(ibin,igroup,ignucto).lt.1.01) then
+> c       print*,ixyz,t3(ixyz),supsati3(ixyz,2)
+> c       Endif
+> c       Endif
+> c

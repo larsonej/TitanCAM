@@ -1,0 +1,191 @@
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init
+END
+init_model.F90
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/init_model.F90
+END
+misc.h
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/misc.h
+END
+drand48_.c
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/drand48_.c
+END
+get_levels.F90
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/get_levels.F90
+END
+runtype.h
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/runtype.h
+END
+calcdate.F90
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/calcdate.F90
+END
+scam_rpc.x
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/scam_rpc.x
+END
+comfrc.h
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/comfrc.h
+END
+fortran.h
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/fortran.h
+END
+ipc.h
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/ipc.h
+END
+setlatlon.F90
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/setlatlon.F90
+END
+forecast.F90
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/forecast.F90
+END
+myhandler.F
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/myhandler.F
+END
+realtype.h
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/realtype.h
+END
+readpressdata.F90
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/readpressdata.F90
+END
+scam_inital.F90
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/scam_inital.F90
+END
+scamMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/scamMod.F90
+END
+c_outfld.c
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/c_outfld.c
+END
+c_outfld.h
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/c_outfld.h
+END
+interplevs.F90
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/interplevs.F90
+END
+getnetcdfdata.F90
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/getnetcdfdata.F90
+END
+preproc.h
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/preproc.h
+END
+setiopupdate.F90
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/setiopupdate.F90
+END
+scam.c
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/scam.c
+END
+scam_fifo.c
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/scam_fifo.c
+END
+getinterpncdata.F90
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/getinterpncdata.F90
+END
+params.h
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/params.h
+END
+readiopdata.F90
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/readiopdata.F90
+END
+readsaveinit.F90
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/readsaveinit.F90
+END
+max.h
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/max.h
+END
+scam_fifo.h
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/scm_init/scam_fifo.h
+END

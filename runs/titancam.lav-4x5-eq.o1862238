@@ -1,0 +1,20 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/nodes/node0658/mom_priv/jobs/1862238.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/nodes/node0658/mom_priv/jobs/1862238.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/nodes/node0658/mom_priv/jobs/1862238.moab.rc.colorado.edu.SC:  Running on node0658
+/curc/torque/nodes/node0658/mom_priv/jobs/1862238.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/nodes/node0658/mom_priv/jobs/1862238.moab.rc.colorado.edu.SC:  Set run to lav-4x5-eq
+/curc/torque/nodes/node0658/mom_priv/jobs/1862238.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/nodes/node0658/mom_priv/jobs/1862238.moab.rc.colorado.edu.SC:  Set runtype to INITIAL
+/curc/torque/nodes/node0658/mom_priv/jobs/1862238.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/nodes/node0658/mom_priv/jobs/1862238.moab.rc.colorado.edu.SC:  copying cam from /projects/larsonej/titancam/build_lav-4x5-eq ...
+/curc/torque/nodes/node0658/mom_priv/jobs/1862238.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/lav-4x5-eq using MPI
+/curc/torque/nodes/node0658/mom_priv/jobs/1862238.moab.rc.colorado.edu.SC:  Started at Tue Apr  9 11:25:01 MDT 2013
+/curc/torque/nodes/node0658/mom_priv/jobs/1862238.moab.rc.colorado.edu.SC: Running on nodes ...
+node0658 node0658 node0658 node0658 node0658 node0658 node0658 node0658 node0658 node0658 node0658 node0658 node0661 node0661 node0661 node0661 node0661 node0661 node0661 node0661 node0661 node0661 node0661 node0661 node0662 node0662 node0662 node0662 node0662 node0662 node0662 node0662 node0662 node0662 node0662 node0662 node0663 node0663 node0663 node0663 node0663 node0663 node0663 node0663 node0663 node0663 node0663 node0663
+/curc/torque/nodes/node0658/mom_priv/jobs/1862238.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    4  48  /curc/torque/nodes/node0658/aux//1862238.moab.rc.colorado.edu 
+[node0663:13417] [[7545,0],3]-[[7545,1],46] mca_oob_tcp_msg_recv: readv failed: Connection reset by peer (104)
+[node0662:14509] [[7545,0],2]-[[7545,1],29] mca_oob_tcp_msg_recv: readv failed: Connection reset by peer (104)
+/curc/torque/nodes/node0658/mom_priv/jobs/1862238.moab.rc.colorado.edu.SC:  CAM run failed

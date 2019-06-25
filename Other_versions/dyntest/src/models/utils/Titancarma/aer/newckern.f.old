@@ -1,0 +1,141 @@
+       subroutine newckern 
+c 
+c 
+c  @(#) newckern.f  Barth Jul-1999
+c 
+c  This routine evaluates the coagulation kernels, ckernel(k,j1,j2,i1,i2)
+c  [cm^-3 s^-1]. Indices correspond to vertical level <k>, aerosol groups
+c  <j1,j2> and bins <i1,i2> of colliding particles.
+c
+c  This routine requires that vertical profiles of temperature <T>,
+c  air density <rhoa>, and viscosity <rmu> are defined.
+c  (i.e., initatm.f must be called before this)
+c  The vertical profile with ix = iy = 1 is used.
+c
+c  Argument list input:
+c    None.
+c
+c  Argument list output:
+c    None.
+c
+c
+c  Include global constants and variables
+c
+      include 'globaer.h'
+c
+c
+    1 format(4(1pe13.6)) 
+c-------------------------------------------------------------------------------
+c
+c  Announce entry to this routine
+c
+      if( DEBUG ) write(LUNOPRT,'(/,a)') 'Enter newckern'
+c
+c-------------------------------------------------------------------------------
+c
+c  electron charge [esu]
+            e = -4.8d-10
+c
+c  Use constant kernel if <icoagop> = 0
+c
+      if( icoagop .eq. 0 )then
+        do j1 = 1, NGROUP
+         do j2 = 1, NGROUP
+          do i1 = 1, NBIN
+           do i2 = 1, NBIN
+            do k = 1, NZ
+             ckernel(k,i1,i2,j1,j2) = ck0
+            enddo
+           enddo
+          enddo
+         enddo
+        enddo
+        return   ! Return to caller with coagulation kernels evaluated.
+      endif
+ 
+c
+c  Loop over vertical layers (use column ix = iy = 1)
+c
+      ix = 1
+      iy = 1
+
+      do k = 1, NZ
+ 
+        call charge(k,prrat)
+c
+c  This is <rhoa> in cartesian coordinates.
+c
+        rhoa_cgs = rhoa(ix,iy,k) /
+     $             (xmet(ix,iy,k)*ymet(ix,iy,k)*zmet(ix,iy,k))
+
+c
+c  Loop over groups
+c
+        do j1 = 1, NGROUP
+        do j2 = 1, NGROUP
+
+        if( icoag(j1,j2) .ne. 0 )then
+   
+c
+c  First particle
+c
+         do i1 = 1, NBIN
+
+          do i2 = 1, NBIN
+c
+c  Second particle
+c
+c
+c  First calculate thermal coagulation kernel
+c  
+c  <cstick> is the probability that two particles that collide
+c  through thermal coagulation will stick to each other.
+c
+c  Sticking coefficient for charged particles below 300km from
+c  Toon et al. (Icarus 95, 24-53, 1992)
+
+
+            if(zl(1,1,k) .le. 300.d5) then
+                cstick = exp(-r(i1,j1)*r(i2,j2)*(prrat)**2*e**2 /
+     $                          (BK*t(1,1,k)*(r(i1,j1)+r(i2,j2))))
+            else
+                cstick = 1.
+            endif
+c
+c   <cbr> is thermal (brownian) coagulation coefficient
+c
+           cbr = cbr_term0(k,i1,i2,j1,j2) /
+     $                  ( cbr_term1(k,i1,i2,j1,j2)
+     $                          + cbr_term2(k,i1,i2,j1,j2)/cstick )
+c
+c
+c  Now combine all the coagulation and collection kernels into the
+c  overall kernel.
+c
+            ckernel(k,i1,i2,j1,j2) = cbr + cgr(k,i1,i2,j1,j2)
+
+c
+c...dbg: To avoid generation of large, non-physical hydrometeors by
+c        coagulation, cut down ckernel for large radii
+c
+c           if( ( r1 .gt. 0.18 .and. r2 .gt. 10.e-4 ) .or.
+c    $          ( r2 .gt. 0.18 .and. r1 .gt. 10.e-4 ) ) then
+c              ckernel(k,i1,i2,j1,j2) = ckernel(k,i1,i2,j1,j2) / 1.e6
+c           endif
+   
+c           write(*,'(2f8.1,f11.4)'), r1*1.e4,r2*1.e4,e_coll
+c           write(80) r1,r2,e_coal,e_coll,e_coal*e_coll
+c           write(80) r1,r2,cgr
+
+          enddo    ! second particle bin
+          enddo    ! first particle bin
+         endif     ! icoag ne 0 
+        enddo      ! second particle group
+        enddo      ! first particle group
+      enddo        ! vertical level
+c
+c
+c  return to caller with coagulation kernels evaluated.
+c
+      return
+      end

@@ -1,0 +1,4 @@
+# $Id: common_ 17 2006-12-11 21:50:24Z hpc $
+ESMC_LANGUAGE = C
+ESMC_SCALAR   = l
+

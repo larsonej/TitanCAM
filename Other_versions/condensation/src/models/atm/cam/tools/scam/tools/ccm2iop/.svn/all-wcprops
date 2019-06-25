@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/tools/ccm2iop
+END
+ncfile.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/tools/ccm2iop/ncfile.cpp
+END
+ncfile.C
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/tools/ccm2iop/ncfile.C
+END
+ncfile.h
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/tools/ccm2iop/ncfile.h
+END
+ioerr.h
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/tools/ccm2iop/ioerr.h
+END
+ccm2iop.C
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/tools/ccm2iop/ccm2iop.C
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/tools/ccm2iop/Makefile
+END
+test.nc
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/tools/scam/tools/ccm2iop/test.nc
+END

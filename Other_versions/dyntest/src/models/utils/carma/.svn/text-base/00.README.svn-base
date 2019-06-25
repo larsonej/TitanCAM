@@ -1,0 +1,350 @@
+@(#) 00.README  
+
+This is a brief overview of CARMA.
+(Community Aerosol & Radiation Model for Atmospheres).
+NASA Ames Aerosol Modeling group.
+
+
+MODEL REVISION HISTORY
+======================
+
+03-Oct-1995 v1.00
+30-Oct-1995 v1.01
+10-Nov-1995 v1.02
+10-Nov-1995 v1.03
+26-Nov-1995 v1.04
+05-Dec-1995 v1.05
+29-Jan-1996 v1.06
+21-Feb-1996 v1.06a
+25-Jun-1996 v1.07b
+11-Jul-1996 v1.08
+??-Sep-1996 v1.09
+11-Dec-1996 v1.10
+27-Apr-1997 v1.11
+19-Aug-1997 v1.12
+21-Sep-1997 v1.13
+01-Oct-1997 v1.14
+10-Oct-1997 v1.15
+?           v1.16
+23-Apr-1999 v1.17a
+10-Nov-1999 v1.18
+26-Jul-2000 v2.00
+17-May-2001 v2.1
+03-Jun-2001 v2.2
+
+
+BRIEF INTRO TO THE MODEL
+========================
+
+The model simulates aerosol and radiation processes within a planet's
+atmosphere.  Some features of the model:
+
+  Coded in Fortran-77.
+
+  Model computer code written to run on multiple target computer systems.
+
+  Simulation of the following processes [NYI = not yet implemented]:
+    Coagulation.
+    Growth.
+    Evaporation.
+    Nucleation.
+    Vertical transport.
+    Horizontal transport.
+    Thermodynamics.
+    Radiative transfer.
+    Chemistry.             [NYI]
+
+
+OVERALL STRUCTURE OF THE MODEL CODE
+===================================
+
+ An attempt has been made to write the model code in standard
+ Fortran-77 so that it will compile and run on a variety of
+ computing systems with a minimal number of system dependencies.
+
+ Some guidelines for writing the source code for this model
+ have been assembled in file 02.CODE_GUIDE, which is in
+ subdirectory doc/.
+
+ The hierarchical structure of the code (which routines call
+ other routines) is described in the calling tree located
+ in file 03.CALL_MAP, which is also in subdirectory doc/.
+
+
+HOW TO OBTAIN THE MODEL CODE
+============================
+
+ The model source code and related information are distributed as a
+ set of files contained within a standard tar file.
+
+ The latest version of the model is made available for download
+ using a web browser at:
+
+  http://sky.arc.nasa.gov/carma
+
+ The latest carma distribution is available from this site as
+ a tar file, a unix compressed tar file, and a gzip compressed
+ tar file. 
+
+
+SUPPORTED COMPUTER SYSTEMS
+==========================
+
+ The model code has been configured to run on the following computer
+ systems.  It may work directly or with a few changes on other systems,
+ but the following are the only known systems on which the latest
+ version has been successfully run.
+
+   H/w          OS          Fortran compiler
+   -----     -------------  -----------------------------------------
+   Sun       Solaris        Sun Fortran
+   SGI       Irix 6.x       SGI Fortran
+   PC        RH Linux 6.1   Gnu Fortran-77 (g77) compiling package
+   PC        RH Linux 6.1   Absoft f77 v4.5 Fortran compiling package
+   PC        RH Linux 6.1   Absoft f90 v2.1 Fortran compiling package
+   Cray T3E  UNICOS 2.0     Cray Fortan v3.5.01 (f90) compiling package
+
+
+HOW TO COMPILE & LINK THE MODEL
+===============================
+
+ After obtaining the tar distribution file, e.g.  carma_v.v.tar.Z,
+ create a new directory in which to work, move the distribution tar file
+ to that directory, change to that directory, and unpack the distribution.
+ Here, "v.v" is being used as the sample current version number of the
+ model distribution.  E.g.
+
+   mkdir  /a/b/c/models
+   mv  carma_v.v.tar.Z  /a/b/c/models 
+   cd  /a/b/c/models
+   zcat  carma_v.v.tar.Z  |  tar xvf -
+
+ This should create a subdirectory hierarchy under your current directory,
+ including:
+
+  carma_v.v/
+   |
+   |
+   +-- aer/         For the aerosol model's source code
+   |
+   |
+   +-- rad/         For the radiation model's source code
+   |
+   |
+   +-- dumnetcdf/   For dummy netcdf library source code
+   |
+   |
+   +-- include/     For include files shared by aer/ and rad/
+   |
+   |
+   +-- data/        For data files 
+   |
+   |
+   +-- run/         For running the model
+   |
+   |
+   +-- test/        For things related to model test runs
+   |
+   |
+   +-- doc/         For documentation files
+
+
+ You may want to read through the descriptive files in the doc/ subdirectory.
+
+ Change to the carma_v.v/ directory.
+
+ Save the original copy of the overall Makefile with:
+
+   cp Makefile Makefile.orig
+
+ Note that each of the submodel subdirectories has its own Makefile.
+ These usually should not be changed, because the top level Makefile
+ in the carma_v.v/ directory passes controlling parameters to each
+ of the submodel's Makefiles.
+
+ Edit the top level Makefile in carma_v.v/, and choose values in
+ the clearly marked section of symbol definitions near the top of
+ Makefile that are appropriate for your system.  Be sure to at least
+ set the symbol SYSTYP to the system type of your computer system.
+
+ If you are going to use the netcdf history output, then be sure that
+ the netcdf object library is available on your target system, and that
+ the LIB_OTHERS symbol in the top level Makefile is defined with its path.
+
+ The netcdf Fortran include file is also needed by the outhis_ncdf.f
+ routine, and its path on your system needs to be specified.
+ Typical paths to these netcdf files are:
+
+   /usr/local/lib/libnetcdf.a
+   /usr/local/include/netcdf.inc
+
+ Some Fortran compilers can accept an option to specify one or more
+ directories to be searched for include files.  On these systems,
+ one can define the NETCDF_INC_DIR symbol in the top level carma Makefile
+ to the option specifying the directory containing the netcdf include file,
+ and then define symbol NETCDF_INC_FIL to be the Fortran include file's name,
+ usually "netcdf.inc".  E.g.
+
+   NETCDF_INC_DIR=  -I/usr/local/include
+   NETCDF_INC_FIL=  netcdf.inc
+
+ For Fortran compilers that do not support the option -Idirectory,
+ one can simply set the NETCDF_INC_DIR symbol to null in the top
+ level Makefile, and specify the full path to the include file in
+ the NETCDF_INC_FIL symbol definition.  E.g.
+
+   NETCDF_INC_DIR= 
+   NETCDF_INC_FIL=  /usr/local/include/netcdf.inc
+
+ The logical variable do_netcdf should be set to .true. in the aer/init.f
+ routine if netcdf history output is to be used.
+
+ On those systems without a netcdf package, or when a user prefers to
+ use standard Fortran unformatted i/o for the model's history output,
+ the do_netcdf variable can be set to .false. in aer/init.f, and
+ the LIB_OTHERS symbol in the top level carma Makefile defined
+ to $(DUMNETCDF_DIR)/dumnetcdf.a, which links a dummy version of the
+ netcdf routines used by carma into the program.  With do_netcdf = .false.,
+ history output is performed using binary Fortran i/o, and the dummy
+ netcdf routines are never called.
+
+ On systems without a netcdf package, a netcdf.inc file is needed for
+ compiling outhis_ncdf.f.  There is a dummy version of this file
+ available for this situation in dumnetcdf/netcdf.inc .
+
+ To compile and link the model into the executable file that you chose by
+ defining the EXE symbol in the Makefile, type:
+
+   make
+
+ If you need to remove the compiler object files and the executable file,
+ type:
+
+   make clean
+
+ Some Fortran source files are dynamically constructed from template
+ source files at make time.  Examples include rad/miess.f and
+ aer/outhis_ncdf.f.  These .f files are transient, and should not
+ be edited.  They are usually constructed at make time from
+ template files with a .template suffix.  E.g. 
+
+  rad/miess.f.template
+  aer/outhis_ncdf.f.template
+
+ If changes are to be made to these routines, be sure to edit
+ the template files and not the .f files, or else your edits
+ will be lost in a future make when the .f files are automatically
+ regenerated.
+
+ If you would like to generate your own tar file containing the latest
+ versions of your copy of the model source files, type:
+
+   make tar
+
+ As distributed, this should make a .tar file in the directory immediately
+ above the carma_v.v/ subdirectory.
+
+
+
+HOW TO SET UP A SIMULATION
+==========================
+
+ A description of the model setup as it is configured in this
+ distribution is provided in the 05.DEFAULT_RUN file in the
+ doc/ subdirectory.  
+
+ To reconfigure the model setup, we suggest that you first
+ save the originally distributed copy of the init.f routine
+ e.g. by doing a "cp init.f init.f.orig".  Edit the init.f
+ file, define begin and end timestep indices (ibtime, ietime),
+ with ibtime=0 for a new simulation's cold start.  Define
+ other values in the clearly marked section at the top of
+ init.f, e.g. names of input and output files.  Other
+ files that handle different parts of the initialization
+ for a new simulation include:
+
+   aer/init*.f
+   aer/setup*.f
+
+ Further files that have been customized for the model setup
+ in this distribution are listed in 05.DEFAULT_RUN.
+
+ Double or single precision computation is controlled by
+ statements in the include file:
+
+   include/precision.h.
+
+ Follow the comments in that file to select the type of precision.
+ Precision is selected by uncommenting one of several sections of
+ statements in the precision.h file, and commenting the other
+ sections.
+
+
+HOW TO RUN THE MODEL
+====================
+
+ Compile and link the model using the Makefile as described above.
+ Ensure you have set up the code as described above for your run.
+
+ Move the model executable to the directory in which you intend to run
+ the model.  The model executable file is usually "carma.exe".  This is
+ left in the run/ subdirectory relative to the top level directory
+ carma_v.v/ after compiling and linking.  For simplicity, the model can
+ be run in this run/ subdirectory.
+
+ Ensure any needed initialization files are in the run directory.
+ Cold start initializations usually require no input initialization
+ files, because all such initializations are usually handled within the
+ model code.
+
+ Cd to the directory containing the model executable (e.g. "cd run") and
+ run the model with the command:
+
+   ./carma.exe
+
+ Output will appear in output files whose names you have defined in
+ init.f.
+
+
+HOW TO ADD ADDITIONAL MODEL GLOBAL VARIABLES
+============================================
+
+ In file aer/globaer.h, rad/globrad.h, or include/aerad.h:
+ ---------------------------------------------------------
+
+  Add a comment before the common block into which the variable is
+  to be placed.
+
+  Add a declaration for the variable's type only if the type is
+  not integer or floating point.  [The implicit declarations for
+  integers and floats should be used for these types.]
+
+  Add the variable the appropriate common block.
+
+
+ In file aer/outhis.f:
+ ---------------------
+
+  If the variable is a state variable, add it to the variables that
+  are output to the history file.
+
+
+ Generate the restart i/o subroutine source code files
+ -----------------------------------------------------
+
+  Compile and run the Fortran program chekres.f in the aer/
+  subdirectory.  This program will examine the common blocks in the
+  globaer.h aerosol global include file, and will generate the outres.f
+  and initres.f files to do restart i/o that is consistent with the
+  current state and other variables in the model's common blocks.
+
+  The chekres.f program should be a fully self-contained Fortran-77
+  program.  It requires no user input.  Simply compile and run it to
+  perform this check.
+
+  To compile and link the chekres program, do "make chekres".
+
+  To compile, link, & run chekres, do "make do_chekres".
+
+  The Makefile is currently set up to automatically do a
+  "do_chekres" whenever the model's source code is recompiled.

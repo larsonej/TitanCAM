@@ -1,0 +1,441 @@
+#  @(#) Makefile  McKie  May-1997
+#  This is the master top level make file for CARMA.
+#
+#  Modified to concentrate all symbol definitions for both aer and rad
+#  submodels in this top level Makefile.  The aer and rad subdirectories
+#  were changed to use a Makefile that calls this top Makefile,
+#  which then calls Makefile.work for various targets in the aer & rad
+#  subdirectories.   Sep-1999.  -bm 
+#
+#  Begin target list
+#
+#  Targets:
+#
+#   default        Same as exe
+#   exe            Compile & link source modules into runnable executable
+#   tar            Generate archive file containing source distribution
+#   clean          Remove all compiler object files & the executable file 
+#   dumnetcdf      Build dumnetcdf/dumnetcdf.a dummy netcdf object library
+#
+#   library_aer          Build aerosol submodel object library
+#   default_aer          Default target from aer Makefile
+#   compile_aer          <compile> target from aer Makefile
+#   clean_aer            <clean> target from aer Makefile
+#   tar_aer              <tar> target from aer Makefile
+#
+#   library_rad          Build radiation submodel object library
+#   default_rad          Default target from rad Makefile
+#   compile_rad          <compile> target from rad Makefile
+#   clean_rad            <clean> target from rad Makefile
+#   tar_rad              <rad> target from aer Makefile
+#
+#  End target list
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#
+#  Define program version tag string (change this for each new version of code)
+#
+PROGTAG=	2.3
+#
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#  Define symbolic Makefile constants that might change from system to system
+#
+#
+#  Define name (path) of output tar file (for generating a source distribution)
+#
+TARFILE=	carma_$(PROGTAG).tar
+#
+#
+#  Define name of executable file (or path to executable file)
+#   (If executable is to be built into scratch area, include full path here)
+#
+EXE=		carma.exe
+#
+#
+#  Define the name of the Fortran compiler
+#   Use f77  on Suns with the native Sun Fortran-77 compiler
+#   Use f77  on SGIs with the native SGI Fortran-77 compiler
+#   Use f90  on Crays with the native Cray unicos Fortran-90 compiler
+#   Use f77  on PC Linux with the f2c Fortran-77 compiler
+#   Use f77  on HP HP-UX with HP native Fortran-77 compiler
+#
+#FORTRAN=	g77
+#FORTRAN=	f77
+FORTRAN=	ifort
+#FORTRAN=	ifc
+#FORTRAN=	f90
+#
+#
+#  Define alternative Fortran generic intrinsic function for imag().
+#   E.g. AbSoft f77 v4.5 fortran compiler requires use of dimag
+#   Use "imag" for compilers that support a generic imag() function. 
+#
+GENERIC_IMAG=	imag
+#GENERIC_IMAG=	dimag
+#
+#
+#  Define Fortran compiler option flags:
+#   For most unix compilers, use "-c -O" for compile only, optimize
+#   For most unix compilers, use "-C" for bounds checking
+#   For most unix compilers, use "-g" for debugger
+#   For linux g77, use "-c -w -ff90" for no optimize, no warnings, f90 style real(dcmplx) 
+#   For linux AbSoft f77 compiler, use "-c -f -O -q" for case insensitive, optimized, quiet
+#   For linux AbSoft f90 compiler, use "-c -f fixed -m3" for f77 fixed format, msg lev 3
+#   For Sun Fortran v4.x, use "-c -g -fnonstd -C" for debugger & bounds checking
+#   Old cray options (no longer known to be useful):
+#    For Cray unicos (no opt), use "-c -O0"
+#    For Cray unicos (all opt), use  "-c -Oscalar3,inline3,vector1"
+#    (vector optimization > 1 is buggy for CF90 Version 3.0.0.2)
+#    For Cray unicos, use "-c -g -Rabc" for debugger & bounds checking
+#
+#  Some compilers may require a switch to request more than the default 19
+#  continuation lines.
+#
+FFLAGS= 	-c -O
+#FFLAGS= 	-w -c -C
+#FFLAGS=	-c -ff90 -w -O
+#FFLAGS=	-c -ff90 -w -C
+#FFLAGS=	-c -f -q -C -N3
+#FFLAGS=	-c -f -q -O -N3
+#FFLAGS= 	-w -c -CB -CU
+#FFLAGS=	-c -f -q -O
+#FFLAGS=	-c -f fixed -m3
+#FFLAGS=	-c -g -fnonstd -C
+#FFLAGS=	-c -fnonstd -ftrap=invalid,division -C -g
+#FFLAGS=	-c -O0
+#FFLAGS=	-c -Oscalar3,inline3,vector1
+#FFLAGS=	-c -g -Rabc
+#FFLAGS=	-c -O4 +DA1.1d +DS1.1d +Oaggressive -Wl,-a,archive
+#
+#
+#  Define the name of the linker
+#   Use f77  on Suns with the native Sun Fortran-77 compiler
+#   Use f77  on SGIs with the native SGI Fortran-77 compiler
+#   Use f90  on Crays with the native Cray unicos Fortran-90 compiler
+#   Use f77  on PC Linux with the f2c Fortran-77 compiler
+#
+#LINK=		g77
+LINK=		ifort 
+#LINK=		f77
+#LINK=		ifc
+#LINK=		f90
+#
+#
+#  Define linker flags
+#   With most unix compilers, the std is "-o $(EXE)"
+#   Temporary debugging or performance tracking flags could be defined here
+#   Under Linux AbSoft, optim:  LFLAGS= -O
+#   Under Suns, for debugger, use: LFLAGS= -g -o $(EXE)
+#   Under HP, optim: LFLAGS= -o $(EXE) -O4 +DA1.1d +DS1.1d +Oaggressive -Wl,-a,archive 
+#   Under Cray unicos, for debugger & bounds checking, use:   LFLAGS= -g -Rabc -o $(EXE)
+#   Under Cray unicos (no opt), use:   LFLAGS= -O0 -o $(EXE)
+#   (vector optimization > 1 is buggy for CF90 Version 3.0.0.2)
+#   Under Cray unicos (all opt), use:   LFLAGS= -Oscalar3,inline3,vector1 -o $(EXE)
+#
+LFLAGS=         -o $(EXE)
+#LFLAGS=	-o $(EXE) -g
+#LFLAGS=	-o $(EXE) -Oscalar3,inline3,vector1
+#LFLAGS=	-o $(EXE) -O4 +DA1.1d +DS1.1d +Oaggressive -Wl,-a,archive
+#
+#
+#  Define references to non-model external libraries
+#    On most systems, std libraries will be searched automatically.
+#    Netcdf library is needed when using the outhis_ncdf.f routine.
+#    Netcdf i/o is requested in init.f when <do_netcdf> is .true. .
+# 
+#    When not using netcdf i/o, simply specify that the dummy
+#    netcdf object library dumnetcdf is to be linked below.  This dummy
+#    netcdf library's stub routines exist under the dumnetcdf
+#    subdirectory, and the dummy library is built with "make dumnetcdf".
+#
+LIB_OTHERS=	""
+#LIB_OTHERS=	$(DUMNETCDF_DIR)/dumnetcdf.a
+#LIB_OTHERS=	/usr/local/netcdf/absoft.f77.netcdf-3.4/lib/libnetcdf.a
+#LIB_OTHERS=	/usr/local/netcdf/intel.ifc.netcdf-3.5/lib/libnetcdf.a
+#
+#
+#  Define name of path of tar archiving program
+#
+TARPROG=	tar
+#
+#
+#  Define name of path of delete file program
+#
+RM=		/bin/rm -f
+#
+#
+#  Define name of path of move file program
+#
+MV=		/bin/mv -f
+#
+#
+#  Define name of path of shell to use in the make actions below
+#   (Should be sh for unix systems)
+#
+SHELL=		/bin/tcsh
+#
+#
+#  Under Cray multi-cpu unicos systems, the following forces
+#  sequential make using a single cpu
+#
+NPROC=		1
+#
+#
+#  Define name of path of object library archiver, its flags, & its randomizer
+#    On bsd systems,   RANLIB=ranlib  (e.g. Linux, SunOS 4.1.x)
+#    On sys-V systems, RANLIB=touch   (e.g. Solaris 2.x, Irix)
+#
+AR=		ar
+ARFLAGS=	cr
+RANLIB=		ranlib
+#RANLIB=	touch
+#
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#  Define things that will probably not change from system to system
+#
+#
+#  Define method for compiling .f file into .o file
+#
+.f.o:	;	$(FORTRAN) $(FFLAGS) $(<)
+#
+#
+#  Define the location of the source code.
+#
+CARMA_ROOT = .
+#
+#
+#  Define relative directory containing aerosol code
+#
+AER_DIR=	aer
+AER_SRCDIR=	$(CARMA_ROOT)/aer
+#
+#
+#  Define relative directory containing radiation code
+#
+RAD_DIR=	rad
+RAD_SRCDIR=	$(CARMA_ROOT)/rad
+#
+#
+#  Define relative directory containing radiation code
+#
+RUN_DIR=	run
+RUN_SRCDIR=	$(CARMA_ROOT)/run
+#
+#
+#  Define relative directory containing shared include files
+#
+INCLUDE_DIR=	$(CARMA_ROOT)/include
+#
+#
+#  Define relative path to include files used by all component submodels
+#   (These paths are relative to the submodel subdirectories)
+#
+PRECISION_H=	$(INCLUDE_DIR)/carma/precision.h
+AERAD_H=	$(INCLUDE_DIR)/aerad.h
+#
+#
+#  Define relative directory containing documentation files
+#
+DOC_DIR=	$(CARMA_ROOT)/doc
+#
+#
+#  Define relative directory containing data files
+#
+DATA_DIR=	$(CARMA_ROOT)/data
+#
+#
+#  Define relative path to main program compiled object file
+#
+MAINO=		$(AER_DIR)/main.o
+#
+#
+#  Define name of aer library of compiled object code
+#
+LIB_AER=	libaer.a
+#
+#
+#  Define name of rad library of compiled object code
+#
+LIB_RAD=	librad.a
+#
+#
+#  Define list of all libraries to be used at link time
+#
+ALL_LIBS=	$(AER_DIR)/$(LIB_AER) \
+		$(RAD_DIR)/$(LIB_RAD) \
+		$(LIB_OTHERS)
+#
+#
+#  Define list of symbolic macro names to be passed to the sub-make processes
+#  called for each of the sub-models.
+#
+MAKE_MACROS=	PROGTAG="$(PROGTAG)" \
+		FORTRAN="$(FORTRAN)" \
+		FFLAGS="$(FFLAGS)" \
+		LINK="$(LINK)" \
+		RM="$(RM)" \
+		AR="$(AR)" \
+		TARPROG="$(TARPROG)" \
+		ARFLAGS="$(ARFLAGS)" \
+		RANLIB="$(RANLIB)" \
+		SHELL="$(SHELL)" \
+		NPROC="$(NPROC)" \
+		LIB_AER="$(LIB_AER)" \
+		LIB_RAD="$(LIB_RAD)" \
+		AER_DIR="$(AER_DIR)" \
+		RAD_DIR="$(RAD_DIR)" \
+		AER_SRCDIR="$(AER_SRCDIR)" \
+		RAD_SRCDIR="$(RAD_SRCDIR)" \
+		INCLUDE_DIR="$(INCLUDE_DIR)" \
+		PRECISION_H="$(PRECISION_H)" \
+		AERAD_H="$(AERAD_H)" \
+		GENERIC_IMAG="$(GENERIC_IMAG)"
+#
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#  Define make targets to be used from this top level carma Makefile
+#
+#
+#  The default target is the <exe> target
+#
+default:	exe
+#
+#
+#  The <exe> target compiles & links the program into an executable
+#
+exe:		library_aer library_rad library_dumnetcdf
+		$(LINK) $(LFLAGS) $(MAINO) $(ALL_LIBS)
+		$(MV) -f $(EXE) $(RUN_DIR)
+		@ echo "==================================================================="
+		@ echo "Model executable is in directory $(RUN_DIR)/, file: $(EXE)"
+		@ echo "==================================================================="
+#
+#
+#  The <help> target lists the possible targets in this Makefile
+#
+help:		;
+		@ sed -n '/^#  Begin target list/,/^#  End target list/p'  Makefile
+#
+#
+#  The <tar> target generates a source distribution for this program
+#
+tar:		;
+		make clean
+		@ ( cd .. ; \
+		  base_dir="carma_$(PROGTAG)" ; \
+		  echo "Expected base directory is $$base_dir" ; \
+		  if [ ! -d "$$base_dir" ] ; then \
+		   echo "Error--Can't find base directory $$base_dir in `pwd`" ; \
+		   echo "       Can't create tar file" ; \
+		   exit 1 ; \
+		  fi ; \
+		  $(RM) $(TARFILE) ; \
+		  $(TARPROG) cf $(TARFILE) \
+		    $$base_dir/Makefile* \
+		    $$base_dir/00.README \
+		    $$base_dir/$(DOC_DIR) \
+		    $$base_dir/$(DATA_DIR) \
+		    $$base_dir/$(INCLUDE_DIR) \
+		    $$base_dir/$(AER_SRCDIR)/Makefile* \
+		    $$base_dir/$(AER_SRCDIR)/*.h \
+		    $$base_dir/$(AER_SRCDIR)/*.f \
+		    $$base_dir/$(AER_SRCDIR)/*.f.* \
+		    $$base_dir/$(AER_SRCDIR)/*.c \
+		    $$base_dir/$(AER_SRCDIR)/80 \
+		    $$base_dir/$(RAD_SRCDIR)/Makefile* \
+		    $$base_dir/$(RAD_SRCDIR)/*.h \
+		    $$base_dir/$(RAD_SRCDIR)/*.f \
+		    $$base_dir/$(RAD_SRCDIR)/*.f.* \
+		    $$base_dir/$(RAD_SRCDIR)/80 \
+		    $$base_dir/$(RAD_SRCDIR)/create_miess \
+		    $$base_dir/$(RUN_SRCDIR)/README \
+		    $$base_dir/test ; \
+		  echo "Tar file is in ../$(TARFILE)" ; \
+		  exit 0; )
+#
+#
+#  The <clean> target removes all compiler object files & the executable file
+#
+clean:		clean_aer clean_rad
+		$(RM) $(EXE) $(RUN_DIR)/$(EXE)
+#
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#  Define make targets useable from the aer subdirectory's pseudo Makefile
+#
+#
+#  The <default_aer> target does the default target under the aer subdirectory
+#
+default_aer:	;
+		( cd $(AER_DIR); gmake -f $(AER_SRCDIR)/Makefile.work $(MAKE_MACROS) )
+#
+#
+#  The <lib_aer> target compiles the aerosol sub-model code & builds its library
+#
+library_aer:	;
+		@ echo "=========================================="
+		@ echo "Doing aer sub-model stuff"
+		( cd $(AER_DIR); gmake -f $(AER_SRCDIR)/Makefile.work $(MAKE_MACROS) library )
+#
+#
+#  The <compile_aer> target does the <compile> target under the aer subdirectory
+#
+compile_aer:	;
+		( cd $(AER_DIR); gmake -f $(AER_SRCDIR)/Makefile.work $(MAKE_MACROS) compile )
+#
+#
+#  The <clean_aer> target does the <clean> target under the aer subdirectory
+#
+clean_aer:	;
+		( cd $(AER_DIR); gmake -f $(AER_SRCDIR)/Makefile.work $(MAKE_MACROS) clean )
+#
+#
+#  The <tar_aer> target does the <tar> target under the aer subdirectory
+#
+tar_aer:	;
+		( cd $(AER_DIR); gmake -f $(AER_SRCDIR)/Makefile.work $(MAKE_MACROS) tar )
+#
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#  Define make targets useable from the rad subdirectory's pseudo Makefile
+#
+#
+#  The <default_rad> target does the default target under the rad subdirectory
+#
+default_rad:	;
+		( cd $(RAD_DIR); gmake -f $(RAD_SRCDIR)/Makefile.work $(MAKE_MACROS) )
+#
+#
+#  The <lib_rad> target compiles the radiation sub-model code & builds its library
+#
+library_rad:	;
+		@ echo "=========================================="
+		@ echo "Doing rad sub-model stuff"
+		( cd $(RAD_DIR); gmake -f $(RAD_SRCDIR)/Makefile.work $(MAKE_MACROS) library )
+#
+#
+#  The <compile_rad> target does the <compile> target under the rad subdirectory
+#
+compile_rad:	;
+		( cd $(RAD_DIR); gmake -f $(RAD_SRCDIR)/Makefile.work $(MAKE_MACROS) compile )
+#
+#
+#  The <clean_rad> target does the <clean> target under the rad subdirectory
+#
+clean_rad:	;
+		( cd $(RAD_DIR); gmake -f $(RAD_SRCDIR)/Makefile.work $(MAKE_MACROS) clean )
+#
+#
+#  The <tar_rad> target does the <tar> target under the rad subdirectory
+#
+tar_rad:	;
+		( cd $(RAD_DIR); gmake -f $(RAD_SRCDIR)/Makefile.work $(MAKE_MACROS) tar )
+		

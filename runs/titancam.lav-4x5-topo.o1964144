@@ -1,0 +1,20 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/nodes/node0419/mom_priv/jobs/1964144.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/nodes/node0419/mom_priv/jobs/1964144.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/nodes/node0419/mom_priv/jobs/1964144.moab.rc.colorado.edu.SC:  Running on node0419
+/curc/torque/nodes/node0419/mom_priv/jobs/1964144.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/nodes/node0419/mom_priv/jobs/1964144.moab.rc.colorado.edu.SC:  Set run to lav-4x5-topo
+/curc/torque/nodes/node0419/mom_priv/jobs/1964144.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/nodes/node0419/mom_priv/jobs/1964144.moab.rc.colorado.edu.SC:  Set runtype to RESTART
+/curc/torque/nodes/node0419/mom_priv/jobs/1964144.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/nodes/node0419/mom_priv/jobs/1964144.moab.rc.colorado.edu.SC:  using cam from /lustre/janus_scratch/larsonej/run/lav-4x5-topo ...
+/curc/torque/nodes/node0419/mom_priv/jobs/1964144.moab.rc.colorado.edu.SC:  using namelist from /lustre/janus_scratch/larsonej/run/lav-4x5-topo ...
+/curc/torque/nodes/node0419/mom_priv/jobs/1964144.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/lav-4x5-topo using MPI
+/curc/torque/nodes/node0419/mom_priv/jobs/1964144.moab.rc.colorado.edu.SC:  Started at Sun May 26 10:02:31 MDT 2013
+/curc/torque/nodes/node0419/mom_priv/jobs/1964144.moab.rc.colorado.edu.SC: Running on nodes ...
+node0419 node0419 node0419 node0419 node0419 node0419 node0419 node0419 node0419 node0419 node0419 node0419 node0477 node0477 node0477 node0477 node0477 node0477 node0477 node0477 node0477 node0477 node0477 node0477 node0478 node0478 node0478 node0478 node0478 node0478 node0478 node0478 node0478 node0478 node0478 node0478 node0549 node0549 node0549 node0549 node0549 node0549 node0549 node0549 node0549 node0549 node0549 node0549 node0527 node0527 node0527 node0527 node0527 node0527 node0527 node0527 node0527 node0527 node0527 node0527 node0675 node0675 node0675 node0675 node0675 node0675 node0675 node0675 node0675 node0675 node0675 node0675 node0617 node0617 node0617 node0617 node0617 node0617 node0617 node0617 node0617 node0617 node0617 node0617 node0612 node0612 node0612 node0612 node0612 node0612 node0612 node0612 node0612 node0612 node0612 node0612 node0611 node0611 node0611 node0611 node0611 node0611 node0611 node0611 node0611 node0611 node0611 node0611 node0610 node0610 node0610 node0610 node0610 node0610 node0610 node0610 node0610 node0610 node0610 node0610 node0608 node0608 node0608 node0608 node0608 node0608 node0608 node0608 node0608 node0608 node0608 node0608 node0653 node0653 node0653 node0653 node0653 node0653 node0653 node0653 node0653 node0653 node0653 node0653 node0654 node0654 node0654 node0654 node0654 node0654 node0654 node0654 node0654 node0654 node0654 node0654 node0656 node0656 node0656 node0656 node0656 node0656 node0656 node0656 node0656 node0656 node0656 node0656 node0779 node0779 node0779 node0779 node0779 node0779 node0779 node0779 node0779 node0779 node0779 node0779 node0778 node0778 node0778 node0778 node0778 node0778 node0778 node0778 node0778 node0778 node0778 node0778 node0777 node0777 node0777 node0777 node0777 node0777 node0777 node0777 node0777 node0777 node0777 node0777 node0776 node0776 node0776 node0776 node0776 node0776 node0776 node0776 node0776 node0776 node0776 node0776 node0762 node0762 node0762 node0762 node0762 node0762 node0762 node0762 node0762 node0762 node0762 node0762 node0711 node0711 node0711 node0711 node0711 node0711 node0711 node0711 node0711 node0711 node0711 node0711
+/curc/torque/nodes/node0419/mom_priv/jobs/1964144.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    20  240  /curc/torque/nodes/node0419/aux//1964144.moab.rc.colorado.edu 
+=>> PBS: job killed: walltime 86426 exceeded limit 86400
+Terminated

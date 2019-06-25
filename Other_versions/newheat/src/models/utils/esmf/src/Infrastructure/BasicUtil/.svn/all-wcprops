@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/src/Infrastructure/BasicUtil
+END
+ESMC_BasicUtil.c
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/src/Infrastructure/BasicUtil/ESMC_BasicUtil.c
+END
+ESMF_BasicUtilMod.F
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/src/Infrastructure/BasicUtil/ESMF_BasicUtilMod.F
+END
+makefile
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/src/Infrastructure/BasicUtil/makefile
+END

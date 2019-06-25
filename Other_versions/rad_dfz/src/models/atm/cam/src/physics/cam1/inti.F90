@@ -1,0 +1,138 @@
+#include <misc.h>
+#include <params.h>
+
+subroutine inti ()
+!----------------------------------------------------------------------- 
+! 
+! Purpose: 
+! Set constants and call initialization procedures for time independent
+! physics routines
+! 
+! Method: 
+! <Describe the algorithm(s) used in the routine.> 
+! <Also include any applicable external references.> 
+! 
+! Author: J. Rosinski
+! 
+!-----------------------------------------------------------------------
+   use shr_kind_mod, only: r8 => shr_kind_r8
+   use pmgrid,             only: plev, plevp          ! Needed for hypm passed to vd_inti
+   use chemistry,          only: trace_gas, chem_init
+   use tracers,       only: tracers_flag, tracers_init
+   use carma, 		only: carma_init
+   use aerosol_intr,       only: prognostic_aerosol_initialize
+   use gw_drag,            only: gw_inti
+   use vertical_diffusion, only: vd_inti
+   use moistconvection,    only: mfinti
+   use cloud_fraction,     only: cldfrc_init
+   use cldcond,            only: cldcond_init
+   use param_cldoptics,    only: param_cldoptics_init
+   use zm_conv,            only: zm_convi
+   use shr_const_mod,      only: shr_const_zvir, shr_const_cpwv, shr_const_rwv
+   use physconst,          only: rair, cpair, cpwv, gravit, stebol, epsilo, tmelt, &
+                                 latvap, latice, rh2o, zvir, cpvir, rhoh2o, pstd,  &
+                                 karman, rhodair
+   use prescribed_aerosols,only: aerosol_initialize
+   use aer_optics,         only: aer_optics_initialize
+   use check_energy,       only: check_energy_init
+   use cloudsimulator,     only: doisccp, cloudsimulator_init
+
+   ! FAO
+   use radcnst, only: radcnst_initialize
+   use abortutils, only : endrun
+   ! EHW
+!   use tracrchem,  only: inichem
+   
+   ! EJL
+   use carma, only: carma_optics_init
+
+   implicit none
+
+#include <comctl.h>
+#include <comhyb.h>
+
+!
+! Initialize radiation data for aerosol forcing calculation
+! Initialize aerosol fields from files
+!
+   call aer_optics_initialize()
+   call aerosol_initialize()
+
+   ! FAO
+   call radcnst_initialize()
+   
+   ! EJL
+   call carma_optics_init()
+
+   write(6,*) 'done calling radcnst_initialize'
+
+   call prognostic_aerosol_initialize()
+
+!
+!-----------------------------------------------------------------------
+!
+! Initialize physconst variables
+! In adiabatic case, set zvir and cpvir explicitly to zero instead of 
+! computing as (rh2o/rair - 1.) and (cpwv/cpair - 1.) respectively, in order 
+! to guarantee an identical zero.
+!
+   if (adiabatic .or. ideal_phys) then
+      rh2o  = rair
+      zvir  = 0.
+      cpwv  = cpair
+      cpvir = 0.
+   else
+      rh2o  = shr_const_rwv
+      zvir  = shr_const_zvir
+      cpwv  = shr_const_cpwv
+      cpvir = cpwv/cpair - 1.
+   end if
+!
+! Call time independent initialization routines for parameterizations.
+!
+   if (trace_gas) call chem_init
+   if (tracers_flag) call tracers_init
+   
+!   print *, 'intitest'
+
+   call carma_init()
+   
+!   call inichem  !Initialize parameters used for tracer chemistry
+!   print *, 'intitest2'
+!   call gw_inti (cpair   ,cpwv    ,gravit  ,rair    ,hypi    )
+!   print*, 'test2'
+   !write(6,*) ' chkpt 3'
+!   call vd_inti (cpair   ,cpwv    ,gravit  ,rair    ,zvir   , &
+!                 hypm    ,karman    )
+!   print*,'test3'
+   !write(6,*) ' chkpt 4'
+   call tsinti  (tmelt   ,latvap  ,rair    ,stebol  ,latice  )
+   !write(6,*) ' chkpt 5'
+!   print*,'test4'
+   call radini  (gravit  ,cpair   ,epsilo  ,stebol  ,pstd*10.0 )
+   !write(6,*) ' chkpt 6'
+!   print*,'test5'
+   call esinti  (epsilo  ,latvap  ,latice  ,rh2o    ,cpair  , &
+                 tmelt   )
+   !write(6,*) ' chkpt 7'
+!   print*,'test6'
+   call mfinti  (rair    ,cpair   ,gravit  ,latvap  ,rhoh2o  )
+   !write(6,*) ' chkpt 8'
+!   print*,'test7'
+   call cldfrc_init
+   !write(6,*) ' chkpt 9'
+   call zm_convi( tmelt, epsilo, latvap, cpair )
+   !write(6,*) ' chkpt 10'
+   call cldinti ()
+!   print*,'test8'
+   call cldcond_init
+   call param_cldoptics_init
+!  print*,'end param_cldoptics_init and start check_energy_init'  
+   call check_energy_init
+
+!print*,doisccp
+   if (doisccp) call cloudsimulator_init
+!print*, 'cloudsimulator_init'
+   return
+!print*,'end inti'
+end subroutine inti

@@ -1,0 +1,29 @@
+@(#) DEFAULT_RUN  Jun-2001
+
+This is a brief description of how the default simulation is set up.
+
+As shipped, CARMA is set up for a 1-D simulation of a liquid water
+cloud forming in a rising bubble.  The particle types, specified
+in aer/setupaer.f, include 3 elements (CN, droplets, and sulfate core
+mass within droplets).  We have also included aer/setupaer.4elem.f,
+which includes the core mass second moment element, and
+aer/setupaer.8elem.f, which includes ice and mixed-phase elements. 
+Processes that are active in the default simulation (specified in
+aer/init.f) include droplet activation from (and evaporation to) CN,
+condensational growth, coagulation, vertical transport, and radiative
+transfer.  The vertical grid is set up in aer/initatm.f with 35 levels
+spanning the height range from the surface to 17 km.  The dimensions of
+the spatial and particle grids are set up in include/aerad.h.
+
+The simulation runs 160 time-steps of 10 seconds (the time-step for
+slow processes such as transport and coagulation), which are divided
+into 2 to 1000 sub-steps at each grid point for fast microphysical
+processes (such as nucleation and condensation).  Cloud formation is
+forced by an imposed vertical wind specified in aer/prestep.f -- the
+initial vertical wind profile has a maximum value of 5 m/s at 5.5 km,
+and the height of the peak vertical wind moves up at 5 m/s throughout
+the simulation.
+
+The top-level makefile specifies compilation with g77 with
+optimization.  On a 700 MHz Pentium III system, the simulation
+takes about 20 seconds to run.

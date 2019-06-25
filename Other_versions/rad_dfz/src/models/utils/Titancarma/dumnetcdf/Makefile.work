@@ -1,0 +1,203 @@
+#  @(#) Makefile.work  McKie  Oct-1995
+#  This is the make file for manipulating the dummy netcdf code.
+#
+#  Since critical symbols are passed into this make file from the top
+#  level make file, these symbol values are not defined here.
+#
+#  A pseudo make file in file Makefile exists in this subdirectory.
+#  It is invoked by default if make commands are issued in this
+#  directory, and it invokes the top level Makefile, which passes
+#  the critical symbols back to this Makefile.work for action.
+#
+#  Critical symbols are listed near the top of this Makefile.work file
+#  to show their symbol names, but they are given nonsense values in
+#  this file so that this Makefile.work will only work properly when
+#  called from the top level Makefile, and the meaningful values for
+#  the various symbols are passed to this Makefile.work from the top
+#  level Makefile.
+#
+#  Modified to use Makefile and Makefile.work and top level Makefile
+#  control, Sep-1999, for carma v1.18.  -bm
+#
+#
+#  Begin target list
+#
+#  Targets:
+#
+#    default     Same as library
+#    library     Ensure include files are consistent, compile, and build library 
+#    compile     Ensure each latest source module is compiled
+#    clean       Remove all compiler object files
+#    tar         Build distribution tar for dummy netcdf only code
+#
+#  End target list
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#
+#  Define program version tag string 
+#
+PROGTAG=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define symbolic Makefile constants that might change from system to system
+#
+#
+#  Define system type for conditional machine compilations
+#
+SYSTYP=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define the name of the Fortran compiler
+#
+FORTRAN=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define Fortran compiler flags
+#
+FFLAGS=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define special Fortran include path compiler option
+#
+NETCDF_INC=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define the name of the linker
+#
+LINK=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define linker flags
+#
+LFLAGS=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define name of path of tar archiving program
+#
+TARPROG=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define name of path of file delete program
+#
+RM=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define name of path of shell to use in the make actions below
+#   (Should be sh for unix systems)
+#
+SHELL=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Under Cray multi-cpu unicos systems, NPROC=1 forces
+#  sequential make using a single cpu
+#
+NPROC=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define name of object library archiver, its flags, & its randomizer
+#    On bsd systems,   RANLIB=ranlib
+#    On sys-V systems, RANLIB=touch
+#
+AR=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+ARFLAGS=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+RANLIB=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define name of aerosol object library
+#
+LIB_DUMNETCDF=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define the parent relative directory containing the include files shared
+#  with other submodels
+#
+INCLUDE_DIR=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#  Define things that will probably not change from system to system
+#
+#
+#  Define name of the aerosol only tar distribution file
+#
+TARFILE=	./dumnetcdf_$(PROGTAG).tar
+#
+#
+#  Define list of appropriate suffixes
+#
+.SUFFIXES:
+.SUFFIXES:   .h .ff .f .o
+#
+#
+#  Define method for compiling .f file into .o file
+#
+.f.o:	;	$(FORTRAN) $(FFLAGS) $(<)
+#
+#
+#  Define list of compiled object files for dummy netcdf code
+#
+OFILES=		dumnetcdf.o
+#
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#  Define make targets
+#
+#
+#  The <default> target invokes the library target and reports
+#  that an executable was not created.
+#
+default:	library
+		@ echo " "
+		@ echo "============== WARNING ================"
+		@ echo "Only the dummy netcdf library was built"
+		@ echo "No executable created."
+		@ echo "======================================="
+		@ echo " "
+#
+#
+#  The <tar> target generates a source distribution for this program
+#
+tar:		;
+		( $(RM) $(TARFILE) ; \
+		  $(TARPROG) cf $(TARFILE) \
+		    Makefile* \
+		    *.inc \
+		    *.f ; \
+		  exit 0; )
+#
+#
+#  The <clean> target removes compiler object files
+#
+clean:		;
+		$(RM)  $(OFILES)  $(LIB_DUMNETCDF)
+#
+#
+#  The <help> target lists the possible targets in this Makefile
+#
+help:
+		@ sed -n '/^#  Begin target list/,/^#  End target list/p'  Makefile.work
+#
+#
+#  The <compile> target compiles each source code file
+#
+compile:	$(OFILES)
+#
+#
+#  The <library> target compiles the source code & builds a library
+#
+library:	$(LIB_DUMNETCDF)
+#
+$(LIB_DUMNETCDF):	compile
+			$(RM) $(LIB_DUMNETCDF)
+			$(AR) $(ARFLAGS) $(LIB_DUMNETCDF) $(OFILES)
+			$(RANLIB) $(LIB_DUMNETCDF)
+#
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#  Define source code file dependencies
+#
+dumnetcdf.o:	dumnetcdf.f

@@ -1,0 +1,692 @@
+#include <misc.h>
+#include <params.h>
+
+!AJF(2/22/12) - THIS VERSION INCLUDES OPTION TO USE CURTIS MATRIX OR 
+! DIRECT INTEGRATION WITH *MID-LAYER* (DIML) SOURCE FUNCTIONS
+
+
+subroutine radctl_opgcm(lchnk   ,ncol    ,                   &
+                  lwup    ,emis    ,          &
+                  pmid    ,pint    ,pmln    ,piln    ,t       , &
+                  qm1     ,cld     ,cicewp  ,cliqwp  ,coszrs  , &
+                  asdir   ,asdif   ,aldir   ,aldif   ,pmxrgn  , &
+                  nmxrgn  ,fsns    ,fsnt    ,flns    ,flnt    , &
+                  qrs     ,qrl     ,flwds   ,rel     ,rei     , &
+                  sols    ,soll    ,solsd   ,solld   , &
+                  landfrac,zm      ,state, fsds, ts, tref)
+!----------------------------------------------------------------------- 
+! 
+! Purpose: 
+! Driver for radiation computation.
+! AJF: 4-14-09 - modified to use opgcm_sw_rad_mod routines
+! 
+! Method: 
+! Radiation uses cgs units, so conversions must be done from
+! model fields to radiation fields.
+!
+! Author: CCM1,  CMS Contact: J. Truesdale
+! 
+!-----------------------------------------------------------------------
+   use shr_kind_mod, only: r8 => shr_kind_r8
+   use shr_orb_mod, only : L_s
+   use ppgrid
+  use pmgrid      , only : masterproc, iam
+   use pspect
+   use commap
+   use history, only: outfld
+   use constituents, only: ppcnst, cnst_get_ind
+   use prescribed_aerosols, only: get_aerosol, naer_all, aerosol_diagnostics, &
+      aerosol_indirect, get_rf_scales, get_int_scales, radforce, idxVOLC
+   use physics_types, only: physics_state
+   use wv_saturation, only: aqsat
+   use chemistry,    only: trace_gas
+   use physconst, only: cpair, epsilo, gravit ! gravit in m s^-2
+   use aer_optics, only: idxVIS
+   use aerosol_intr, only: set_aerosol_from_prognostics
+
+! FAO
+   use abortutils, only: endrun
+   use phys_grid, only: get_rlon_all_p,  get_rlat_all_p, get_rlat_p, get_rlon_p
+   use time_manager, only: get_curr_titan_calday
+   use radcnst, only:   Nf_lw, Ng_lw, wn_lw
+   use ir_rad_mod, only: planck
+! AJF
+#ifdef DIUR_AV
+   use tmp_qrs_mod, only: tmp_qrs
+#endif
+   use opgcm_sw_rad_mod, only: get_sw_layer_props, opgcm_deding, de, sun, sum_sun, &
+                               knu_sw, dnu_c_sw, aero_int_sw, debug_sw, &
+                               str_of_int_less_than_1000
+  
+
+   implicit none
+
+#include <ptrrgrid.h>
+#include <comctl.h>
+#include <comsol.h>
+!
+! Input arguments
+!
+   integer, intent(in) :: lchnk                 ! chunk identifier
+   integer, intent(in) :: ncol                  ! number of atmospheric columns
+
+   integer nspint            ! Num of spctrl intervals across solar spectrum
+   integer naer_groups       ! Num of aerosol groups for optical diagnostics
+   parameter ( nspint = 19 )
+   parameter ( naer_groups = 7 )    ! current groupings are sul, sslt, all carbons, all dust, background, and all aerosols
+
+   real(r8), intent(in) :: lwup(pcols)          ! Longwave up flux at surface
+   real(r8), intent(in) :: emis(pcols,pver)     ! Cloud emissivity
+   real(r8), intent(in) :: pmid(pcols,pver)     ! Model level pressures
+   real(r8), intent(in) :: pint(pcols,pverp)    ! Model interface pressures, Pa
+   real(r8), intent(in) :: pmln(pcols,pver)     ! Natural log of pmid
+   real(r8), intent(in) :: rel(pcols,pver)      ! liquid effective drop size (microns)
+   real(r8), intent(in) :: rei(pcols,pver)      ! ice effective drop size (microns)
+   real(r8), intent(in) :: piln(pcols,pverp)    ! Natural log of pint
+   real(r8), intent(in) :: t(pcols,pver)        ! Model level temperatures
+   real(r8), intent(in) :: qm1(pcols,pver,ppcnst) ! Specific humidity and tracers
+   real(r8), intent(in) :: cld(pcols,pver)      ! Fractional cloud cover
+   real(r8), intent(in) :: cicewp(pcols,pver)   ! in-cloud cloud ice water path
+   real(r8), intent(in) :: cliqwp(pcols,pver)   ! in-cloud cloud liquid water path
+   real(r8), intent(in) :: coszrs(pcols)        ! Cosine solar zenith angle
+   real(r8), intent(in) :: asdir(pcols)         ! albedo shortwave direct
+   real(r8), intent(in) :: asdif(pcols)         ! albedo shortwave diffuse
+   real(r8), intent(in) :: aldir(pcols)         ! albedo longwave direct
+   real(r8), intent(in) :: aldif(pcols)         ! albedo longwave diffuse
+   real(r8), intent(in) :: landfrac(pcols)      ! land fraction
+   real(r8), intent(in) :: zm(pcols,pver)       ! Height of midpoints (above surface)
+   real(r8), intent(in) :: ts(pcols)                      ! surface temperature
+   real(r8), intent(in) :: tref(pcols)                      ! reference surface temperature
+   type(physics_state), intent(in) :: state     
+   real(r8), intent(inout) :: pmxrgn(pcols,pverp) ! Maximum values of pmid for each
+!    maximally overlapped region.
+!    0->pmxrgn(i,1) is range of pmid for
+!    1st region, pmxrgn(i,1)->pmxrgn(i,2) for
+!    2nd region, etc
+   integer, intent(inout) :: nmxrgn(pcols)     ! Number of maximally overlapped regions
+
+    real(r8) :: pmxrgnrf(pcols,pverp)             ! temporary copy of pmxrgn
+    integer  :: nmxrgnrf(pcols)     ! temporary copy of nmxrgn
+
+!
+! Output solar arguments
+!
+   real(r8), intent(out) :: fsns(pcols)          ! Surface absorbed solar flux
+   real(r8), intent(out) :: fsnt(pcols)          ! Net column abs solar flux at model top
+   real(r8), intent(out) :: flns(pcols)          ! Srf longwave cooling (up-down) flux
+   real(r8), intent(out) :: flnt(pcols)          ! Net outgoing lw flux at model top
+   real(r8), intent(out) :: sols(pcols)          ! Downward solar rad onto surface (sw direct)
+   real(r8), intent(out) :: soll(pcols)          ! Downward solar rad onto surface (lw direct)
+   real(r8), intent(out) :: solsd(pcols)         ! Downward solar rad onto surface (sw diffuse)
+   real(r8), intent(out) :: solld(pcols)         ! Downward solar rad onto surface (lw diffuse)
+   real(r8), intent(out) :: qrs(pcols,pver)      ! Solar heating rate
+   real(r8), intent(out) :: fsds(pcols)          ! Flux Shortwave Downwelling Surface
+!
+! Output longwave arguments
+!
+   real(r8), intent(out) :: qrl(pcols,pver)      ! Longwave cooling rate
+   real(r8), intent(out) :: flwds(pcols)         ! Surface down longwave flux
+
+
+!
+!---------------------------Local variables-----------------------------
+!
+   integer i, j, k              ! index
+
+   integer :: in2o, ich4, if11, if12 ! indexes of gases in constituent array
+
+   real(r8) solin(pcols)         ! Solar incident flux
+!  real(r8) fsds(pcols)          ! Flux Shortwave Downwelling Surface
+   real(r8) fsntoa(pcols)        ! Net solar flux at TOA
+   real(r8) fsntoac(pcols)       ! Clear sky net solar flux at TOA
+   real(r8) fsnirt(pcols)        ! Near-IR flux absorbed at toa
+   real(r8) fsnrtc(pcols)        ! Clear sky near-IR flux absorbed at toa
+   real(r8) fsnirtsq(pcols)      ! Near-IR flux absorbed at toa >= 0.7 microns
+   real(r8) fsntc(pcols)         ! Clear sky total column abs solar flux
+   real(r8) fsnsc(pcols)         ! Clear sky surface abs solar flux
+   real(r8) fsdsc(pcols)         ! Clear sky surface downwelling solar flux
+   real(r8) flut(pcols)          ! Upward flux at top of model
+   real(r8) lwcf(pcols)          ! longwave cloud forcing
+   real(r8) swcf(pcols)          ! shortwave cloud forcing
+   real(r8) flutc(pcols)         ! Upward Clear Sky flux at top of model
+   real(r8) flntc(pcols)         ! Clear sky lw flux at model top
+   real(r8) flnsc(pcols)         ! Clear sky lw flux at srf (up-down)
+   real(r8) ftem(pcols,pver)     ! temporary array for outfld
+   real(r8) fln200(pcols)        ! net longwave flux interpolated to 200 mb
+   real(r8) fln200c(pcols)       ! net clearsky longwave flux interpolated to 200 mb
+   real(r8) fns(pcols,pverp)     ! net shortwave flux
+   real(r8) fcns(pcols,pverp)    ! net clear-sky shortwave flux
+   real(r8) fsn200(pcols)        ! fns interpolated to 200 mb
+   real(r8) fsn200c(pcols)       ! fcns interpolated to 200 mb
+   real(r8) fnl(pcols,pverp)     ! net longwave flux
+   real(r8) fcnl(pcols,pverp)    ! net clear-sky longwave flux
+
+   real(r8) pbr(pcols,pverr)     ! Model mid-level pressures (dynes/cm2)
+   real(r8) pnm(pcols,pverrp)    ! Model interface pressures (dynes/cm2)
+   real(r8) o3vmr(pcols,pverr)   ! Ozone volume mixing ratio
+   real(r8) o3mmr(pcols,pverr)   ! Ozone mass mixing ratio
+   real(r8) eccf                 ! Earth/sun distance factor
+   real(r8) n2o(pcols,pver)      ! nitrous oxide mass mixing ratio
+   real(r8) ch4(pcols,pver)      ! methane mass mixing ratio
+   real(r8) cfc11(pcols,pver)    ! cfc11 mass mixing ratio
+   real(r8) cfc12(pcols,pver)    ! cfc12 mass mixing ratio
+   real(r8) rh(pcols,pverr)      ! level relative humidity (fraction)
+   real(r8) lwupcgs(pcols)       ! Upward longwave flux in cgs units
+
+   real(r8) esat(pcols,pverr)    ! saturation vapor pressure
+   real(r8) qsat(pcols,pverr)    ! saturation specific humidity
+
+   real(r8) :: frc_day(pcols) ! = 1 for daylight, =0 for night colums
+!!   real(r8) :: aertau(pcols,Nf,Na) ! Aerosol column optical depth
+!!   real(r8) :: aerssa(pcols,Nf,Na) ! Aerosol column averaged single scattering albedo
+!!   real(r8) :: aerasm(pcols,Nf,Na) ! Aerosol column averaged asymmetry parameter
+!!   real(r8) :: aerfwd(pcols,Nf,Na) ! Aerosol column averaged forward scattering
+
+   real(r8) aerosol(pcols, pver, naer_all) ! aerosol mass mixing ratios
+   real(r8) scales(naer_all)               ! scaling factors for aerosols
+
+
+!  FAO
+   real(r8) frac_day, day_in_year
+   real(r8) rlons(pcols), rlats(pcols)
+   real(r8) mmr_g(pcols,pver,ppcnst) ! gass mass mixing ratio
+   real(r8) mmr_a(pcols,pver,aero_int_sw%Na) ! aerosol mass mixing ratio
+   real(r8) Ti
+   integer Zg, Za, Zd, Zf
+
+   real(r8) :: planckf(Nf_lw,pverp,ncol) !atm planck function on interfcs
+   real(r8) :: planckfg(Nf_lw,ncol)     !surface planck function
+
+! AJF
+   real(r8) :: tref_u  !use to set tref .ne. 0 
+   real(r8) :: ts_u  !use to set tref .ne. 0 
+   real(r8) :: p1,p2,pt,tt ! variables used for extrapolating T to topmost interfc.
+   real(r8), parameter :: conv_p= 10.0  !convert pressure from Pa to dyne cm^-2
+   real(r8), parameter :: conv_q_to_mks = 1.e-4 !convert qrs to mks units
+   real(r8) :: grav  !gravity in cgs units
+   real(r8) :: lon_,lat_
+   real(r8) :: rmask  !Transmittance of Saturn's rings (not used if not Saturn)
+   integer  :: Naa,ind_aer(aero_int_sw%Na),ind_ch4  !indices of tracers
+   logical, parameter :: print_diag = .false.  ! for debugging opgcm_deding
+   character(len=4) :: iam_str
+      
+#ifdef RADIATION_DEBUG
+   call str_of_int_less_than_1000(iam_str,iam)
+   open(unit=7321, file='rad_' // iam_str, access='append')
+#endif
+   
+   Naa = aero_int_sw%Na
+   grav = 100.*gravit
+   debug_sw=.false.
+!
+! Interpolate ozone volume mixing ratio to model levels
+!
+!!   call radozn(lchnk   ,ncol    ,pmid    ,o3vmr   )
+!!   call outfld('O3VMR   ',o3vmr ,pcols, lchnk)
+   
+
+!
+! Set chunk dependent radiation input
+!
+   call radinp(lchnk   ,ncol    ,                                &
+               pmid    ,pint    ,o3vmr   , pbr     ,&
+               pnm     ,eccf    ,o3mmr   )
+!
+! Solar radiation computation
+!
+
+   if (dosw) then
+   
+! 
+! Initialize output fields:
+! 
+    fsds(1:ncol)     = 0.0_r8
+    fsns(1:ncol)     = 0.0_r8
+    fsnt(1:ncol)     = 0.0_r8
+    fsntoa(1:ncol)   = 0.0_r8
+
+    solin(1:ncol)    = 0.0_r8
+
+    sols(1:ncol)     = 0.0_r8
+    soll(1:ncol)     = 0.0_r8
+    solsd(1:ncol)    = 0.0_r8
+    solld(1:ncol)    = 0.0_r8
+
+    qrs(1:ncol,1:pver) = 0.0_r8
+    fns(1:ncol,1:pverp) = 0.0_r8
+    
+    fsnirt(1:ncol) = 0.0_r8
+    fsnrtc(1:ncol) = 0.0_r8
+    fsnirtsq(1:ncol) = 0.0_r8
+    fsntc(1:ncol) = 0.0_r8
+    fsnsc(1:ncol) = 0.0_r8
+    fsdsc(1:ncol) = 0.0_r8
+    fsntoac(1:ncol) = 0.0_r8
+    fsn200(1:ncol) = 0.0_r8
+    fsn200c(1:ncol) = 0.0_r8
+    
+
+      
+
+!
+! calculate heating with aerosols
+!
+
+      ! FAO: NB -- this routine computes saturation vapour pressure and spec. humidity
+!!      call aqsat(state%t, state%pmid, esat, qsat, pcols, &
+!!                 ncol, pver, 1, pver)
+
+      ! calculate relative humidity
+!!      rh(1:ncol,1:pver) = state%q(1:ncol,1:pver,1) / qsat(1:ncol,1:pver) * &
+!!         ((1.0 - epsilo) * qsat(1:ncol,1:pver) + epsilo) / &
+!!         ((1.0 - epsilo) * state%q(1:ncol,1:pver,1) + epsilo)
+
+
+! Get aerosol mass mixing ratios
+
+!!!#ifdef _TITAN
+!!!     ! FAO:  kludge for mass mixing ratios (for Titan)
+!!!      call set_aerosol_mmr(mmr_a)
+!!!#else  !Currently supports 4 aerosols  !ajf, now same handling for Titan
+
+      Za=1
+      call cnst_get_ind (Trim('HAZE_0'), ind_aer(Za))
+      Za=2
+      call cnst_get_ind (Trim('HAZE_A'), ind_aer(Za))
+      Za=3
+      call cnst_get_ind (Trim('HAZE_B'), ind_aer(Za))
+      Za=4
+      call cnst_get_ind (Trim('HAZE_C'), ind_aer(Za))
+      
+      do i=1,ncol
+        do k=1,pver
+         do Za=1,Naa
+          mmr_a(i,k,Za) = state%q(i,k,ind_aer(Za))
+         enddo
+        enddo
+      enddo
+
+!!!#endif
+
+
+      ! [FAO] set CH4 MMR ratios from state%q
+      ! AJF - allow more general definition of CH4:
+      mmr_g = 0
+      call cnst_get_ind (Trim('CH4'), ind_ch4)  !nonadvected ch4
+      do k=1,pver
+      do i=1,ncol
+         do Zg=1,ppcnst
+            mmr_g(i,k,Zg) = 0.
+         enddo
+         mmr_g(i,k,1) = state%q(i,k,ind_ch4)
+      enddo
+      enddo
+      
+
+
+
+!!      call get_int_scales(scales)
+ 
+!!      call get_aerosol(lchnk, pint, aerosol, scales)
+
+      ! overwrite with prognostics aerosols
+!!      call set_aerosol_from_prognostics (state, aerosol)
+
+!!      call aerosol_indirect(ncol,lchnk,landfrac,pmid,t,qm1,cld,zm,rel)
+
+      call get_rlon_all_p(lchnk, ncol, rlons)
+      call get_rlat_all_p(lchnk, ncol, rlats)
+      call get_curr_titan_calday(frac_day, day_in_year)
+      
+!      write(6,fmt=381) day_in_year, frac_day, eccf
+!381   format ('FAO-TIME', e14.4, e14.4, e14.4)
+
+!      do i = 1, ncol
+!         write (6,fmt=382) rlons(i), rlats(i), scon*eccf*coszrs(i)
+!      enddo
+!382   format ('FAO-SOLIN:',e14.4, e14.4, e14.4)
+
+
+      call t_startf('sw_radiation')
+      
+! Loop over columns in chunk
+
+      do i=1,ncol
+      
+#ifdef RADIATION_DEBUG
+      lon_=180./3.1415926*get_rlon_p(lchnk,i)
+      lat_=180./3.1415926*get_rlat_p(lchnk,i)
+      
+      if ((lat_ > -88.0 .and. lat_ < -84.0) .and. &
+          ((lon_ > 84.0 .and. lon_ < 86.0) .or. &
+           (lon_ > 89.0 .and. lon_ < 91.0))) then
+        debug_sw = .true.
+        write(7321,*) ' LAT= ',lat_
+        write(7321,*) ' LON= ',lon_
+
+      endif
+#endif
+            
+      if (coszrs(i) > 0.0) then
+      
+#ifdef _SATURN
+       call ring_mask (rlons(i), rlats(i), frac_day, L_s, rmask)
+       solin(i) = sum_sun*eccf*coszrs(i)*rmask
+#else
+       rmask=1.0
+       solin(i) = sum_sun*eccf*coszrs(i)
+#endif
+
+
+!  - Obtain layer optical depths and bulk scattering properties     
+      
+       call get_sw_layer_props(pmid(i,:),pint(i,:),t(i,:), &
+            mmr_g(i,:,1),mmr_a(i,:,:))
+      
+      do k=1,knu_sw  
+                    
+       call opgcm_deding(coszrs(i), de%tau(k,:), de%ssa(k,:), de%g(k,:), &
+        de%f(k,:), asdir(i), de%fnet(k,:), de%fup(k,:), de%fdn(k,:), print_diag)                 
+                    
+      enddo !end loop over k (wavenumber)
+      
+        do j=1,pverp
+         fns(i,j)=sum(sun(:)*dnu_c_sw(:)*de%fnet(:,j))  ! Fup - Fdn
+        enddo
+!!!         fns(i,:)=solin(i)/sum_sun*fns(i,:)
+        fns(i,:)=rmask*eccf*fns(i,:)
+         
+        do j=1,pver
+         qrs(i,j)= conv_q_to_mks*grav*(fns(i,j+1)-fns(i,j))/ &
+                  (conv_p*(pint(i,j+1)-pint(i,j)))
+        enddo
+         
+
+!  The following fluxes are defined positive *downward*
+!!! (extra factor of mu0?)
+!!!        fsns(i)=solin(i)/sum_sun*sum(sun(:)*dnu_c_sw(:)* &
+!!!               (de%fdn(:,pverp)-de%fup(:,pverp)))
+!!!        fsnt(i)=solin(i)/sum_sun*sum(sun(:)*dnu_c_sw(:)*(de%fdn(:,1)-de%fup(:,1)))
+!!!        fsds(i)=solin(i)/sum_sun*sum(sun(:)*dnu_c_sw(:)*de%fdn(:,pverp))
+!!!        fsntoa(i)=solin(i)/sum_sun*sum(sun(:)*dnu_c_sw(:)* &
+!!!               (de%fdn(:,0)-de%fup(:,0)))
+               
+        fsns(i)=rmask*eccf*sum(sun(:)*dnu_c_sw(:)* &
+               (de%fdn(:,pverp)-de%fup(:,pverp)))
+        fsnt(i)=rmask*eccf*sum(sun(:)*dnu_c_sw(:)*(de%fdn(:,1)-de%fup(:,1)))
+        fsds(i)=rmask*eccf*sum(sun(:)*dnu_c_sw(:)*de%fdn(:,pverp))
+        fsntoa(i)=rmask*eccf*sum(sun(:)*dnu_c_sw(:)* &
+               (de%fdn(:,0)-de%fup(:,0)))
+      
+      else ! coszrs <,= 0
+      
+        fsns(i)=0.0_r8
+        fsnt(i)=0.0_r8
+        fsds(i)=0.0_r8
+        fsntoa(i)=0.0_r8
+        fns(i,:)=0.0_r8
+        qrs(i,:)=0.0_r8
+      
+      
+      endif
+
+#ifdef RADIATION_DEBUG      
+      if (debug_sw) then
+        write(7321,*) ' lat= ',lat_
+        write(7321,*) ' lon= ',lon_
+        write(7321,*) ' solin= ',solin(i),' coszrs= ',coszrs(i),' rmask= ',rmask
+        do j=1,pver
+         write(7321,*) 'qrs(i,j)= ',qrs(i,j),' fns(i,j)= ',fns(i,j)
+        enddo
+      endif
+        
+      debug_sw=.false.
+#endif
+
+      enddo !end loop over columns
+                    
+      call t_stopf('sw_radiation')
+      
+#ifdef RADIATION_DEBUG
+   close(unit=7321)
+#endif
+
+      
+! -- tls ---------------------------------------------------------------2
+
+!  Output net fluxes at 200 mb
+
+!!!      call vertinterp(ncol, pcols, pverp, pint, 20000._r8, fcns, fsn200c)
+!!!      call vertinterp(ncol, pcols, pverp, pint, 20000._r8, fns, fsn200)
+
+!
+! Convert units of shortwave fields needed by rest of model from CGS to MKS
+!
+      do i=1,ncol
+         solin(i) = solin(i)*1.e-3
+         fsds(i)  = fsds(i)*1.e-3
+!!         fsnirt(i)= fsnirt(i)*1.e-3
+!!         fsnrtc(i)= fsnrtc(i)*1.e-3
+!!         fsnirtsq(i)= fsnirtsq(i)*1.e-3
+         fsnt(i)  = fsnt(i) *1.e-3
+         fsns(i)  = fsns(i) *1.e-3
+!!         fsntc(i) = fsntc(i)*1.e-3
+!!         fsnsc(i) = fsnsc(i)*1.e-3
+!!         fsdsc(i) = fsdsc(i)*1.e-3
+         fsntoa(i)=fsntoa(i)*1.e-3
+!!         fsntoac(i)=fsntoac(i)*1.e-3
+!!         fsn200(i)  = fsn200(i)*1.e-3
+!!         fsn200c(i) = fsn200c(i)*1.e-3
+      end do
+      ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
+
+#ifdef DIUR_AV
+         tmp_qrs(:ncol,lchnk,:pver)=qrs(:ncol,:pver)
+#endif        
+
+
+
+
+!
+! Dump shortwave radiation information to history tape buffer (diagnostics)
+!
+
+      call outfld('frc_day ', frc_day, pcols, lchnk)
+
+
+      call outfld('QRS     ',ftem  ,pcols,lchnk)
+      call outfld('SOLIN   ',solin ,pcols,lchnk)
+      call outfld('FSDS    ',fsds  ,pcols,lchnk)
+      call outfld('FSNIRTOA',fsnirt,pcols,lchnk)
+      call outfld('FSNRTOAC',fsnrtc,pcols,lchnk)
+      call outfld('FSNRTOAS',fsnirtsq,pcols,lchnk)
+      call outfld('FSNT    ',fsnt  ,pcols,lchnk)
+      call outfld('FSNS    ',fsns  ,pcols,lchnk)
+      call outfld('FSNTC   ',fsntc ,pcols,lchnk)
+      call outfld('FSNSC   ',fsnsc ,pcols,lchnk)
+      call outfld('FSDSC   ',fsdsc ,pcols,lchnk)
+      call outfld('FSNTOA  ',fsntoa,pcols,lchnk)
+      call outfld('FSNTOAC ',fsntoac,pcols,lchnk)
+      call outfld('SOLS    ',sols  ,pcols,lchnk)
+      call outfld('SOLL    ',soll  ,pcols,lchnk)
+      call outfld('SOLSD   ',solsd ,pcols,lchnk)
+      call outfld('SOLLD   ',solld ,pcols,lchnk)
+!!!      call outfld('FSN200  ',fsn200,pcols,lchnk)
+!!!     call outfld('FSN200C ',fsn200c,pcols,lchnk)
+
+   end if
+
+!
+! Longwave radiation computation
+!
+   if (dolw) then
+   
+
+!
+! Convert upward longwave flux units to CGS
+!
+      do i=1,ncol
+         lwupcgs(i) = lwup(i)*1000.
+      end do
+
+      ! FAO: This bit of code should be moved elsewhere
+      ! FAO: unmapped planck functions
+      ! AJF:  If moved, then pressures must be defined in destination routine
+
+
+      do i=1,ncol
+
+#ifdef _CURTIS_MATRIX 
+
+         do k=2,pverp     !For C-M & DIML formulations, planckf(k+1)=B[T(k)]
+            Ti =  t(i,k-1)
+            do Zf=1,Nf_lw
+               planckf(Zf,k,i) = planck(wn_lw(Zf),Ti)
+            enddo
+         enddo
+
+#elif defined _DIML
+
+        do k=2,pverp     !For C-M & DIML formulations, planckf(k+1)=B[T(k)]
+            Ti =  t(i,k-1)
+            do Zf=1,Nf_lw
+               planckf(Zf,k,i) = planck(wn_lw(Zf),Ti)
+            enddo
+         enddo
+
+#else
+
+         do k=2,pver
+            Ti = 0.5 * (t(i,k) + t(i,k-1))
+            do Zf=1,Nf_lw
+               planckf(Zf,k,i) = planck(wn_lw(Zf),Ti)
+            enddo
+         enddo
+
+#endif
+
+#ifdef _TITAN
+         tref_u=tref(i)
+         ts_u  =ts(i)
+         tt=t(i,1)
+#else
+         tt=t(i,1)
+         p1=pmid(i,pver-1)  !Linear extrapolation of T to bottom interface:
+         p2=pmid(i,pver)
+         pt=pint(i,pverp)
+         ts_u=(p2-pt)/(p2-p1)*t(i,pver-1)+(pt-p1)/(p2-p1)*t(i,pver)
+         tref_u=ts_u
+#endif
+
+
+
+         do Zf=1,Nf_lw
+            planckfg(Zf,i) = planck(wn_lw(Zf),ts_u)
+!!!            ! take top interface level to be equal to top midpt level
+!!!            planckf(Zf,1,i) = planck(wn_lw(Zf),t(i,1))
+            planckf(Zf,1,i) = planck(wn_lw(Zf),tt)
+            ! bottom level
+#ifndef _CURTIS_MATRIX  !planckf(pverp) defined above for C-M formulation
+#ifndef _DIML
+            planckf(Zf,pverp,i) = planck(wn_lw(Zf),tref_u)
+#endif
+#endif
+         enddo
+      enddo
+
+
+!
+! Do longwave computation. If not implementing greenhouse gas code then
+! first specify trace gas mixing ratios. If greenhouse gas code then:
+!  o ixtrcg   => indx of advected n2o tracer
+!  o ixtrcg+1 => indx of advected ch4 tracer
+!  o ixtrcg+2 => indx of advected cfc11 tracer
+!  o ixtrcg+3 => indx of advected cfc12 tracer
+!
+      if (trace_gas) then
+         call t_startf("radclwmx")
+         call cnst_get_ind('N2O'  , in2o)
+         call cnst_get_ind('CH4'  , ich4)
+         call cnst_get_ind('CFC11', if11)
+         call cnst_get_ind('CFC12', if12)
+         call t_startf("radclwmx")
+         call radclwmx_opgcm(lchnk, ncol, qm1, pint, t, planckf, planckfg, &
+              qrl,flns,flnt,flut,flnsc,flntc,flutc,flwds,fcnl,fnl)
+              
+         call radclwmx_opgcm(lchnk,ncol, mmr_g(:,:,1), pint, planckf, planckfg, &
+              qrl,flns,flnt,flut,flnsc,flntc,flutc,flwds,fcnl,fnl)
+!         call radclwmx_titan_old(lchnk   ,ncol    ,                            &
+!                       lwupcgs ,t       ,qm1(1,1,1)       ,o3vmr ,   &
+!                       pbr     ,pnm     ,pmln    ,piln    ,          &
+!                       qm1(1,1,in2o)    ,qm1(1,1,ich4)    ,          &
+!                       qm1(1,1,if11)    ,qm1(1,1,if12)    ,          &
+!                       cld     ,emis    ,pmxrgn  ,nmxrgn  ,qrl     , &
+!                       flns    ,flnt    ,flnsc   ,flntc   ,flwds   , &
+!                       flut    ,flutc   ,                            &
+!                       aerosol(:,:,idxVOLC)      ,fnl     , fcnl   )
+
+         call t_stopf("radclwmx")
+      else
+         call trcmix(lchnk   ,ncol    , &
+                     pmid    ,n2o     ,ch4     ,                     &
+                     cfc11   ,cfc12   )
+
+         call t_startf("radclwmx")
+         call radclwmx_opgcm(lchnk, ncol, qm1, pint, t, planckf, planckfg, &
+              qrl,flns,flnt,flut,flnsc,flntc,flutc,flwds,fcnl,fnl)
+!         call radclwmx_titan_old(lchnk     ,ncol    ,                            &
+!                       lwupcgs   ,t       ,qm1(1,1,1)       ,o3vmr ,   &
+!                       pbr       ,pnm     ,pmln    ,piln    ,          &
+!                       n2o       ,ch4     ,cfc11   ,cfc12   ,          &
+!                       cld       ,emis    ,pmxrgn  ,nmxrgn  ,qrl     , &
+!                       flns      ,flnt    ,flnsc   ,flntc   ,flwds   , &
+!                       flut      ,flutc   ,                            &
+!                       aerosol(:,:,idxVOLC)        ,fnl     ,fcnl    )
+         call t_stopf("radclwmx")
+      endif
+
+!
+!  Output fluxes at 200 mb
+!
+!!!   call vertinterp(ncol, pcols, pverp, pint, 20000._r8, fnl, fln200)
+!!!   call vertinterp(ncol, pcols, pverp, pint, 20000._r8, fcnl, fln200c)
+!
+! Convert units of longwave fields needed by rest of model from CGS to MKS
+!  AJF 7/07/07:  Planck function in MKS units/cm^-1, no conversion needed
+!!!      do i=1,ncol
+!!!         flnt(i)  = flnt(i)*1.e-3
+!!!         flut(i)  = flut(i)*1.e-3
+!!!         flutc(i) = flutc(i)*1.e-3
+!!!         flns(i)  = flns(i)*1.e-3
+!!!         flntc(i) = flntc(i)*1.e-3
+!!!         fln200(i)  = fln200(i)*1.e-3
+!!!         fln200c(i) = fln200c(i)*1.e-3
+!!!         flnsc(i) = flnsc(i)*1.e-3
+!!!         flwds(i) = flwds(i)*1.e-3
+!!!         lwcf(i)=flutc(i) - flut(i)
+!!!         swcf(i)=fsntoa(i) - fsntoac(i)
+!!!      end do
+!
+! Dump longwave radiation information to history tape buffer (diagnostics)
+!
+      call outfld('QRL     ',qrl(:ncol,:)/cpair,ncol,lchnk)
+      call outfld('FLNT    ',flnt  ,pcols,lchnk)
+      call outfld('FLUT    ',flut  ,pcols,lchnk)
+      call outfld('FLUTC   ',flutc ,pcols,lchnk)
+      call outfld('FLNTC   ',flntc ,pcols,lchnk)
+      call outfld('FLNS    ',flns  ,pcols,lchnk)
+      call outfld('FLNSC   ',flnsc ,pcols,lchnk)
+      call outfld('LWCF    ',lwcf  ,pcols,lchnk)
+      call outfld('SWCF    ',swcf  ,pcols,lchnk)
+!!!      call outfld('FLN200  ',fln200,pcols,lchnk)
+!!!      call outfld('FLN200C ',fln200c,pcols,lchnk)
+!
+   end if
+!
+
+!   call endrun ('FAO -- stop at end of radctl')
+   
+   return
+end subroutine radctl_opgcm
+
+

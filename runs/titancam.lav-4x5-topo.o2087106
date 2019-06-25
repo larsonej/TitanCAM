@@ -1,0 +1,25 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087106.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087106.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/bin/mpirun
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087106.moab.rc.colorado.edu.SC:  Running on node1738
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087106.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087106.moab.rc.colorado.edu.SC:  Set run to lav-4x5-topo
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087106.moab.rc.colorado.edu.SC:  Set debug to ON
+/home/larsonej/titancam
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087106.moab.rc.colorado.edu.SC:  Set runtype to INITIAL
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087106.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087106.moab.rc.colorado.edu.SC:  copying cam from /projects/larsonej/titancam/build_lav-4x5-topo ...
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087106.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/lav-4x5-topo_rh6 using MPI
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087106.moab.rc.colorado.edu.SC:  Started at Sat Jul 27 00:48:36 MDT 2013
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087106.moab.rc.colorado.edu.SC: Running on nodes ...
+node1738 node1738 node1738 node1738 node1738 node1738 node1738 node1738 node1738 node1738 node1738 node1738 node1315 node1315 node1315 node1315 node1315 node1315 node1315 node1315 node1315 node1315 node1315 node1315 node1322 node1322 node1322 node1322 node1322 node1322 node1322 node1322 node1322 node1322 node1322 node1322 node1328 node1328 node1328 node1328 node1328 node1328 node1328 node1328 node1328 node1328 node1328 node1328 node1341 node1341 node1341 node1341 node1341 node1341 node1341 node1341 node1341 node1341 node1341 node1341 node1343 node1343 node1343 node1343 node1343 node1343 node1343 node1343 node1343 node1343 node1343 node1343 node1345 node1345 node1345 node1345 node1345 node1345 node1345 node1345 node1345 node1345 node1345 node1345 node1346 node1346 node1346 node1346 node1346 node1346 node1346 node1346 node1346 node1346 node1346 node1346 node1347 node1347 node1347 node1347 node1347 node1347 node1347 node1347 node1347 node1347 node1347 node1347 node1350 node1350 node1350 node1350 node1350 node1350 node1350 node1350 node1350 node1350 node1350 node1350 node1351 node1351 node1351 node1351 node1351 node1351 node1351 node1351 node1351 node1351 node1351 node1351 node1355 node1355 node1355 node1355 node1355 node1355 node1355 node1355 node1355 node1355 node1355 node1355 node1368 node1368 node1368 node1368 node1368 node1368 node1368 node1368 node1368 node1368 node1368 node1368 node1375 node1375 node1375 node1375 node1375 node1375 node1375 node1375 node1375 node1375 node1375 node1375 node1401 node1401 node1401 node1401 node1401 node1401 node1401 node1401 node1401 node1401 node1401 node1401 node1452 node1452 node1452 node1452 node1452 node1452 node1452 node1452 node1452 node1452 node1452 node1452 node1465 node1465 node1465 node1465 node1465 node1465 node1465 node1465 node1465 node1465 node1465 node1465 node1467 node1467 node1467 node1467 node1467 node1467 node1467 node1467 node1467 node1467 node1467 node1467 node1479 node1479 node1479 node1479 node1479 node1479 node1479 node1479 node1479 node1479 node1479 node1479 node1301 node1301 node1301 node1301 node1301 node1301 node1301 node1301 node1301 node1301 node1301 node1301
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087106.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    20  240  /curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/aux//2087106.moab.rc.colorado.edu 
+[node1345:17506] [[14324,0],6]-[[14324,1],80] mca_oob_tcp_msg_recv: readv failed: Connection reset by peer (104)
+[node1350:17093] [[14324,0],9]-[[14324,1],112] mca_oob_tcp_msg_recv: readv failed: Connection reset by peer (104)
+[node1351:22480] [[14324,0],10]-[[14324,1],123] mca_oob_tcp_msg_recv: readv failed: Connection reset by peer (104)
+[node1347:13499] [[14324,0],8]-[[14324,1],96] mca_oob_tcp_msg_recv: readv failed: Connection reset by peer (104)
+[node1347:13499] [[14324,0],8]-[[14324,1],97] mca_oob_tcp_msg_recv: readv failed: Connection reset by peer (104)
+[node1347:13499] [[14324,0],8]-[[14324,1],99] mca_oob_tcp_msg_recv: readv failed: Connection reset by peer (104)
+[node1347:13499] [[14324,0],8]-[[14324,1],98] mca_oob_tcp_msg_recv: readv failed: Connection reset by peer (104)
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087106.moab.rc.colorado.edu.SC:  CAM run failed

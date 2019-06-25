@@ -1,0 +1,90 @@
+110,114d109
+< c  Define # elements + gases
+< c
+<       parameter( NELPGS = NELEM + NGAS )
+< c
+< c
+299,301c294
+<       parameter( T0 = 90.348d+0 )  !ethane
+< c     parameter( T0 = 90.69d+0  )  !methane
+< c     parameter( T0 = 80.6d+0   )  !CH4 + N2
+---
+>       parameter( T0 = 90.348d+0 )
+347c340
+<       parameter( PREF = 1013.25d+3 )
+---
+>       parameter( PREF = 1018.d+3 )
+375,378c368,370
+< c  Define mass density of liquid ethane [ g / cm^3 ]   !These densities should
+< c                                                      !really be defined for
+<       parameter( RHO_W = 0.5446d+0 ) !ethane           !each gas
+< c     parameter( RHO_W = 0.4228d+0 ) !methane
+---
+> c  Define mass density of liquid ethane [ g / cm^3 ]
+> c
+>       parameter( RHO_W = 0.5446d+0 )
+383,384c375
+<       parameter( RHO_I = 0.713d+0 )  !ethane
+< c     parameter( RHO_I = 0.519d+0 )  !methane
+---
+>       parameter( RHO_I = 0.713d+0 )
+422,423c413
+< c   apcifil1  Name of particle concentration input file (0 - 98 km)
+< c   apcifil2  Name of particle concentration input file (100 km)
+---
+> c   apcifil   Name of particle concentration input file
+425c415,417
+< c   ext       File name extension to designate run
+---
+> c   rateofil  Name of rate output file
+> c   extrifil  Name of extrapolation input file
+> c   mflxofil  Name of mass flux output file
+439,440c431
+<       character*(50) apcifil1
+<       character*(50) apcifil2
+---
+>       character*(50) apcifil
+442c433,435
+<       character*(2)  ext
+---
+>       character*(50) rateofil
+>       character*(50) extrifil
+>       character*(50) mflxofil
+456,457c449,450
+<      $  trhoifil, tempofil, fluxifil, apcifil1, apcifil2, timeofil,
+<      $  ext
+---
+>      $  trhoifil, tempofil, fluxifil, apcifil, timeofil,rateofil,
+>      $  extrifil,mflxofil
+783,784d775
+< c   pcmflux     Mass flux for particles across bottom boundary of layer {vertical}
+< c   gcmflux     Mass flux for gases across bottom boundary of layer {vertical}
+805,806c796
+<      $  rprod(NZ), ppd, pls,pcmflux(NX,NY,NZ,NELEM),
+<      $  gcmflux(NX,NY,NZ,NGAS),
+---
+>      $  rprod(NZ), ppd, pls,
+813,814d802
+<       dimension pcmflux2(NXY,NZ,NELEM)
+<       dimension gcmflux2(NXY,NZ,NGAS)
+817,818d804
+<       equivalence( pcmflux2, pcmflux )
+<       equivalence( gcmflux2, gcmflux )
+903a890
+> c   fluxcl    Total flux of cloud particles at each layer           {versol}
+911a899
+>      $  fluxcl(NX,NY,NZ),
+917a906
+>       dimension fluxcl3(NXYZ)
+920a910
+>       equivalence( fluxcl3, fluxcl )
+1061c1051
+<      $  surfctwa(NZ,NGAS), surfctiw(NZ,NGAS), surfctia(NZ,NGAS),
+---
+>      $  surfctwa(NZ), surfctiw(NZ), surfctia(NZ),
+1100d1089
+< c   ct       Contact parameter                               {actdropl}
+1108c1097
+<      $  ct(NGAS),adelf, bdelf, prenuc, rmiv,
+---
+>      $  adelf, bdelf, prenuc, rmiv,

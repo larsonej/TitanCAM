@@ -1,0 +1,287 @@
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/repos/cam_titan/!svn/ver/74/branches/toon/src/models/lnd/clm2/src/main
+END
+spmdGathScatMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/spmdGathScatMod.F90
+END
+inicFileMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/inicFileMod.F90
+END
+clm_varcon.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/clm_varcon.F90
+END
+clm_varpar.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/74/branches/toon/src/models/lnd/clm2/src/main/clm_varpar.F90
+END
+abortutils.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/abortutils.F90
+END
+time_manager.F90
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/time_manager.F90
+END
+accumulMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/accumulMod.F90
+END
+driver.F90
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/driver.F90
+END
+getdatetime.F90
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/getdatetime.F90
+END
+ncdio.F90
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/ncdio.F90
+END
+atmdrvMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/atmdrvMod.F90
+END
+accFldsMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/accFldsMod.F90
+END
+fileutils.F90
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/fileutils.F90
+END
+clmtypeInitMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/clmtypeInitMod.F90
+END
+initializeMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/initializeMod.F90
+END
+iniTimeConst.F90
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/74/branches/toon/src/models/lnd/clm2/src/main/iniTimeConst.F90
+END
+histFileMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/histFileMod.F90
+END
+iniTimeVar.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/iniTimeVar.F90
+END
+pft2colMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/pft2colMod.F90
+END
+program_csm.F90
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/program_csm.F90
+END
+do_restwrite.F90
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/do_restwrite.F90
+END
+system_messages.F90
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/system_messages.F90
+END
+lp_coupling.F90
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/lp_coupling.F90
+END
+restFileMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/restFileMod.F90
+END
+clm_varsur.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/clm_varsur.F90
+END
+clm_csmMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/clm_csmMod.F90
+END
+atm_lndMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/atm_lndMod.F90
+END
+surfFileMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/surfFileMod.F90
+END
+controlMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/controlMod.F90
+END
+filterMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/filterMod.F90
+END
+clm_varctl.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/clm_varctl.F90
+END
+subgridAveMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/subgridAveMod.F90
+END
+initGridCellsMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/initGridCellsMod.F90
+END
+program_off.F90
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/program_off.F90
+END
+lnd2atmMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/lnd2atmMod.F90
+END
+pftvarcon.F90
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/pftvarcon.F90
+END
+snowdp2lev.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/snowdp2lev.F90
+END
+spmdMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/spmdMod.F90
+END
+cfort.h
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/cfort.h
+END
+decompMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/decompMod.F90
+END
+areaMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/areaMod.F90
+END
+nanMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/nanMod.F90
+END
+iobinary.F90
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/iobinary.F90
+END
+do_close_dispose.F90
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/do_close_dispose.F90
+END
+clmtype.F90
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/clmtype.F90
+END
+mpiinc.F90
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/mpiinc.F90
+END
+histFldsMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/main/histFldsMod.F90
+END

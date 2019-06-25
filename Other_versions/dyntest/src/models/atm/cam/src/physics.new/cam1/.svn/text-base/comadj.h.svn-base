@@ -1,0 +1,13 @@
+!
+! $Id$
+! $Author$
+!
+!
+! Convective adjustment
+!
+      common/comadj/ nlvdry
+!
+      integer nlvdry        ! Number of levels to apply dry adjustment
+!
+
+ 

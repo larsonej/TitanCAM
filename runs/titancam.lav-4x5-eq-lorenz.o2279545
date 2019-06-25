@@ -1,0 +1,295 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/mom_priv/jobs/2279545.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/mom_priv/jobs/2279545.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/bin/mpirun
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/mom_priv/jobs/2279545.moab.rc.colorado.edu.SC:  Running on node1466
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/mom_priv/jobs/2279545.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/mom_priv/jobs/2279545.moab.rc.colorado.edu.SC:  Set run to lav-4x5-lorenz
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/mom_priv/jobs/2279545.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/mom_priv/jobs/2279545.moab.rc.colorado.edu.SC:  Set runtype to RESTART
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/mom_priv/jobs/2279545.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/mom_priv/jobs/2279545.moab.rc.colorado.edu.SC:  using cam from /lustre/janus_scratch/larsonej/run/lav-4x5-lorenz ...
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/mom_priv/jobs/2279545.moab.rc.colorado.edu.SC:  using namelist from /lustre/janus_scratch/larsonej/run/lav-4x5-lorenz ...
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/mom_priv/jobs/2279545.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/lav-4x5-lorenz using MPI
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/mom_priv/jobs/2279545.moab.rc.colorado.edu.SC:  Started at Wed Oct 16 17:19:48 MDT 2013
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/mom_priv/jobs/2279545.moab.rc.colorado.edu.SC: Running on nodes ...
+node1466 node1466 node1466 node1466 node1466 node1466 node1466 node1466 node1466 node1466 node1466 node1466 node1403 node1403 node1403 node1403 node1403 node1403 node1403 node1403 node1403 node1403 node1403 node1403 node1405 node1405 node1405 node1405 node1405 node1405 node1405 node1405 node1405 node1405 node1405 node1405 node1407 node1407 node1407 node1407 node1407 node1407 node1407 node1407 node1407 node1407 node1407 node1407 node1408 node1408 node1408 node1408 node1408 node1408 node1408 node1408 node1408 node1408 node1408 node1408 node1418 node1418 node1418 node1418 node1418 node1418 node1418 node1418 node1418 node1418 node1418 node1418 node1424 node1424 node1424 node1424 node1424 node1424 node1424 node1424 node1424 node1424 node1424 node1424 node1436 node1436 node1436 node1436 node1436 node1436 node1436 node1436 node1436 node1436 node1436 node1436 node1445 node1445 node1445 node1445 node1445 node1445 node1445 node1445 node1445 node1445 node1445 node1445 node1446 node1446 node1446 node1446 node1446 node1446 node1446 node1446 node1446 node1446 node1446 node1446 node1447 node1447 node1447 node1447 node1447 node1447 node1447 node1447 node1447 node1447 node1447 node1447 node1470 node1470 node1470 node1470 node1470 node1470 node1470 node1470 node1470 node1470 node1470 node1470 node1471 node1471 node1471 node1471 node1471 node1471 node1471 node1471 node1471 node1471 node1471 node1471 node1472 node1472 node1472 node1472 node1472 node1472 node1472 node1472 node1472 node1472 node1472 node1472 node1473 node1473 node1473 node1473 node1473 node1473 node1473 node1473 node1473 node1473 node1473 node1473 node1475 node1475 node1475 node1475 node1475 node1475 node1475 node1475 node1475 node1475 node1475 node1475 node1476 node1476 node1476 node1476 node1476 node1476 node1476 node1476 node1476 node1476 node1476 node1476 node1477 node1477 node1477 node1477 node1477 node1477 node1477 node1477 node1477 node1477 node1477 node1477 node1479 node1479 node1479 node1479 node1479 node1479 node1479 node1479 node1479 node1479 node1479 node1479 node1401 node1401 node1401 node1401 node1401 node1401 node1401 node1401 node1401 node1401 node1401 node1401
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/mom_priv/jobs/2279545.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    20  240  /curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/aux//2279545.moab.rc.colorado.edu 
+[node1407:07109] [[4418,0],3] ORTED_CMD_PROCESSOR: STUCK IN INFINITE LOOP - ABORTING
+[node1407:07109] *** Process received signal ***
+[node1407:07109] Signal: Aborted (6)
+[node1407:07109] Signal code:  (-6)
+[node1407:07109] [ 0] /lib64/libpthread.so.0(+0xf500) [0x2ae35ca0e500]
+[node1407:07109] [ 1] /lib64/libc.so.6(gsignal+0x35) [0x2ae35cc4e8a5]
+[node1407:07109] [ 2] /lib64/libc.so.6(abort+0x175) [0x2ae35cc50085]
+[node1407:07109] [ 3] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon_cmd_processor+0x242) [0x2ae35ba40f92]
+[node1407:07109] [ 4] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2ae35ba821a7]
+[node1407:07109] [ 5] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2ae35ba68ecc]
+[node1407:07109] [ 6] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_grpcomm_bad.so(+0x1c34) [0x2ae35f5cfc34]
+[node1407:07109] [ 7] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_ess_base_orted_finalize+0x1c) [0x2ae35ba44b8c]
+[node1407:07109] [ 8] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_ess_tm.so(+0x12e4) [0x2ae35e7a12e4]
+[node1407:07109] [ 9] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_finalize+0x49) [0x2ae35ba21139]
+[node1407:07109] [10] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(+0x48b25) [0x2ae35ba40b25]
+[node1407:07109] [11] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2ae35ba821a7]
+[node1407:07109] [12] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2ae35ba68ecc]
+[node1407:07109] [13] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_trigger_event+0x4d) [0x2ae35ba2cd5d]
+[node1407:07109] [14] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2ae35ba821a7]
+[node1407:07109] [15] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon+0xb30) [0x2ae35ba3ffe0]
+[node1407:07109] [16] orted(main+0x84) [0x4012e4]
+[node1407:07109] [17] /lib64/libc.so.6(__libc_start_main+0xfd) [0x2ae35cc3acdd]
+[node1407:07109] [18] orted() [0x401199]
+[node1407:07109] *** End of error message ***
+[node1403:06695] [[4418,0],1] ORTED_CMD_PROCESSOR: STUCK IN INFINITE LOOP - ABORTING
+[node1403:06695] *** Process received signal ***
+[node1403:06695] Signal: Aborted (6)
+[node1403:06695] Signal code:  (-6)
+[node1403:06695] [ 0] /lib64/libpthread.so.0(+0xf500) [0x2b3c69806500]
+[node1403:06695] [ 1] /lib64/libc.so.6(gsignal+0x35) [0x2b3c69a468a5]
+[node1403:06695] [ 2] /lib64/libc.so.6(abort+0x175) [0x2b3c69a48085]
+[node1403:06695] [ 3] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon_cmd_processor+0x242) [0x2b3c68838f92]
+[node1403:06695] [ 4] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b3c6887a1a7]
+[node1403:06695] [ 5] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2b3c68860ecc]
+[node1403:06695] [ 6] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_grpcomm_bad.so(+0x1c34) [0x2b3c6c3c7c34]
+[node1403:06695] [ 7] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_ess_base_orted_finalize+0x1c) [0x2b3c6883cb8c]
+[node1403:06695] [ 8] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_ess_tm.so(+0x12e4) [0x2b3c6b5992e4]
+[node1403:06695] [ 9] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_finalize+0x49) [0x2b3c68819139]
+[node1403:06695] [10] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(+0x48b25) [0x2b3c68838b25]
+[node1403:06695] [11] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b3c6887a1a7]
+[node1403:06695] [12] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2b3c68860ecc]
+[node1403:06695] [13] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_trigger_event+0x4d) [0x2b3c68824d5d]
+[node1403:06695] [14] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b3c6887a1a7]
+[node1403:06695] [15] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon+0xb30) [0x2b3c68837fe0]
+[node1403:06695] [16] orted(main+0x84) [0x4012e4]
+[node1403:06695] [17] /lib64/libc.so.6(__libc_start_main+0xfd) [0x2b3c69a32cdd]
+[node1403:06695] [18] orted() [0x401199]
+[node1403:06695] *** End of error message ***
+[node1424:07107] [[4418,0],6] ORTED_CMD_PROCESSOR: STUCK IN INFINITE LOOP - ABORTING
+[node1424:07107] *** Process received signal ***
+[node1424:07107] Signal: Aborted (6)
+[node1424:07107] Signal code:  (-6)
+[node1424:07107] [ 0] /lib64/libpthread.so.0(+0xf500) [0x2ad711349500]
+[node1424:07107] [ 1] /lib64/libc.so.6(gsignal+0x35) [0x2ad7115898a5]
+[node1424:07107] [ 2] /lib64/libc.so.6(abort+0x175) [0x2ad71158b085]
+[node1424:07107] [ 3] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon_cmd_processor+0x242) [0x2ad71037bf92]
+[node1424:07107] [ 4] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2ad7103bd1a7]
+[node1424:07107] [ 5] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2ad7103a3ecc]
+[node1424:07107] [ 6] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_grpcomm_bad.so(+0x1c34) [0x2ad713f0ac34]
+[node1424:07107] [ 7] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_ess_base_orted_finalize+0x1c) [0x2ad71037fb8c]
+[node1424:07107] [ 8] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_ess_tm.so(+0x12e4) [0x2ad7130dc2e4]
+[node1424:07107] [ 9] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_finalize+0x49) [0x2ad71035c139]
+[node1424:07107] [10] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(+0x48b25) [0x2ad71037bb25]
+[node1424:07107] [11] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2ad7103bd1a7]
+[node1424:07107] [12] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2ad7103a3ecc]
+[node1424:07107] [13] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_trigger_event+0x4d) [0x2ad710367d5d]
+[node1424:07107] [14] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2ad7103bd1a7]
+[node1424:07107] [15] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon+0xb30) [0x2ad71037afe0]
+[node1424:07107] [16] orted(main+0x84) [0x4012e4]
+[node1424:07107] [17] /lib64/libc.so.6(__libc_start_main+0xfd) [0x2ad711575cdd]
+[node1424:07107] [18] orted() [0x401199]
+[node1424:07107] *** End of error message ***
+[node1436:07351] [[4418,0],7] ORTED_CMD_PROCESSOR: STUCK IN INFINITE LOOP - ABORTING
+[node1436:07351] *** Process received signal ***
+[node1436:07351] Signal: Aborted (6)
+[node1436:07351] Signal code:  (-6)
+[node1436:07351] [ 0] /lib64/libpthread.so.0(+0xf500) [0x2aede6cc7500]
+[node1436:07351] [ 1] /lib64/libc.so.6(gsignal+0x35) [0x2aede6f078a5]
+[node1436:07351] [ 2] /lib64/libc.so.6(abort+0x175) [0x2aede6f09085]
+[node1436:07351] [ 3] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon_cmd_processor+0x242) [0x2aede5cf9f92]
+[node1436:07351] [ 4] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2aede5d3b1a7]
+[node1436:07351] [ 5] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2aede5d21ecc]
+[node1436:07351] [ 6] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_rml_oob.so(orte_rml_oob_send+0x2bf) [0x2aede926c16f]
+[node1436:07351] [ 7] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_rml_oob.so(orte_rml_oob_send_buffer+0x85) [0x2aede926be75]
+[node1436:07351] [ 8] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_grpcomm_bad.so(+0x1cc4) [0x2aede9888cc4]
+[node1436:07351] [ 9] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_ess_base_orted_finalize+0x1c) [0x2aede5cfdb8c]
+[node1436:07351] [10] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_ess_tm.so(+0x12e4) [0x2aede8a5a2e4]
+[node1436:07351] [11] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_finalize+0x49) [0x2aede5cda139]
+[node1436:07351] [12] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(+0x48b25) [0x2aede5cf9b25]
+[node1436:07351] [13] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2aede5d3b1a7]
+[node1436:07351] [14] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2aede5d21ecc]
+[node1436:07351] [15] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_trigger_event+0x4d) [0x2aede5ce5d5d]
+[node1436:07351] [16] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2aede5d3b1a7]
+[node1436:07351] [17] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon+0xb30) [0x2aede5cf8fe0]
+[node1436:07351] [18] orted(main+0x84) [0x4012e4]
+[node1436:07351] [19] /lib64/libc.so.6(__libc_start_main+0xfd) [0x2aede6ef3cdd]
+[node1436:07351] [20] orted() [0x401199]
+[node1436:07351] *** End of error message ***
+[node1405:07520] [[4418,0],2] ORTED_CMD_PROCESSOR: STUCK IN INFINITE LOOP - ABORTING
+[node1405:07520] *** Process received signal ***
+[node1405:07520] Signal: Aborted (6)
+[node1405:07520] Signal code:  (-6)
+[node1405:07520] [ 0] /lib64/libpthread.so.0(+0xf500) [0x2b1dae0c2500]
+[node1405:07520] [ 1] /lib64/libc.so.6(gsignal+0x35) [0x2b1dae3028a5]
+[node1405:07520] [ 2] /lib64/libc.so.6(abort+0x175) [0x2b1dae304085]
+[node1405:07520] [ 3] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon_cmd_processor+0x242) [0x2b1dad0f4f92]
+[node1405:07520] [ 4] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b1dad1361a7]
+[node1405:07520] [ 5] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2b1dad11cecc]
+[node1405:07520] [ 6] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_grpcomm_bad.so(+0x1c34) [0x2b1db0c83c34]
+[node1405:07520] [ 7] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_ess_base_orted_finalize+0x1c) [0x2b1dad0f8b8c]
+[node1405:07520] [ 8] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_ess_tm.so(+0x12e4) [0x2b1dafe552e4]
+[node1405:07520] [ 9] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_finalize+0x49) [0x2b1dad0d5139]
+[node1405:07520] [10] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(+0x48b25) [0x2b1dad0f4b25]
+[node1405:07520] [11] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b1dad1361a7]
+[node1405:07520] [12] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2b1dad11cecc]
+[node1405:07520] [13] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_trigger_event+0x4d) [0x2b1dad0e0d5d]
+[node1405:07520] [14] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b1dad1361a7]
+[node1405:07520] [15] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon+0xb30) [0x2b1dad0f3fe0]
+[node1405:07520] [16] orted(main+0x84) [0x4012e4]
+[node1405:07520] [17] /lib64/libc.so.6(__libc_start_main+0xfd) [0x2b1dae2eecdd]
+[node1405:07520] [18] orted() [0x401199]
+[node1405:07520] *** End of error message ***
+[node1477:07340] [[4418,0],17] ORTED_CMD_PROCESSOR: STUCK IN INFINITE LOOP - ABORTING
+[node1477:07340] *** Process received signal ***
+[node1477:07340] Signal: Aborted (6)
+[node1477:07340] Signal code:  (-6)
+[node1477:07340] [ 0] /lib64/libpthread.so.0(+0xf500) [0x2ad66e26a500]
+[node1477:07340] [ 1] /lib64/libc.so.6(gsignal+0x35) [0x2ad66e4aa8a5]
+[node1477:07340] [ 2] /lib64/libc.so.6(abort+0x175) [0x2ad66e4ac085]
+[node1477:07340] [ 3] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon_cmd_processor+0x242) [0x2ad66d29cf92]
+[node1477:07340] [ 4] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2ad66d2de1a7]
+[node1477:07340] [ 5] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2ad66d2c4ecc]
+[node1477:07340] [ 6] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_rml_oob.so(orte_rml_oob_send+0x2bf) [0x2ad67080f16f]
+[node1477:07340] [ 7] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_rml_oob.so(orte_rml_oob_send_buffer+0x85) [0x2ad67080ee75]
+[node1477:07340] [ 8] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_grpcomm_bad.so(+0x1cc4) [0x2ad670e2bcc4]
+[node1477:07340] [ 9] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_ess_base_orted_finalize+0x1c) [0x2ad66d2a0b8c]
+[node1477:07340] [10] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_ess_tm.so(+0x12e4) [0x2ad66fffd2e4]
+[node1477:07340] [11] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_finalize+0x49) [0x2ad66d27d139]
+[node1477:07340] [12] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(+0x48b25) [0x2ad66d29cb25]
+[node1477:07340] [13] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2ad66d2de1a7]
+[node1477:07340] [14] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2ad66d2c4ecc]
+[node1477:07340] [15] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_trigger_event+0x4d) [0x2ad66d288d5d]
+[node1477:07340] [16] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2ad66d2de1a7]
+[node1477:07340] [17] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon+0xb30) [0x2ad66d29bfe0]
+[node1477:07340] [18] orted(main+0x84) [0x4012e4]
+[node1477:07340] [19] /lib64/libc.so.6(__libc_start_main+0xfd) [0x2ad66e496cdd]
+[node1477:07340] [20] orted() [0x401199]
+[node1477:07340] *** End of error message ***
+[node1418:07356] [[4418,0],5] ORTED_CMD_PROCESSOR: STUCK IN INFINITE LOOP - ABORTING
+[node1418:07356] *** Process received signal ***
+[node1418:07356] Signal: Aborted (6)
+[node1418:07356] Signal code:  (-6)
+[node1418:07356] [ 0] /lib64/libpthread.so.0(+0xf500) [0x2b76b8198500]
+[node1418:07356] [ 1] /lib64/libc.so.6(gsignal+0x35) [0x2b76b83d88a5]
+[node1418:07356] [ 2] /lib64/libc.so.6(abort+0x175) [0x2b76b83da085]
+[node1418:07356] [ 3] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon_cmd_processor+0x242) [0x2b76b71caf92]
+[node1418:07356] [ 4] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b76b720c1a7]
+[node1418:07356] [ 5] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2b76b71f2ecc]
+[node1418:07356] [ 6] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_grpcomm_bad.so(+0x1c34) [0x2b76bad59c34]
+[node1418:07356] [ 7] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_ess_base_orted_finalize+0x1c) [0x2b76b71ceb8c]
+[node1418:07356] [ 8] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_ess_tm.so(+0x12e4) [0x2b76b9f2b2e4]
+[node1418:07356] [ 9] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_finalize+0x49) [0x2b76b71ab139]
+[node1418:07356] [10] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(+0x48b25) [0x2b76b71cab25]
+[node1418:07356] [11] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b76b720c1a7]
+[node1418:07356] [12] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2b76b71f2ecc]
+[node1418:07356] [13] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_trigger_event+0x4d) [0x2b76b71b6d5d]
+[node1418:07356] [14] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b76b720c1a7]
+[node1418:07356] [15] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon+0xb30) [0x2b76b71c9fe0]
+[node1418:07356] [16] orted(main+0x84) [0x4012e4]
+[node1418:07356] [17] /lib64/libc.so.6(__libc_start_main+0xfd) [0x2b76b83c4cdd]
+[node1418:07356] [18] orted() [0x401199]
+[node1418:07356] *** End of error message ***
+[node1446:07347] [[4418,0],9] ORTED_CMD_PROCESSOR: STUCK IN INFINITE LOOP - ABORTING
+[node1446:07347] *** Process received signal ***
+[node1446:07347] Signal: Aborted (6)
+[node1446:07347] Signal code:  (-6)
+[node1446:07347] [ 0] /lib64/libpthread.so.0(+0xf500) [0x2b1fd8a0d500]
+[node1446:07347] [ 1] /lib64/libc.so.6(gsignal+0x35) [0x2b1fd8c4d8a5]
+[node1446:07347] [ 2] /lib64/libc.so.6(abort+0x175) [0x2b1fd8c4f085]
+[node1446:07347] [ 3] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon_cmd_processor+0x242) [0x2b1fd7a3ff92]
+[node1446:07347] [ 4] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b1fd7a811a7]
+[node1446:07347] [ 5] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2b1fd7a67ecc]
+[node1446:07347] [ 6] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_rml_oob.so(orte_rml_oob_send+0x2bf) [0x2b1fdafb216f]
+[node1446:07347] [ 7] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_rml_oob.so(orte_rml_oob_send_buffer+0x85) [0x2b1fdafb1e75]
+[node1446:07347] [ 8] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_grpcomm_bad.so(+0x1cc4) [0x2b1fdb5cecc4]
+[node1446:07347] [ 9] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_ess_base_orted_finalize+0x1c) [0x2b1fd7a43b8c]
+[node1446:07347] [10] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_ess_tm.so(+0x12e4) [0x2b1fda7a02e4]
+[node1446:07347] [11] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_finalize+0x49) [0x2b1fd7a20139]
+[node1446:07347] [12] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(+0x48b25) [0x2b1fd7a3fb25]
+[node1446:07347] [13] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b1fd7a811a7]
+[node1446:07347] [14] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2b1fd7a67ecc]
+[node1446:07347] [15] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_trigger_event+0x4d) [0x2b1fd7a2bd5d]
+[node1446:07347] [16] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b1fd7a811a7]
+[node1446:07347] [17] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon+0xb30) [0x2b1fd7a3efe0]
+[node1446:07347] [18] orted(main+0x84) [0x4012e4]
+[node1446:07347] [19] /lib64/libc.so.6(__libc_start_main+0xfd) [0x2b1fd8c39cdd]
+[node1446:07347] [20] orted() [0x401199]
+[node1446:07347] *** End of error message ***
+[node1472:07340] [[4418,0],13] ORTED_CMD_PROCESSOR: STUCK IN INFINITE LOOP - ABORTING
+[node1472:07340] *** Process received signal ***
+[node1472:07340] Signal: Aborted (6)
+[node1472:07340] Signal code:  (-6)
+[node1472:07340] [ 0] /lib64/libpthread.so.0(+0xf500) [0x2b1d869f4500]
+[node1472:07340] [ 1] /lib64/libc.so.6(gsignal+0x35) [0x2b1d86c348a5]
+[node1472:07340] [ 2] /lib64/libc.so.6(abort+0x175) [0x2b1d86c36085]
+[node1472:07340] [ 3] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon_cmd_processor+0x242) [0x2b1d85a26f92]
+[node1472:07340] [ 4] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b1d85a681a7]
+[node1472:07340] [ 5] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2b1d85a4eecc]
+[node1472:07340] [ 6] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_rml_oob.so(orte_rml_oob_send+0x2bf) [0x2b1d88f9916f]
+[node1472:07340] [ 7] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_rml_oob.so(orte_rml_oob_send_buffer+0x85) [0x2b1d88f98e75]
+[node1472:07340] [ 8] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_grpcomm_bad.so(+0x1cc4) [0x2b1d895b5cc4]
+[node1472:07340] [ 9] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_ess_base_orted_finalize+0x1c) [0x2b1d85a2ab8c]
+[node1472:07340] [10] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_ess_tm.so(+0x12e4) [0x2b1d887872e4]
+[node1472:07340] [11] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_finalize+0x49) [0x2b1d85a07139]
+[node1472:07340] [12] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(+0x48b25) [0x2b1d85a26b25]
+[node1472:07340] [13] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b1d85a681a7]
+[node1472:07340] [14] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2b1d85a4eecc]
+[node1472:07340] [15] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_trigger_event+0x4d) [0x2b1d85a12d5d]
+[node1472:07340] [16] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b1d85a681a7]
+[node1472:07340] [17] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon+0xb30) [0x2b1d85a25fe0]
+[node1472:07340] [18] orted(main+0x84) [0x4012e4]
+[node1472:07340] [19] /lib64/libc.so.6(__libc_start_main+0xfd) [0x2b1d86c20cdd]
+[node1472:07340] [20] orted() [0x401199]
+[node1472:07340] *** End of error message ***
+[node1479:07337] [[4418,0],18] ORTED_CMD_PROCESSOR: STUCK IN INFINITE LOOP - ABORTING
+[node1479:07337] *** Process received signal ***
+[node1479:07337] Signal: Aborted (6)
+[node1479:07337] Signal code:  (-6)
+[node1479:07337] [ 0] /lib64/libpthread.so.0(+0xf500) [0x2b5252baa500]
+[node1479:07337] [ 1] /lib64/libc.so.6(gsignal+0x35) [0x2b5252dea8a5]
+[node1479:07337] [ 2] /lib64/libc.so.6(abort+0x175) [0x2b5252dec085]
+[node1479:07337] [ 3] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon_cmd_processor+0x242) [0x2b5251bdcf92]
+[node1479:07337] [ 4] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b5251c1e1a7]
+[node1479:07337] [ 5] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2b5251c04ecc]
+[node1479:07337] [ 6] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_rml_oob.so(orte_rml_oob_send+0x2bf) [0x2b525514f16f]
+[node1479:07337] [ 7] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_rml_oob.so(orte_rml_oob_send_buffer+0x85) [0x2b525514ee75]
+[node1479:07337] [ 8] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_grpcomm_bad.so(+0x1cc4) [0x2b525576bcc4]
+[node1479:07337] [ 9] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_ess_base_orted_finalize+0x1c) [0x2b5251be0b8c]
+[node1479:07337] [10] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_ess_tm.so(+0x12e4) [0x2b525493d2e4]
+[node1479:07337] [11] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_finalize+0x49) [0x2b5251bbd139]
+[node1479:07337] [12] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(+0x48b25) [0x2b5251bdcb25]
+[node1479:07337] [13] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b5251c1e1a7]
+[node1479:07337] [14] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2b5251c04ecc]
+[node1479:07337] [15] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_trigger_event+0x4d) [0x2b5251bc8d5d]
+[node1479:07337] [16] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b5251c1e1a7]
+[node1479:07337] [17] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon+0xb30) [0x2b5251bdbfe0]
+[node1479:07337] [18] orted(main+0x84) [0x4012e4]
+[node1479:07337] [19] /lib64/libc.so.6(__libc_start_main+0xfd) [0x2b5252dd6cdd]
+[node1479:07337] [20] orted() [0x401199]
+[node1479:07337] *** End of error message ***
+[node1473:07336] [[4418,0],14] ORTED_CMD_PROCESSOR: STUCK IN INFINITE LOOP - ABORTING
+[node1473:07336] *** Process received signal ***
+[node1473:07336] Signal: Aborted (6)
+[node1473:07336] Signal code:  (-6)
+[node1473:07336] [ 0] /lib64/libpthread.so.0(+0xf500) [0x2b5f2ced6500]
+[node1473:07336] [ 1] /lib64/libc.so.6(gsignal+0x35) [0x2b5f2d1168a5]
+[node1473:07336] [ 2] /lib64/libc.so.6(abort+0x175) [0x2b5f2d118085]
+[node1473:07336] [ 3] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon_cmd_processor+0x242) [0x2b5f2bf08f92]
+[node1473:07336] [ 4] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b5f2bf4a1a7]
+[node1473:07336] [ 5] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2b5f2bf30ecc]
+[node1473:07336] [ 6] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_rml_oob.so(orte_rml_oob_send+0x2bf) [0x2b5f2f47b16f]
+[node1473:07336] [ 7] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_rml_oob.so(orte_rml_oob_send_buffer+0x85) [0x2b5f2f47ae75]
+[node1473:07336] [ 8] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_grpcomm_bad.so(+0x1cc4) [0x2b5f2fa97cc4]
+[node1473:07336] [ 9] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_ess_base_orted_finalize+0x1c) [0x2b5f2bf0cb8c]
+[node1473:07336] [10] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/openmpi/mca_ess_tm.so(+0x12e4) [0x2b5f2ec692e4]
+[node1473:07336] [11] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_finalize+0x49) [0x2b5f2bee9139]
+[node1473:07336] [12] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(+0x48b25) [0x2b5f2bf08b25]
+[node1473:07336] [13] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b5f2bf4a1a7]
+[node1473:07336] [14] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_progress+0x5c) [0x2b5f2bf30ecc]
+[node1473:07336] [15] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_trigger_event+0x4d) [0x2b5f2bef4d5d]
+[node1473:07336] [16] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(opal_event_base_loop+0x307) [0x2b5f2bf4a1a7]
+[node1473:07336] [17] /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/lib/libopen-rte.so.4(orte_daemon+0xb30) [0x2b5f2bf07fe0]
+[node1473:07336] [18] orted(main+0x84) [0x4012e4]
+[node1473:07336] [19] /lib64/libc.so.6(__libc_start_main+0xfd) [0x2b5f2d102cdd]
+[node1473:07336] [20] orted() [0x401199]
+[node1473:07336] *** End of error message ***
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1466/mom_priv/jobs/2279545.moab.rc.colorado.edu.SC:  CAM run failed

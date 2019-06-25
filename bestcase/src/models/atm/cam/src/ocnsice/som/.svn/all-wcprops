@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/som
+END
+albocean.F90
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/som/albocean.F90
+END
+somoce.F90
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/som/somoce.F90
+END
+print_coverage.F90
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/som/print_coverage.F90
+END
+mixed_layer_globalcalcs.F90
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/som/mixed_layer_globalcalcs.F90
+END
+somint.F90
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/som/somint.F90
+END
+parpbl.h
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/som/parpbl.h
+END
+ocn_srf.F90
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/som/ocn_srf.F90
+END
+somini.F90
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/som/somini.F90
+END
+ocean_data.F90
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/som/ocean_data.F90
+END
+flxoce.F90
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/src/ocnsice/som/flxoce.F90
+END

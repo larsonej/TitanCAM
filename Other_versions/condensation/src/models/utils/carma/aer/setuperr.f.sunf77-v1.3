@@ -1,0 +1,126 @@
+      subroutine setuperr
+c
+c
+c  @(#) setuperr.f.sunos  McKie  Nov-1995
+c  This routine is called to set up ieee floating point error exception
+c  handling on SunOS 4.1.x, when a debugger utility such as Sun's
+c  dbxtool is being used to help debug the code.
+c
+c
+c  Declare & define the name of error type(s) to be trapped
+c   (Comment all but one of the following parameter statements)
+c
+      character*(*) ERRTYPE
+c
+c     parameter( ERRTYPE='division' )   ! divide by 0.
+c     parameter( ERRTYPE='overflow' )   ! magnitude too large
+c     parameter( ERRTYPE='invalid' )    ! bad function arg, e.g. sqrt(-2.5)
+c     parameter( ERRTYPE='underflow' )  ! magnitude too small
+c     parameter( ERRTYPE='inexact' )    ! results rounded
+      parameter( ERRTYPE='common' )     ! division or overflow or invalid
+c     parameter( ERRTYPE='all' )        ! all error types
+c
+c
+c  Declare name of do-nothing ieee error handler routine
+c
+      external handler
+c
+c
+c  Tell system to trap type(s) of exceptions given by ERRTYPE
+c 
+      call ieee_handler('set', ERRTYPE, handler)
+      call ieee_retrospective
+c
+c
+c  Return to caller with ieee error exception handling set up
+c
+      return
+      end
+c
+c
+c-----------------------------------------------------------------------------
+c
+c
+      subroutine handler(i1,i2,i3,i4)
+c
+c
+c  @(#) handler.f  McKie  Nov-1995
+c  This routine is the ieee floating point error exception handler. It is
+c  called whenever the error type(s) given by the "call ieee_handler"
+c  occur.  This routine does not do anything, but is needed in order
+c  for the Sun debugger to catch and stop at floating point exceptions.
+c
+c
+c  Return with nothing done
+c
+      return
+      end
+c
+c
+c-----------------------------------------------------------------------------
+c
+c
+      subroutine ieee_retrospective
+c
+c
+c  @(#) ieee_retrospective.f  McKie Feb-1991
+c  This routine takes the place of the system ieee floating point
+c  uncleared exception reporting routine.  It reports only the
+c  serious (so-called "common") ieee floating point exceptions
+c  which have not been cleared.  This routine can be called explicitly
+c  at any time by the user program, or is called implicitly at the
+c  end of a normal fortran program by the fortran run-time system. 
+c
+c  This version is for Sun SunOS 4.1, SunFORTRAN v1.4
+c
+c  Define sun4 ieee fl pt exception bits  (See /usr/include/sys/ieeefp.h)
+c
+      parameter(IINEXACT=1)
+      parameter(IDIVISION=2)
+      parameter(IUNDERFLOW=4)
+      parameter(IOVERFLOW=8)
+      parameter(IINVALID=16)
+c
+c
+c  Declare local storage
+c
+      character*(16) out
+c
+c
+c  Define formats
+c
+    1 format(a)
+    2 format(a,$)
+c
+c
+c  Get bit pattern showing which ieee fl pt exceptions are uncleared
+c
+      ibits = ieee_flags('get','exception','all',out)
+c
+c
+c  Define bit mask for serious ieee fl pt exceptions
+c
+      mask = IDIVISION + IOVERFLOW + IINVALID
+c
+c
+c  List serious exceptions which are uncleared
+c
+      if( and(ibits,mask) .ne. 0 )then
+       write(*,1) ' '
+       write(*,1) 'Uncleared serious ieee fl pt exceptions:'
+       if( and(ibits,IDIVISION) .ne. 0 ) write(*,2) ' Divide by zero; '
+       if( and(ibits,IOVERFLOW) .ne. 0 ) write(*,2) ' Overflow; '
+       if( and(ibits,IINEXACT) .ne. 0 ) write(*,2) ' Inexact; '
+       write(*,1) ' '
+      endif
+c
+c
+c  Clear all exception flags
+c
+      ibits = ieee_flags('clear','exception','all',out)
+c
+c
+c  Return to caller with retrospective complete 
+c
+      return
+      end

@@ -1,0 +1,18 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/nodes/node0334/mom_priv/jobs/1863435.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/nodes/node0334/mom_priv/jobs/1863435.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/nodes/node0334/mom_priv/jobs/1863435.moab.rc.colorado.edu.SC:  Running on node0334
+/curc/torque/nodes/node0334/mom_priv/jobs/1863435.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/nodes/node0334/mom_priv/jobs/1863435.moab.rc.colorado.edu.SC:  Set run to cond
+/curc/torque/nodes/node0334/mom_priv/jobs/1863435.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/nodes/node0334/mom_priv/jobs/1863435.moab.rc.colorado.edu.SC:  Set runtype to INITIAL
+/curc/torque/nodes/node0334/mom_priv/jobs/1863435.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/nodes/node0334/mom_priv/jobs/1863435.moab.rc.colorado.edu.SC:  copying cam from /projects/larsonej/titancam/build_cond ...
+/curc/torque/nodes/node0334/mom_priv/jobs/1863435.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/cond using MPI
+/curc/torque/nodes/node0334/mom_priv/jobs/1863435.moab.rc.colorado.edu.SC:  Started at Tue Apr  9 16:35:58 MDT 2013
+/curc/torque/nodes/node0334/mom_priv/jobs/1863435.moab.rc.colorado.edu.SC: Running on nodes ...
+node0334 node0334 node0334 node0334 node0334 node0334 node0334 node0334 node0334 node0334 node0334 node0334 node0333 node0333 node0333 node0333 node0333 node0333 node0333 node0333 node0333 node0333 node0333 node0333 node0756 node0756 node0756 node0756 node0756 node0756 node0756 node0756 node0756 node0756 node0756 node0756 node0753 node0753 node0753 node0753 node0753 node0753 node0753 node0753 node0753 node0753 node0753 node0753
+/curc/torque/nodes/node0334/mom_priv/jobs/1863435.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    4  48  /curc/torque/nodes/node0334/aux//1863435.moab.rc.colorado.edu 
+/curc/torque/nodes/node0334/mom_priv/jobs/1863435.moab.rc.colorado.edu.SC:  CAM run failed

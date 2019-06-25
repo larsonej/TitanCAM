@@ -1,0 +1,193 @@
+#! /bin/csh -vf
+#
+# This is a first cut at a script that will test scam to make sure it is 
+# bit for bit with cam.
+# Run this script from the scam directory
+# TDIFF and QDIFF values output at the end of this script should all be 0
+# Right now this script runs cam at t42 there is no real reason why it
+# cant be run at t5 - you will just need to pick some lat,lon other than 95,46
+# appropriate to the resolution you are validating
+# make sure the following environment variables are set correctly
+
+setenv QTDIR /usr/lib/qt-3.1
+setenv PGI /usr/local/pgi-hpf-cc-5.1-6
+setenv CSMDATA /fs/cgd/csm/inputdata
+setenv PATH ${PGI}/linux86/bin:${PATH}
+
+#
+# Build cam 
+#
+
+mkdir cam.obj
+cd cam.obj
+
+
+# Create scam inputfile for build-namelist
+
+cat >! namelist.scam << EOF
+&camexp
+ caseid         = 'camrun'
+ NDENS    = 1,1
+ MFILT    = 1,10
+ nhtfrq   = 0,1
+ nelapse                = 6
+ nsrest         = 0
+ fincl2='Ps','u','v','t','q','omega','phis','Prec','lhflx','shflx',
+        'Tsair','Tg','divq3d','divT3d','dcldice','dcldliq','beta',
+        'fixmas','afixq','afixcldl','afixcldi','dqfxq','dqfxcldl',
+        'dqfxcldi','CLAT'
+ mss_irt = 0
+/
+EOF
+
+##configure cam - set BFB_CAM_SCAM_IOP to output SCAM IOP history file
+
+../../../bld/configure -debug -cppdefs '-DBFB_CAM_SCAM_IOP'
+
+##build namelist for cam - output fields needed for scam in fincl2
+
+../../../bld/build-namelist -infile namelist.scam
+
+# make cam
+
+gmake realclean
+gmake  || echo "can build cam" && exit 1
+./cam < namelist  || echo "can not execute cam" && exit 1
+
+set scam_iopdata='camrun.cam2.h1.0000-09-01-00000_lat_46_lon95.nc'
+set ncdata=`grep "\bncdata\b" namelist | awk '{print $3}'| sed "s/'//g"`
+set scam_ncdata=$ncdata:t
+set ozone=`grep "\bbndtvo\b" namelist | awk '{print $3}'| sed "s/'//g"`
+set lsmini=`grep "\bfinidat\b" namelist | awk '{print $3}'| sed "s/'//g"`
+set absems=`grep "\babsems_data\b" namelist | awk '{print $3}'| sed "s/'//g"`
+set aeroptics=`grep "\baeroptics\b" namelist | awk '{print $3}'| sed "s/'//g"`
+set aermas=`grep "\bbndtvaer\b" namelist | awk '{print $3}'| sed "s/'//g"`
+set lsmsrf=`grep "\bfsurdat\b" namelist | awk '{print $3}'| sed "s/'//g"`
+set lsmpft=`grep "\bfpftcon\b" namelist | awk '{print $3}'| sed "s/'//g"`
+set sst=`grep "\bbndtvs\b" namelist | awk '{print $3}'| sed "s/'//g"`
+set aermas=`grep "\bbndtvaer\b" namelist | awk '{print $3}'| sed "s/'//g"`
+
+# create cam iop data from history tape and copy it to scam directory
+# just use ncks to strip out one column for scam
+
+ncks -O -d lat,45 -d lon,94 camrun.cam2.h1.0000-09-01-00000.nc $scam_iopdata
+cp $scam_iopdata ..
+
+# create scam gui - added batch mode to check data
+
+cd ../ui
+configure -batch
+gmake || echo "cant build scam gui" && exit 1
+
+# create scam executabe
+
+cd ..
+configure -batch
+gmake || echo "cant build scam executable" && exit 1
+
+
+# create initial data for scam using CAM dataset (add OMEGA to CAM NCDATA)
+
+rm -f $scam_ncdata
+cp $ncdata .
+chmod 644 $scam_ncdata
+ncks -A -vomega -d time,0 obj.cam/camrun.cam2.h1.0000-09-01-00000.nc $scam_ncdata
+
+# above command overwrites dimensions so we will replace them with the originals
+
+ncks -A -vlon $ncdata $scam_ncdata
+
+# since previous command overwrites the global dimensions 
+# we need to put back the original lat and lon dimensions
+
+ncks -A -vlon -d time,0 $ncdata $scam_ncdata
+ncrename -vomega,OMEGA $scam_ncdata
+
+# create a scam pressure file from iop dataset
+
+ncks -O -vlon,lat,lev,ilev,gw,hyam,hybm,hyai,hybi $scam_iopdata press26.nc
+
+
+#setup scam quickstart file
+
+cat >! quickstart.scm << EOF
+# SCAM Defaults File #
+runtype="2"
+basedate="901"
+basesecs="0"
+iopstartoffset="0"
+globaldatadir="./"
+iopdatadir="./"
+boundarydatadir="./"
+userdatadir="./userdata/"
+histfile="hist.nc"
+lat="37.673090"
+lon="-95.625"
+steplen="1200"
+endstep="6"
+savefreq="1"
+timedisplayformat="0"
+showsettings="0"
+analysisfile="$scam_ncdata"
+modelfile="$scam_ncdata"
+userfile=""
+iopfile="$scam_iopdata"
+lsminifile="$lsmini"
+ozonfile="$ozone"
+pressfile="press26.nc"
+absemsfile="$absems"
+aeropticsfile="$aeroptics"
+aermassfile="$aermas"
+lsmsurffile="$lsmsrf"
+lsmpftfile="$lsmpft"
+sstfile="$sst"
+sicfile=""
+savefields="QDIFF TDIFF "
+switch_desc1="Logical Switch 1"
+switch1="0"
+switch_desc2="Logical Switch 2"
+switch2="0"
+switch_desc3="Logical Switch 3"
+switch3="0"
+switch_desc4="Logical Switch 4"
+switch4="0"
+switch_desc5="Logical Switch 5"
+switch5="0"
+switch_desc6="Logical Switch 6"
+switch6="0"
+switch_desc7="Logical Switch 7"
+switch7="0"
+switch_desc8="Logical Switch 8"
+switch8="0"
+switch_desc9="Logical Switch 9"
+switch9="0"
+switch_desc10="Logical Switch 10"
+switch10="0"
+switch_desc11="Logical Switch 11"
+switch11="0"
+switch_desc12="Logical Switch 12"
+switch12="0"
+switch_desc13="Use surface props"
+switch13="0"
+switch_desc14="Use relaxation"
+switch14="0"
+switch_desc15="Use 3D forcing"
+switch15="0"
+switch_desc16="Perturb Initial Conditions"
+switch16="0"
+switch_desc17="Perturb Forcing"
+switch17="0"
+switch_desc18="Fix CAM div3d Forcing"
+switch18="0"
+switch_desc19="Use Diurnal Averaging"
+switch19="0"
+EOF
+
+# run scam using quickstart
+rm userdata/scam_*nc
+scam -ng -o scam_ quickstart.scm
+
+ncdump -ff -v QDIFF,TDIFF userdata/scam_*nc
+
+##clean up
+rm -rf quickstart.scm press26.nc cami* camrun.cam2.h1* userdata/scam_*nc cam.obj

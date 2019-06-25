@@ -1,0 +1,13 @@
+    aer/initrad
+     -setuprad
+       -dmiess
+       -plnk
+
+    aer/initnew,postep
+     -radtran
+       -oppr
+       -oppr1
+         -gather
+       -twostr
+       -add
+       -newflux1

@@ -1,0 +1,167 @@
+6c6
+< c  This routine evaluates particle fall velocities, vf(k,i,j) [cm s^-1]
+---
+> c  This routine evaluates particle fall velocities, vf(k) [cm s^-1]
+45d44
+<     5 format(e10.4)
+58c57
+<       do j = 1, ngroups
+---
+>       do j = 1,NGROUP
+117c116
+< c  Loop over vertical layers.
+---
+> c  Loop over column with ixy = 1
+118a118
+>         ixy = 1
+120a121,125
+> c  This is <rhoa> in cartesian coordinates.
+> c
+>           rhoa_cgs = rhoa2(ixy,k) /
+>      $               (xmet2(ixy,k)*ymet2(ixy,k)*zmet2(ixy,k))
+> c
+123c128
+<           vg = sqrt(8./PI * R_AIR*t(1,1,k))
+---
+>           vg = sqrt(8./PI * R_AIR*t2(ixy,k))
+127c132
+<           rmfp = 2.*rmu(k) / (rhoa(1,1,k)*vg)
+---
+>           rmfp = 2.*rmu(k) / (rhoa_cgs*vg)
+131c136
+<           do i = 1, nbins
+---
+>           do i = 1,NBIN
+164c169
+<             vf(k,i,j) = (ONE*2./9.)*rhop(1,1,k,i,j)*(r(i,j)**2)
+---
+>             vf(k,i,j) = (ONE*2./9.)*rhop2(ixy,k,i,j)*(r(i,j)**2)
+167,168c172,173
+<             re(k,i,j) = 2.*rhoa(1,1,k)*r_shape*vf(k,i,j)/rmu(k)
+< 
+---
+>             re(k,i,j) = 2. * rhoa_cgs * r_shape *
+>      $                  vf(k,i,j)/rmu(k)
+173c178,179
+<             rfix = vol(i,j)*rhop(1,1,k,i,j)*GRAV*rhoa(1,1,k)/rmu(k)**2
+---
+>             rfix = vol(i,j) * rhop2(ixy,k,i,j) * GRAV *
+>      $             rhoa_cgs / rmu(k)**2
+253c259,260
+<               vf(k,i,j) = re(k,i,j)*rmu(k)/(2.*r_shape*rhoa(1,1,k))
+---
+>               vf(k,i,j) = re(k,i,j) * rmu(k) /
+>      $                    (2.*r_shape*rhoa_cgs)
+261,262c268,269
+<               z  = ((1.e6*rhoa(1,1,k)**2)
+<      $           /  (GRAV*rhop(1,1,k,i,j)*rmu(k)**4))**(ONE/6.)
+---
+>               z  = ((1.e6*rhoa_cgs**2)
+>      $           /  (GRAV*rhop2(ixy,k,i,j)*rmu(k)**4))**(ONE/6.)
+272c279,280
+<               vf(k,i,j) = re(k,i,j)*rmu(k)/(2.*r(i,j)*rhoa(1,1,k))
+---
+>               vf(k,i,j) = re(k,i,j) * rmu(k) /
+>      $                         ( 2. * r(i,j) * rhoa_cgs )
+283c291
+<           enddo    ! <i=1,nbins>
+---
+>           enddo    ! <i=1,NBIN>
+287,288c295
+<         do i = 1,nbins
+< 
+---
+>         do i = 1,NBIN
+289a297
+>           if( NZ .gt. 1 )then
+291c299
+< 
+---
+>           endif
+294c302
+<       enddo        ! <j=1,ngroups>
+---
+>       enddo        ! <j=1,NGROUP>
+300,302c308,310
+<         do j = 1, ngroups
+<           do k = 1, nz+1
+<             do i = 1, nbins
+---
+>         do j = 1,NGROUP
+>           do i = 1,NBIN
+>             do k = 1,NZP1
+316c324
+<       do j = 1, ngroups
+---
+>       do j = 1,NGROUP
+320c328
+<         do i = 1, nbins
+---
+>         do i = 1,NBIN
+326,327c334,336
+< c  Write fall velocities as a function of altitude with constant size and
+< c  group for graphing
+---
+> c  Scale cartesian fallspeeds to the appropriate vertical coordinate system.
+> c  Non--cartesion coordinates are assumed to be positive downward, but
+> c  vertical velocities in this model are always assumed to be positive upward. 
+329,331c338,374
+< c     do k = 1,nz
+< c       write(LUNOTEMP,5) vf(k,28,1)
+< c     enddo
+---
+>       if( igridv .ne. I_CART )then
+> 
+>          do k=1,NZP1
+> 
+>           if( k .eq. 1 )then
+>            k1 = 1
+>            k2 = min( NZ, 2 )
+>           else if( k .eq. NZP1 )then
+>            k1 = NZ
+>            k2 = NZ
+>           else
+>            k1 = min( NZ, max( 1, k - 1 ) )
+>            k2 = k
+>           endif
+> 
+>           a_mid_k1 = zc2(ixy,k1)
+>           a_mid_k2 = zc2(ixy,k2)
+> 
+>           if(  a_mid_k2 .ne. a_mid_k1 )then
+>             frac = ( zl2(ixy,k) - a_mid_k1 ) / ( a_mid_k2 - a_mid_k1 )
+>           else
+>             frac = 0.
+>           endif
+> 
+>           zmet_k1 = zmet2(1,k1)
+>           zmet_k2 = zmet2(1,k2)
+>           zmet_k = zmet_k1 + frac * ( zmet_k2 - zmet_k1 )
+> 
+>           do ig = 1,NGROUP
+>             do ibin = 1,NBIN
+>               vf(k,ibin,ig) = -vf(k,ibin,ig) / zmet_k
+>             enddo
+>           enddo
+> 
+>          enddo
+> 
+>       endif
+336c379
+< c     do j = 1,ngroups
+---
+> c     do j = 1,NGROUP
+338,341c381,384
+< c         do i = 1, nbins
+< c
+< c           write(LUNOTEMP,6) j,alt3(k)/1.d5,i,vf(k,i,j) 
+< c
+---
+> c         do i = 1,NBIN 
+>  
+> c           write(LUNOTEMP,6) j,zl3(k)/1.d5,i,vf(k,i,j)
+>  
+346c389
+< 
+---
+> c

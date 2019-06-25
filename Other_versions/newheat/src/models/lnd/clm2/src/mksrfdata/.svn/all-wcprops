@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/mksrfdata
+END
+mkrank.F90
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/mksrfdata/mkrank.F90
+END
+mksoitex.F90
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/mksrfdata/mksoitex.F90
+END
+mksrfdatMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/mksrfdata/mksrfdatMod.F90
+END
+mklai.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/mksrfdata/mklai.F90
+END
+mkgridMod.F90
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/mksrfdata/mkgridMod.F90
+END
+mkglacier.F90
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/mksrfdata/mkglacier.F90
+END
+mklanwat.F90
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/mksrfdata/mklanwat.F90
+END
+mkurban.F90
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/mksrfdata/mkurban.F90
+END
+mksoicol.F90
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/mksrfdata/mksoicol.F90
+END
+mkpft.F90
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/lnd/clm2/src/mksrfdata/mkpft.F90
+END

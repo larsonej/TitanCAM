@@ -1,0 +1,19 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/nodes/node1624/mom_priv/jobs/1733237.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/nodes/node1624/mom_priv/jobs/1733237.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/nodes/node1624/mom_priv/jobs/1733237.moab.rc.colorado.edu.SC:  Running on node1624
+/curc/torque/nodes/node1624/mom_priv/jobs/1733237.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/nodes/node1624/mom_priv/jobs/1733237.moab.rc.colorado.edu.SC:  Set run to newheat-p5
+/curc/torque/nodes/node1624/mom_priv/jobs/1733237.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/nodes/node1624/mom_priv/jobs/1733237.moab.rc.colorado.edu.SC:  Set runtype to INITIAL
+/curc/torque/nodes/node1624/mom_priv/jobs/1733237.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/nodes/node1624/mom_priv/jobs/1733237.moab.rc.colorado.edu.SC:  copying cam from /projects/larsonej/titancam/build_newheat-p5 ...
+/curc/torque/nodes/node1624/mom_priv/jobs/1733237.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/newheat-p5 using MPI
+/curc/torque/nodes/node1624/mom_priv/jobs/1733237.moab.rc.colorado.edu.SC:  Started at Sat Feb  9 19:09:31 MST 2013
+/curc/torque/nodes/node1624/mom_priv/jobs/1733237.moab.rc.colorado.edu.SC: Running on nodes ...
+node1624 node1624 node1624 node1624 node1624 node1624 node1624 node1624 node1624 node1624 node1624 node1624 node1619 node1619 node1619 node1619 node1619 node1619 node1619 node1619 node1619 node1619 node1619 node1619 node1618 node1618 node1618 node1618 node1618 node1618 node1618 node1618 node1618 node1618 node1618 node1618 node1611 node1611 node1611 node1611 node1611 node1611 node1611 node1611 node1611 node1611 node1611 node1611
+/curc/torque/nodes/node1624/mom_priv/jobs/1733237.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    4  48  /curc/torque/nodes/node1624/aux//1733237.moab.rc.colorado.edu 
+=>> PBS: job killed: walltime 86416 exceeded limit 86400
+Terminated

@@ -1,0 +1,249 @@
+#  @(#) Makefile.work  McKie  May-1997
+#  This is the make file for manipulating the radiation submodel code.
+#
+#  Since critical symbols are passed into this make file from the top
+#  level make file, these symbol values are not defined here.
+#
+#  A pseudo make file in file Makefile exists in this subdirectory.
+#  It is invoked by default if make commands are issued in this
+#  directory, and it invokes the top level Makefile, which passes
+#  the critical symbols back to this makefile.work for action.
+#
+#  Critical symbols are listed near the top of this Makefile.work file
+#  to show their symbol names, but they are given nonsense values in
+#  this file so that this Makefile.work will only work properly when
+#  called from the top level Makefile, and the meaningful values for
+#  the various symbols are passed to this Makefile.work from the top
+#  level Makefile.
+#
+#  Modified to use Makefile and Makefile.work and top level Makefile
+#  control, Sep-1999, for carma v1.18.  -bm
+#
+#  Begin target list
+#
+#  Targets:
+#
+#    default     No action
+#    library     Ensure include files are consistent, compile, and build library 
+#    compile     Ensure each latest source module is compiled
+#    clean       Remove all compiler object files
+#    tar         Generate archive file containing rad only source distribution
+#
+#  End target list
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#
+#  Define symbolic Makefile constants that might change from system to system
+#
+#
+#  Define program version tag string
+#
+PROGTAG=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define the name of the Fortran compiler
+#
+FORTRAN=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define Fortran compiler flags
+#
+FFLAGS=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define name of path of tar archiving program
+#
+TARPROG=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define name of path of file delete program
+#
+RM=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define name of path of shell to use in the make actions below
+#   (Should be sh for unix systems)
+#
+SHELL=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Under Cray multi-cpu unicos systems, the NPROC=1 forces
+#  sequential make using a single cpu
+#
+NPROC=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define name of path of object library archiver, its flags, & its randomizer
+#    On bsd systems,   RANLIB=ranlib
+#    On sys-V systems, RANLIB=touch
+#
+AR=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+ARFLAGS=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+RANLIB=		_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define name of radiation object library
+#
+LIB_RAD=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define the parent relative directory containing the include files shared
+#  with the aerosol model
+#
+INCLUDE_DIR=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define relative path to include files used by all component submodels
+#   (These paths are relative to the submodel subdirectories)
+#
+PRECISION_H=	../$(INCLUDE_DIR)/carma/$(PRECISION_H)
+AERAD_H=	../$(INCLUDE_DIR)/$(AERAD_H)
+#
+#
+#  Define alternative generic intrinsic function for imag()
+#
+GENERIC_IMAG=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define netcdf include file directory and file
+#
+NETCDF_INC_DIR=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+NETCDF_INC_FIL=	_TO_BE_DEFINED_FROM_TOP_MAKEFILE_
+#
+#
+#  Define the path to be searched for files, since the source and header
+#  file may not be in the build directory.
+#
+VPATH    := $(RAD_SRCDIR):$(INCLUDE_DIR):$(INCLUDE_DIR)/carma 
+#
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#  Define things that will probably not change from system to system
+#
+#
+#  Define name of the radiation only tar distribution file
+#
+TARFILE=	./rad_$(PROGTAG).tar
+#
+#
+#  Define list of appropriate file suffixes
+#
+.SUFFIXES:
+.SUFFIXES:   .h .ff .f .o
+#
+#
+#  Define method for compiling .f file into .o file
+#
+.f.o :
+	$(FORTRAN) $(FFLAGS) -I$(RAD_SRCDIR) -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/carma $<
+#
+#
+#  Define list of compiled object files for the radiation submodel
+#
+OFILES=		add.o \
+		miess.o \
+		gather.o \
+		newflux1.o \
+		oppr.o \
+		oppr1.o \
+		plnk.o \
+		radout.o \
+		radtran.o \
+		setuprad.o \
+		twostr.o
+#
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#  Define make targets
+#
+#
+#  The <default> target invokes the library target and reports
+#  that an executable was not created.
+#
+default:	library
+		@ echo " "
+		@ echo "================ WARNING ================="
+		@ echo "This Makefile.work has no default target"
+		@ echo "    Unexpected make with no target"
+		@ echo "=========================================="
+		@ echo " "
+#
+#
+#  The <globrad.h> target checks the radiation common-block include file
+#
+globrad.h:      $(AERAD_H)  $(PRECISION_H)
+		touch globrad.h
+#
+#
+#  The <miess.f> target handles use of non-typical imag() generic intrinsic function
+#  in the miess.f routine from make file macro GENERIC_IMAG
+#
+miess.f:	../Makefile miess.f.template create_miess
+		cp $(RAD_SRCDIR)/miess.f.template .
+		cp $(RAD_SRCDIR)/create_miess .
+		./create_miess "$(RM)" "$(GENERIC_IMAG)"
+#
+#
+#  The <help> target lists the possible targets in this Makefile
+#
+help:
+		@ sed -n '/^#  Begin target list/,/^#  End target list/p'  Makefile.work
+#
+#
+#  The <tar> target generates a source distribution for this program
+#
+tar:		;
+		( $(RM) $(TARFILE) ; \
+		  $(TARPROG) cf $(TARFILE) \
+		    80 \
+		    Makefile* \
+		    *.h \
+		    *.f \
+		    miess.f.template \
+		    create_miess ; \
+		  exit 0; )
+#
+#
+#  The <clean> target removes compiler object files & dependent source files
+#
+clean:		;
+		$(RM)  $(OFILES)  $(LIB_RAD) work.pc*
+		$(RM)  miess.f
+		touch *.template
+#
+#
+#
+#  The <compile> target compiles each source code file
+#
+compile:	globrad.h  $(OFILES)
+#
+#
+#  The <library> target checks the include files shared with the
+#  aerosol model, compiles the source code, & builds a library
+#
+library:	$(LIB_RAD)
+#
+$(LIB_RAD):	compile 
+		$(RM) $(LIB_RAD)
+		$(AR) $(ARFLAGS) $(LIB_RAD) $(OFILES)
+		$(RANLIB) $(LIB_RAD)
+#
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+#  Define source code file dependencies
+#
+add.o:		add.f		globrad.h	$(PRECISION_H)	$(AERAD_H)
+miess.o:	miess.f				$(PRECISION_H)
+gather.o:	gather.f			$(PRECISION_H)
+newflux1.o:	newflux1.f	globrad.h	$(PRECISION_H)	$(AERAD_H)
+oppr.o:		oppr.f		globrad.h	$(PRECISION_H)	$(AERAD_H)
+oppr1.o:	oppr1.f		globrad.h	$(PRECISION_H)	$(AERAD_H)
+plnk.o:		plnk.f				$(PRECISION_H)
+radout.o:	radout.f	globrad.h	$(PRECISION_H)	$(AERAD_H)
+radtran.o:	radtran.f	globrad.h	$(PRECISION_H)	$(AERAD_H)
+setuprad.o:	setuprad.f	globrad.h	$(PRECISION_H)	$(AERAD_H)
+twostr.o:	twostr.f	globrad.h	$(PRECISION_H)	$(AERAD_H)

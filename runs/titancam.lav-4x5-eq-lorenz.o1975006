@@ -1,0 +1,20 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/nodes/node0530/mom_priv/jobs/1975006.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/nodes/node0530/mom_priv/jobs/1975006.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/nodes/node0530/mom_priv/jobs/1975006.moab.rc.colorado.edu.SC:  Running on node0530
+/curc/torque/nodes/node0530/mom_priv/jobs/1975006.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/nodes/node0530/mom_priv/jobs/1975006.moab.rc.colorado.edu.SC:  Set run to lav-4x5-eq-lorenz
+/curc/torque/nodes/node0530/mom_priv/jobs/1975006.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/nodes/node0530/mom_priv/jobs/1975006.moab.rc.colorado.edu.SC:  Set runtype to RESTART
+/curc/torque/nodes/node0530/mom_priv/jobs/1975006.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/nodes/node0530/mom_priv/jobs/1975006.moab.rc.colorado.edu.SC:  using cam from /lustre/janus_scratch/larsonej/run/lav-4x5-eq-lorenz ...
+/curc/torque/nodes/node0530/mom_priv/jobs/1975006.moab.rc.colorado.edu.SC:  using namelist from /lustre/janus_scratch/larsonej/run/lav-4x5-eq-lorenz ...
+/curc/torque/nodes/node0530/mom_priv/jobs/1975006.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/lav-4x5-eq-lorenz using MPI
+/curc/torque/nodes/node0530/mom_priv/jobs/1975006.moab.rc.colorado.edu.SC:  Started at Thu May 30 18:18:16 MDT 2013
+/curc/torque/nodes/node0530/mom_priv/jobs/1975006.moab.rc.colorado.edu.SC: Running on nodes ...
+node0530 node0530 node0530 node0530 node0530 node0530 node0530 node0530 node0530 node0530 node0530 node0530 node0528 node0528 node0528 node0528 node0528 node0528 node0528 node0528 node0528 node0528 node0528 node0528 node0524 node0524 node0524 node0524 node0524 node0524 node0524 node0524 node0524 node0524 node0524 node0524 node0621 node0621 node0621 node0621 node0621 node0621 node0621 node0621 node0621 node0621 node0621 node0621 node0627 node0627 node0627 node0627 node0627 node0627 node0627 node0627 node0627 node0627 node0627 node0627 node0631 node0631 node0631 node0631 node0631 node0631 node0631 node0631 node0631 node0631 node0631 node0631 node0641 node0641 node0641 node0641 node0641 node0641 node0641 node0641 node0641 node0641 node0641 node0641 node0679 node0679 node0679 node0679 node0679 node0679 node0679 node0679 node0679 node0679 node0679 node0679 node0760 node0760 node0760 node0760 node0760 node0760 node0760 node0760 node0760 node0760 node0760 node0760 node0758 node0758 node0758 node0758 node0758 node0758 node0758 node0758 node0758 node0758 node0758 node0758 node0754 node0754 node0754 node0754 node0754 node0754 node0754 node0754 node0754 node0754 node0754 node0754 node0751 node0751 node0751 node0751 node0751 node0751 node0751 node0751 node0751 node0751 node0751 node0751 node0748 node0748 node0748 node0748 node0748 node0748 node0748 node0748 node0748 node0748 node0748 node0748 node0743 node0743 node0743 node0743 node0743 node0743 node0743 node0743 node0743 node0743 node0743 node0743 node0724 node0724 node0724 node0724 node0724 node0724 node0724 node0724 node0724 node0724 node0724 node0724 node0721 node0721 node0721 node0721 node0721 node0721 node0721 node0721 node0721 node0721 node0721 node0721 node0719 node0719 node0719 node0719 node0719 node0719 node0719 node0719 node0719 node0719 node0719 node0719 node0718 node0718 node0718 node0718 node0718 node0718 node0718 node0718 node0718 node0718 node0718 node0718 node0713 node0713 node0713 node0713 node0713 node0713 node0713 node0713 node0713 node0713 node0713 node0713 node0712 node0712 node0712 node0712 node0712 node0712 node0712 node0712 node0712 node0712 node0712 node0712
+/curc/torque/nodes/node0530/mom_priv/jobs/1975006.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    20  240  /curc/torque/nodes/node0530/aux//1975006.moab.rc.colorado.edu 
+=>> PBS: job killed: walltime 86423 exceeded limit 86400
+Terminated

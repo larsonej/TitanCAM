@@ -1,0 +1,12 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087135.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087135.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/bin/mpirun
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087135.moab.rc.colorado.edu.SC:  Running on node1738
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087135.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087135.moab.rc.colorado.edu.SC:  Set run to lav-10x15-topo
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087135.moab.rc.colorado.edu.SC:  Set debug to ON
+/home/larsonej/titancam
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087135.moab.rc.colorado.edu.SC:  Set runtype to INITIAL
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087135.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1738/mom_priv/jobs/2087135.moab.rc.colorado.edu.SC:  /projects/larsonej/titancam/build_lav-10x15-topo/cam not found, execute make-cam.csh first ...

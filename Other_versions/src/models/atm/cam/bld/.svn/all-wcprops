@@ -1,0 +1,125 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld
+END
+run-pc.csh
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/run-pc.csh
+END
+configure
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/configure
+END
+fvtest.sh
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/fvtest.sh
+END
+atmlndnl.pm
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/atmlndnl.pm
+END
+resolution_parameters.xml
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/resolution_parameters.xml
+END
+run-ibm.csh
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/run-ibm.csh
+END
+clm2exp.pm
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/clm2exp.pm
+END
+namelist.pm
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/namelist.pm
+END
+camexp.pm
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/camexp.pm
+END
+DefaultCLMEXPNamelist.xml
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/DefaultCLMEXPNamelist.xml
+END
+CAM_config.pm
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/CAM_config.pm
+END
+run-sgi.csh
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/run-sgi.csh
+END
+mkSrcfiles
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/mkSrcfiles
+END
+CAM_namelist.pm
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/CAM_namelist.pm
+END
+build-namelist
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/build-namelist
+END
+system_defaults.xml
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/system_defaults.xml
+END
+mkDepends
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/mkDepends
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/Makefile
+END
+DefaultCAMEXPNamelist.xml
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/DefaultCAMEXPNamelist.xml
+END
+config_cache_defaults.xml
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/atm/cam/bld/config_cache_defaults.xml
+END

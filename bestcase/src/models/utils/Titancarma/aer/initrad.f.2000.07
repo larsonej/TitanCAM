@@ -1,0 +1,335 @@
+       subroutine initrad
+c
+c
+c  @(#) initrad.f  Ackerman  Oct-1997
+c  This routine loads time-independent arrays into the radiation 
+c  interface common block and then initializes the radiative transfer
+c  model by calling setuprad.f.
+c
+c  Argument list input:
+c    None.
+c
+c  Argument list output:
+c    None.
+c
+c
+c  Include global constants and variables
+c
+      include 'globaer.h'
+c
+c
+c  Local declarations
+c
+c   <tbot,pbot> are temperature and pressure at
+c   bottoms of layers below model domain
+c
+      dimension tbot(NZ_BELOW+1), pbot(NZ_BELOW+1)
+c
+c
+c  Define coefficients in Buck's formulation for saturation vapor pressures
+c
+      parameter( BAL = 6.1121e3 )
+      parameter( BBL = 18.729 )
+      parameter( BCL = 257.87 )
+      parameter( BDL = 227.3 )
+c
+c
+c  Define formats
+c
+    1 format(/,'Initial values for radiative transfer model:')
+    2 format(a,':  ',L7)
+    3 format(a,':  ',i6)
+    4 format(a,':  ',f12.2)
+c
+c
+c  Announce entry to this routine
+c
+      if( DEBUG ) write(LUNOPRT,'(/,a)') 'Enter initrad'
+c
+c
+c  Define flags to control whether solar/ir radiative calculations are to be made.
+c
+      do_solar = .true.
+      do_ir = .true.
+c
+c
+c  Define flag to control the calculation of the solar zenith angle:
+c    <isolar_zen> = I_FIXED: use fixed value <u0fixed>
+c                 = I_DIURNAL: calculation based on time, day, lat, and lon
+c
+      isolar_zen = I_DIURNAL
+
+      if( isolar_zen .eq. I_DIURNAL )then
+c
+c
+c  Define values needed for calculation of solar zenith angle:
+c    <iday> is day of year
+c    <rad_start> is solar time corresponding to <time> = 0, in seconds
+c     = 0 means <time> = 0 corresponds to midnight,
+c     = 6 * 3600 means <time> = 0 corresponds to 6 AM
+c    Note: all times are local standard time.
+c
+        iday = 172
+        rad_start = 12. * 3600.
+c
+c
+c  Precalculate terms in solar zenith angle computation:
+c    (adapted from original Toon model)
+c    <saz> is solar azimuth angle [rad]
+c    <declin> is solar declination [rad]
+c    <zsin> is sin term in precalculation
+c    <zcos> is cos term in precalculation
+c
+ 
+        saz = 2. * PI / 365. * iday 
+
+        declin = 0.006918 - 0.399912*cos(saz)    +0.070257*sin(saz)
+     $                    - 0.006758*cos(2.*saz) +0.000907*sin(2.*saz)
+     $                    - 0.002697*cos(3.*saz) +0.001480*sin(3.*saz)
+
+        do ix = 1,NX
+          do iy = 1,NY
+            zsin(ix,iy) = sin(declin) * sin( rlat(ix,iy) * PI/180. )
+            zcos(ix,iy) = cos(declin) * cos( rlat(ix,iy) * PI/180. )
+          enddo
+        enddo
+
+      endif
+c
+c
+c  Define indices for column from which to initialize radiative transfer model
+c  
+      ix = 1
+      iy = 1
+c
+c
+c  Compute initial value of <u0> = cos( solar_zenith_angle ) 
+c
+      if( isolar_zen .eq. I_FIXED )then
+
+        u0 = 0.5
+        u0_fixed = u0
+
+      elseif( isolar_zen .eq. I_DIURNAL )then
+c
+c
+c  <sun_angle> is solar hour angle from noon [rad]
+c
+        sun_angle = PI + ( time + rad_start )*2.*PI/SCDAY
+        u0 = zsin(ix,iy) + zcos(ix,iy)*cos(sun_angle)
+        u0 = max( 0.*ONE, u0 )
+
+      else
+
+        write(LUNOPRT,'(a)') 'Bad isolar_zen = ', isolar_zen
+        stop 1
+
+      endif
+c
+c      
+c  Evaluate option switches for radiative transfer code
+c
+      if( do_solar )then
+        isl_aerad = 1
+      else
+        isl_aerad = 0
+      endif
+ 
+      if( do_ir )then
+        ir_aerad = 1
+      else
+        ir_aerad = 0
+      endif
+c
+c
+c  Load aerosol grid structure 
+c
+      do igroup = 1,NGROUP
+
+        is_grp_ice_aerad(igroup) = is_grp_ice(igroup)
+
+        iep = ienconc(igroup)
+
+        do ibin = 1,NBIN
+          r_aerad(ibin,igroup) = r(ibin,igroup)
+          rup_aerad(ibin,igroup) = rup(ibin,igroup)
+        enddo
+      enddo
+c
+c
+c  Load hydrostatic profile for column defined above
+c
+c  <t_aerad> in K, <p_aerad> in dyne/cm^2
+c
+      do iz = 1,NZ
+c
+c
+c  Reverse the vertical index when in cartesian coordinates
+c
+        if( igridv .eq. I_CART )then
+           jz = NZ + 1 - iz
+        else
+           jz = iz
+        endif
+
+        t_aerad(jz) = t(ix,iy,iz)
+        p_aerad(jz) = p(ix,iy,iz)
+
+      enddo
+c
+c
+c  Load scalars
+c
+      ptop_aerad = p_top(ix,iy)
+      pbot_aerad = p_surf(ix,iy)
+      tbot_aerad = t_surf(ix,iy)
+
+      u0_aerad = u0
+      sfc_alb_aerad = 0.07
+      emisir_aerad = 1.0
+      tsfc_aerad = t_surf(ix,iy)
+      h2ocol_aerad = 2.0
+
+      if( .not. do_below ) then
+
+        tsfc_aerad = tbot_aerad
+        psfc_aerad = pbot_aerad
+
+      else
+c
+c
+c  Specify properties of radiative layers underlying model domain
+c  (set up only for cartesian coordinates for now)
+c
+        if( igridv .ne. I_CART )then
+          print*,'initrad() only set up for cartesian coordinates'
+          stop 1
+        endif
+c
+c
+c  Define scalars
+c
+        tsfc_aerad = 273.16 + 25.
+        psfc_aerad = 1013.5e3
+c
+c
+c  Define layers below the bottom of CARMA
+c
+        rh_below = 15.
+c
+c
+c  Calculate the temperature and pressure at the bottoms of the
+c  layers below the model domain
+c
+        tdiff = tbot_aerad - tsfc_aerad
+        pdiff = pbot_aerad - psfc_aerad
+
+        do iz = 1,NZ_BELOW+1
+          tbot(iz) = tbot_aerad - float(iz-1)/float(NZ_BELOW) * tdiff
+          pbot(iz) = pbot_aerad - float(iz-1)/float(NZ_BELOW) * pdiff
+        enddo
+c
+c
+c  Calculate the temperature, pressure, water vapor mixing ratio, and
+c  aerosol column at the mid-pts of the layers below the model domain
+c
+        blapse = - tdiff / zbot
+        if( blapse .gt. GRAV/CP )then
+          print*,'initrad: non-physical lapse rate underlying model = ',
+     $           blapse
+          stop 1
+        endif
+
+        r_nz_below = max(1,NZ_BELOW)
+        deltap = - pdiff / r_nz_below
+        rvap   = RGAS / gwtmol(1)
+
+        do iz = 1,NZ_BELOW
+          jz = NZ + iz
+
+          print*, iz, jz
+          t_aerad(jz) = 0.5 * ( tbot(iz) + tbot(iz+1) )
+          p_aerad(jz) = 0.5 * ( pbot(iz) + pbot(iz+1) )
+
+          tt = t_aerad(jz) - 273.16
+          pvap = rh_below / 100. *
+     $           BAL * exp( (BBL - tt/BDL)*tt / (tt + BCL) )
+          qv_aerad(jz) = pvap / ( rvap*t_aerad(jz)*rhoa(ix,iy,iz) )
+
+          scale_height = R_AIR * t_aerad(jz) / GRAV
+          deltaz = deltap * scale_height / p_aerad(jz)
+
+          do igroup = 1,NGROUP
+            iep = ienconc(igroup)
+            do ibin = 1,NBIN
+c             pc_aerad(jz,ibin,igroup) = pc(1,1,NZ,ibin,iep) * deltaz
+              pc_aerad(jz,ibin,igroup) = 0.
+            enddo
+          enddo
+        enddo
+
+      endif
+c
+c
+c  Initialize the radiative transfer model
+c
+      call setuprad
+c
+c
+c  Get radiative wavelengths
+c
+      do iwave = 1,NWAVE
+c
+c
+c  Solar wavelengths in radiative transfer model are bin centers,
+c  infrared are bin edges
+c
+        if( iwave .le. NSOL )then
+          wave(iwave) = wave_aerad(iwave)
+        else
+          wave(iwave) = 0.5*( wave_aerad(iwave) + wave_aerad(iwave+1) )
+        endif
+
+      enddo
+c
+c
+c  Switch bins 11 and 12
+c
+      wavetemp = wave(11)
+      wave(11) = wave(12)
+      wave(12) = wavetemp
+c
+c
+c  Report radiation parameters to print file (for a single column)
+c
+c
+      write(LUNOPRT,1)
+      write(LUNOPRT,2) 'do_solar', do_solar
+      write(LUNOPRT,2) 'do_ir', do_ir
+     
+      if( isolar_zen .eq. I_DIURNAL )then
+        ix = 1
+        iy = 1
+        write(LUNOPRT,3) 'iday', iday
+        write(LUNOPRT,4) 'rad_start', rad_start
+        write(LUNOPRT,4) 'u0', u0
+      else
+        write(LUNOPRT,4) 'u0_fixed', u0_fixed
+      endif
+
+      write(LUNOPRT,4) 'surface albedo', sfc_alb_aerad
+      write(LUNOPRT,4) 'surface emissivity', emisir_aerad
+      write(LUNOPRT,4) 'surface temperature', tsfc_aerad
+      write(LUNOPRT,4) 'overlying water vapor column', h2ocol_aerad
+
+      if( do_below )then
+        write(LUNOPRT,3) 'number of underlying layers', NZ_BELOW
+        write(LUNOPRT,4) 'underlying lapse rate', blapse*1.e5
+        write(LUNOPRT,4) 'underlying RH', rh_below
+      endif
+c
+c
+c  Return to caller with radiation model initialized
+c
+      return
+      end

@@ -1,0 +1,113 @@
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/projects/ncar_models/!svn/ver/21/cam/branches/carma/source/cam1/models/utils/carma/rad
+END
+radtran.f
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/rad/radtran.f
+END
+radout.f
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/rad/radout.f
+END
+oppr1.f
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/rad/oppr1.f
+END
+twostr.f
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/rad/twostr.f
+END
+80
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/rad/80
+END
+plnk.f
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/projects/ncar_models/!svn/ver/21/cam/branches/carma/source/cam1/models/utils/carma/rad/plnk.f
+END
+rrestart.f
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/rad/rrestart.f
+END
+newflux1.f
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/rad/newflux1.f
+END
+Makefile.work
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/projects/ncar_models/!svn/ver/21/cam/branches/carma/source/cam1/models/utils/carma/rad/Makefile.work
+END
+gather.f
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/projects/ncar_models/!svn/ver/21/cam/branches/carma/source/cam1/models/utils/carma/rad/gather.f
+END
+globrad.h
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/projects/ncar_models/!svn/ver/21/cam/branches/carma/source/cam1/models/utils/carma/rad/globrad.h
+END
+create_miess
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/rad/create_miess
+END
+cvmgt.f
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/rad/cvmgt.f
+END
+oppr.f
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/rad/oppr.f
+END
+setuprad.f
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/rad/setuprad.f
+END
+add.f
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/rad/add.f
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/rad/Makefile
+END
+miess.f.template
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/projects/ncar_models/!svn/ver/21/cam/branches/carma/source/cam1/models/utils/carma/rad/miess.f.template
+END

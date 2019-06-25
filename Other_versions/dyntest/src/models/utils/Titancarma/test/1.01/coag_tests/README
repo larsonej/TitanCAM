@@ -1,0 +1,32 @@
+This directory contains routines necessary for running
+a test case to compare with the Smoluchowski analytic
+solution (see Pruppacher and Klett [1978] pgs. 366-367).
+The Smoluchowski solution assumes the following:
+
+1. Particles are initially only in the first bin.
+2. The coagulation kernel is independent of particle size.
+
+The numbers densities of particles in bin k (where the
+volume of bin k is k*v(1)) are given as a function of
+a nondimensional time parameter tau.
+
+To run the Smoluchowski test case, the routine
+smoluchowski.f must be called at the end of init.f.
+To compare the results with the analytic solution, run the
+idl routine smol.pro.  This routine reads in the history
+file model_his.out and plots the numerical and analytic
+solutions.  The results are saved in the postscript file
+smol.ps.
+
+This directory also contains sample results for Mrat=1.5 and 2.0.
+The size distributions for the Mrat=1.5 case have dips in the second
+bin because two particles colliding in the first bin result in a particle
+larger than M(2).
+
+In summary, the files in this directory include:
+
+smoluchowski.f		fortran code to set up numerical calculation
+smol.pro		idl routine to plot numerical and analytic results
+smol.1.5.ps		Postscript file with plots comparing exact
+			results with numerical calculations for Mrat=1.5
+smol.2.0.ps		Postscript file with results for Mrat=2.0

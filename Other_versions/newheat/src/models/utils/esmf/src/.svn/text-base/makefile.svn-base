@@ -1,0 +1,15 @@
+# $Id$ 
+
+DIRS     = Infrastructure
+LOCDIR   = src
+
+include ${ESMF_DIR}/build/${ESMF_ARCH}/base
+
+
+
+
+
+
+
+
+

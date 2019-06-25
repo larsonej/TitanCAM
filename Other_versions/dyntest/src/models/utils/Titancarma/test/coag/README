@@ -1,0 +1,63 @@
+This directory contains routines necessary for running
+two coagulation test case simulations and comparison with analytic solutions:
+
+A.  Smoluchowski solution (see Pruppacher and Klett [1978] pgs. 366-367).
+
+   The Smoluchowski solution assumes the following:
+
+   1. Particles are initially only in the first bin.
+   2. The coagulation kernel is independent of particle size.
+
+   The numbers densities of particles in bin k (where the
+   volume of bin k is k*v(1)) are given as a function of
+   a nondimensional time parameter tau.
+
+   To run the Smoluchowski test case, make a symbolic link to the
+   routine 'smoluchowski.f' in the /src directory or copy this source
+   module to /src and uncomment the call to this routine at the end of
+   'init.f'.  To compare the results with the analytic solution, run
+   the idl routine 'smol.pro'.  This routine reads in the history file
+   model_his.out and plots the numerical and analytic solutions.  The
+   results are saved in the postscript file 'smol.ps'.
+
+B.  Seinfeld self-preserving solution (see Seinfeld [Physics and Chemistry of Air
+    Pollution, 1986] pgs. 413-415).
+
+   The Seinfeld solution assumes the following:
+
+   1. Particles are distributed in an exponential distribution.
+   2. The coagulation kernel is independent of particle size.
+
+   The size distribution retains its exponential form throughout
+   the coagulation process.
+
+   To run the Seinfeld86 test case, the routine 'seinfeld86.f' must be
+   called at the end of 'init.f'.  As with the smoluchowski.f routine,
+   either make a symbolic link to the senfeld86.f routine in /src, or
+   copy the file there.  To compare the results with the analytic
+   solution, run the idl routine 'seinfeld86.pro'.  This routine reads
+   in the history file model_his.out and plots the numerical and
+   analytic solutions.  The results are saved in the postscript file
+   'seinfeld86.ps'.
+
+
+This directory also contains sample results for Mrat=1.5 and 2.0.
+The size distributions for the Mrat=1.5 case have dips in the second
+bin because two particles colliding in the first bin result in a particle
+with mass larger than the mass of the second bin.
+
+
+In summary, the files in this directory include:
+
+smoluchowski.f		fortran code to set up numerical calculation
+			for comparison with Smoluchowski solution
+smol.pro		idl routine to plot numerical and analytic results
+smol.1.5.ps		Postscript file with plots comparing exact
+			results with numerical calculations for Mrat=1.5
+smol.2.0.ps		Postscript file with results for Mrat=2.0
+seinfeld86.f		fortran code to set up numerical calculation
+			for comparison with Seinfeld [1986] solution
+seinfeld86.pro		idl routine to plot numerical and analytic results
+seinfeld86.1.5.ps	Postscript file with plots comparing exact
+			results with numerical calculations for Mrat=1.5
+seinfeld86.2.0.ps	Postscript file with results for Mrat=2.0

@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/ES
+END
+buildtest
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/ES/buildtest
+END
+base_variables
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/ES/base_variables
+END
+ESMF_conf.h
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/ES/ESMF_conf.h
+END
+base
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/ES/base
+END
+fix.h
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/ES/fix.h
+END
+base.site
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/ES/base.site
+END

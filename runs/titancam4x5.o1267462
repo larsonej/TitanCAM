@@ -1,0 +1,20 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/nodes/node0177/mom_priv/jobs/1267462.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/nodes/node0177/mom_priv/jobs/1267462.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/nodes/node0177/mom_priv/jobs/1267462.moab.rc.colorado.edu.SC:  Running on node0177
+/curc/torque/nodes/node0177/mom_priv/jobs/1267462.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/nodes/node0177/mom_priv/jobs/1267462.moab.rc.colorado.edu.SC:  Set run to p10m10r50-agg_4x5
+/curc/torque/nodes/node0177/mom_priv/jobs/1267462.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/nodes/node0177/mom_priv/jobs/1267462.moab.rc.colorado.edu.SC:  Set runtype to RESTART
+/curc/torque/nodes/node0177/mom_priv/jobs/1267462.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/nodes/node0177/mom_priv/jobs/1267462.moab.rc.colorado.edu.SC:  using cam from /lustre/janus_scratch/larsonej/run/p10m10r50-agg_4x5 ...
+/curc/torque/nodes/node0177/mom_priv/jobs/1267462.moab.rc.colorado.edu.SC:  using namelist from /lustre/janus_scratch/larsonej/run/p10m10r50-agg_4x5 ...
+/curc/torque/nodes/node0177/mom_priv/jobs/1267462.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/p10m10r50-agg_4x5 using MPI
+/curc/torque/nodes/node0177/mom_priv/jobs/1267462.moab.rc.colorado.edu.SC:  Started at Mon Aug  6 03:06:38 MDT 2012
+/curc/torque/nodes/node0177/mom_priv/jobs/1267462.moab.rc.colorado.edu.SC: Running on nodes ...
+node0177 node0177 node0177 node0177 node0177 node0177 node0177 node0177 node0177 node0177 node0177 node0177 node0162 node0162 node0162 node0162 node0162 node0162 node0162 node0162 node0162 node0162 node0162 node0162 node0135 node0135 node0135 node0135 node0135 node0135 node0135 node0135 node0135 node0135 node0135 node0135 node0133 node0133 node0133 node0133 node0133 node0133 node0133 node0133 node0133 node0133 node0133 node0133 node0131 node0131 node0131 node0131 node0131 node0131 node0131 node0131 node0131 node0131 node0131 node0131 node0130 node0130 node0130 node0130 node0130 node0130 node0130 node0130 node0130 node0130 node0130 node0130 node0129 node0129 node0129 node0129 node0129 node0129 node0129 node0129 node0129 node0129 node0129 node0129 node0128 node0128 node0128 node0128 node0128 node0128 node0128 node0128 node0128 node0128 node0128 node0128 node0127 node0127 node0127 node0127 node0127 node0127 node0127 node0127 node0127 node0127 node0127 node0127 node0126 node0126 node0126 node0126 node0126 node0126 node0126 node0126 node0126 node0126 node0126 node0126 node0124 node0124 node0124 node0124 node0124 node0124 node0124 node0124 node0124 node0124 node0124 node0124 node0123 node0123 node0123 node0123 node0123 node0123 node0123 node0123 node0123 node0123 node0123 node0123 node0122 node0122 node0122 node0122 node0122 node0122 node0122 node0122 node0122 node0122 node0122 node0122 node0121 node0121 node0121 node0121 node0121 node0121 node0121 node0121 node0121 node0121 node0121 node0121 node0120 node0120 node0120 node0120 node0120 node0120 node0120 node0120 node0120 node0120 node0120 node0120 node0118 node0118 node0118 node0118 node0118 node0118 node0118 node0118 node0118 node0118 node0118 node0118 node0117 node0117 node0117 node0117 node0117 node0117 node0117 node0117 node0117 node0117 node0117 node0117 node0116 node0116 node0116 node0116 node0116 node0116 node0116 node0116 node0116 node0116 node0116 node0116 node0115 node0115 node0115 node0115 node0115 node0115 node0115 node0115 node0115 node0115 node0115 node0115 node0114 node0114 node0114 node0114 node0114 node0114 node0114 node0114 node0114 node0114 node0114 node0114
+/curc/torque/nodes/node0177/mom_priv/jobs/1267462.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    20  240  /curc/torque/nodes/node0177/aux//1267462.moab.rc.colorado.edu 
+=>> PBS: job killed: walltime 604827 exceeded limit 604800
+Terminated

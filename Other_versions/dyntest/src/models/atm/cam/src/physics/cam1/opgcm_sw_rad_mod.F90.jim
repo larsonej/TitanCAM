@@ -1,0 +1,1104 @@
+#include <misc.h>
+#include <params.h>
+
+module opgcm_sw_rad_mod
+
+!----------------------------------------------------------------------- 
+! ajf 4-8-09 - Replace sw treatment in CAM3
+! Purpose: Contains several opgcm radiation routines
+! 
+!-----------------------------------------------------------------------
+
+!-----------------------------------------------------------------------
+!USE:
+  use shr_kind_mod, only: r8 => shr_kind_r8
+  use pmgrid, only: masterproc, iam
+  use ppgrid, only: pcols, pver, pverp, begchunk, endchunk
+  use radcnst only: N_gas_ck_sw, Ng_sw, Nwn_sw, Ck_sw, Ck_sw, CkPt_sw
+!  use opgcm_radcnst_sw, only:  N_gas_ck_sw, Ng_sw, Nwn_sw, &
+!                               Ck_sw, CkPt_sw,aero_tab_sw, Aero_Tab
+! EJL - using my radcnst
+                          
+  implicit none
+  public
+  
+! Public interfaces
+  
+  public make_sw_wn_grid
+    
+  integer, parameter :: knu_sw= 1440
+  integer, parameter :: knu_swp=knu_sw+1 
+  real(r8), parameter :: nusw0=2000.0
+  real(r8), parameter :: dnu_sw=250.         !Default wavenumber step for continuum
+  real(r8) :: nu_sw(knu_sw),dnu_c_sw(knu_sw)
+  real(r8) :: nu_e_min,nu_e_max
+  real(r8) :: sun(knu_sw), sum_sun
+  logical :: debug_sw
+  
+  type delv_type
+     real(r8), dimension(knu_sw,0:pver) :: &  !variables at layer centers 
+                                              !numbered from top down
+                                              !0th layer uses layer-1 properties
+          tau,      &! total layer optical depth
+          ssa,  &! scattering albedo of layer
+          g,    &! asymmetry parameter of layer
+          f      ! forward scattering peak of layer
+     real(r8), dimension(knu_sw,0:pverp) :: fnet
+     real(r8), dimension(knu_sw,0:pverp) :: fup
+     real(r8), dimension(knu_sw,0:pverp) :: fdn
+     real(r8), dimension(knu_sw) :: wght
+     integer, dimension(knu_sw) :: ibnd_taug, kg_taug
+  end type delv_type
+  type(delv_type), public :: de
+  type(Aero_Tab), public :: aero_int_sw
+    
+contains
+
+subroutine make_sw_wn_grid(debug_sw_in)
+!----------------------------------------------------------------------- 
+! 
+! Purpose: 
+! Computes grid of wavenumbers that makes room for gas absorption coefficients
+! Defines continuum opacity on remaining wavenumber grid points
+  
+!-----------------------------------------------------------------------
+!  USES:
+    
+  implicit none
+  
+! Arguments
+
+  logical,  intent(in) :: debug_sw_in
+  
+! Local variables
+  
+  integer k,kk,ksw,ibnd,numbnd
+  integer, dimension(Nwn_sw) :: ispec, ngaus
+  real(r8), dimension(Nwn_sw) :: sumws
+  real(r8), dimension(Nwn_sw) ::  nu_1, nu_2
+  real(r8), dimension(knu_swp) :: nu_e   !wavenumbers at edges of fine intervals
+  real(r8), dimension(Nwn_sw,Ng_sw) :: wgsbnd
+  real(r8) :: dnu,dnuk        !wavenumber interval size (variable in shortwave)
+  
+
+  debug_sw = debug_sw_in    
+  numbnd=Nwn_sw
+
+! Get information about gaussian weight used for k-distribution: 
+
+  call get_weight_data(ispec,ngaus,sumws,wgsbnd)
+  
+! Define locations of edges of spectral intervals in table
+
+  do ibnd=1,numbnd
+   nu_1(ibnd)=CkPt_sw(ispec(ibnd))%Wn_1(ibnd)
+   nu_2(ibnd)=CkPt_sw(ispec(ibnd))%Wn_2(ibnd)
+  enddo
+    
+!!! if (masterproc .and. debug_sw) then
+!!!  print*,' Here is sumws and wgsbnd for each band as returned from get_weight_data'
+!!!  do ibnd=1,numbnd
+!!!   print*,ibnd,'sumws= ',sumws(ibnd),' ngaus= ',ngaus(ibnd)
+!!!   do kk=1,ngaus(ibnd)
+!!!    print*,kk,wgsbnd(ibnd,kk)
+!!!   enddo
+!!!  enddo
+!!! endif
+  
+! Set up wavenumber grid in shortwave portion of spectrum
+
+      ibnd=1
+      k=1
+      nu_e(k)=nusw0
+      nu_e_min=nusw0
+
+100   continue
+      ksw=k
+
+      if (ibnd <= numbnd) then
+       if (nu_e(ksw) >= nu_1(ibnd)) then
+        if (masterproc .and. debug_sw) then
+        print*,'doing band = ',ibnd
+        print*,' k= ',k,' old nu_e(k)= ',nu_e(ksw)
+        print*,' nu_1,nu_2,ngaus= ',nu_1(ibnd),nu_2(ibnd),ngaus(ibnd)
+        endif
+        dnu=nu_2(ibnd)-nu_1(ibnd)
+        nu_e(ksw)=nu_1(ibnd)  !first edge frequency in partition ibnd
+        if (masterproc .and. debug_sw) print*,' dnu = ',dnu
+        do kk=1,ngaus(ibnd)
+          dnuk=wgsbnd(ibnd,kk)*dnu          
+          nu_e(ksw+kk)=nu_e(ksw+kk-1)+dnuk
+        enddo
+        do kk=1,ngaus(ibnd)
+          de%ibnd_taug(k+kk-1)=ibnd
+          de%kg_taug(k+kk-1)=kk
+          de%wght(k+kk-1)=wgsbnd(ibnd,kk)
+          if (masterproc .and. debug_sw) then                                               
+           print*,k+kk-1,nu_e(ksw+kk-1),ksw+kk-1,&
+                 de%wght(k+kk-1)
+          endif 
+        enddo
+        nu_e(ksw+ngaus(ibnd))=nu_e(ksw+ngaus(ibnd))*(1.+1.e-7) !kludge to ensure test for next band works 
+        k=k+ngaus(ibnd)  !ajf, 7-10-08: this form ensures proper increment of k
+        ibnd=ibnd+1       
+       else
+        dnu=dnu_sw  !default wavenumber interval for continuum
+          de%ibnd_taug(k)=0
+          de%kg_taug(k)=0
+          de%wght(k)=1.0  !weight of unity at continuum wavenumbers
+          if (masterproc .and. debug_sw) print*,k,nu_e(k),de%wght(k)
+          nu_e(ksw+1)=nu_e(ksw)+dnu
+          k=k+1
+       endif
+      else
+        dnu=dnu_sw  !default wavenumber interval for continuum
+         de%ibnd_taug(k)=0
+         de%kg_taug(k)=0
+         de%wght(k)=1.0  !weight of unity at continuum wavenumbers         
+         if (masterproc .and. debug_sw) print*,k,nu_e(k),de%wght(k)
+         nu_e(ksw+1)=nu_e(ksw)+dnu
+         k=k+1
+      endif        
+      if (k < knu_sw+1) go to 100   !ajf, 2-26-08, include k=knu_sw'th interval
+      
+      nu_e_max=nu_e(ksw+1)
+
+!
+!  Compute central wavenumbers of intervals from "edge wavenumbers" nu_e:
+!  Also compute interval size dnu_c(ksw) = nu_e(ksw+1)-nu_e(ksw)
+!
+
+   do kk=1,knu_sw
+    nu_sw(kk)=0.5*(nu_e(kk)+nu_e(kk+1))
+    dnu_c_sw(kk)=nu_e(kk+1)-nu_e(kk)
+   enddo
+           
+ return
+end subroutine make_sw_wn_grid
+
+subroutine get_solar_spec()
+
+! AJF 4-14-09
+! Computes incident solar flux density on wavenumber grid in units of
+! erg cm^-2 s^-1 /cm^-1
+! USES:
+  use ir_rad_mod, only: planck
+  use shr_const_mod, only: sun_size
+    
+  implicit none
+  
+! Local variables
+
+  real(r8), parameter :: conv_cgs = 1.e3  !converts W m^-2 to erg s^-1 cm^-2
+  real(r8) :: tsun, vnu
+  integer  :: k
+
+!  Compute approximate incident solar spectrum at average planet-sun distance:
+
+    tsun=5785.0 !effective BB temperature of the sun in K, approximation for actual solar spec
+    do k=1,knu_sw
+     vnu = nu_sw(k)
+     sun(k)=sun_size*planck(vnu,tsun)*conv_cgs  !planck needs to be converted to cgs
+    enddo
+    
+    sum_sun=0.0
+    do k=1,knu_sw
+     sum_sun=sum_sun+sun(k)*dnu_c_sw(k)
+    enddo
+
+ return
+end subroutine get_solar_spec
+
+subroutine get_weight_data(ispec,ngaus,sumws,wgsa)
+!=======================================================================
+! AJF 4-9-09, modified from URANUS "get_gas_opas.F90", version for use in OPGCM
+! 1. Get weights for methane data for solar heating calculation
+!
+!=======================================================================
+!  USES:
+    
+  implicit none
+
+! Arguments
+
+  integer, dimension(Nwn_sw), intent(out) :: ispec, ngaus
+  real(r8), dimension(Nwn_sw,Ng_sw), intent(out) :: wgsa
+  real(r8), dimension(Nwn_sw), intent(out) :: sumws
+    
+! Local variables
+
+  integer :: ibnd,ik,numbnd
+  
+  numbnd=Nwn_sw
+
+  
+  do ibnd=1,numbnd
+   ispec(ibnd)=1  !all numbnd spectral bands belong to methane = species 1
+   ngaus(ibnd)=Ng_sw  !always Ng_sw gauss-points per interval
+   sumws(ibnd)=1. !always 1.0
+  enddo
+
+! Define array of the gaussian weights for each spectral interval:
+!  (Current configuration using same Ng_sw weights for all spectral intervals)
+   
+   do ibnd=1,numbnd
+     do ik=1,ngaus(ibnd)
+      wgsa(ibnd,ik)=CkPt_sw(ispec(ibnd))%Wght(ik)  !Defined in sw_initialize from ReadCkPt_sw
+     enddo
+   enddo      
+
+    
+ return
+end subroutine get_weight_data
+
+! ----------------------------------------------------------------------------------
+
+! interpaero_sw:
+!   Interpolates the aero optics tables onto established wavenumber grid
+!
+! author:
+!   AJF, 4-10-09 : for use in OPGCM code
+
+subroutine interpaero_sw()
+   use radcnst,         only: Interpolate
+
+   
+  Implicit None
+  
+!  Arguments
+
+
+!  Local Variables
+
+  Integer I, K
+  integer naa      !number of aerosol types
+
+  
+  
+   naa= aero_tab_sw%Na
+   
+   aero_int_sw%Na=naa
+   aero_int_sw%ns=knu_sw
+      
+   
+   Allocate(aero_int_sw%wn(knu_sw), &
+             aero_int_sw%kaero(naa,knu_sw), &
+             aero_int_sw%ssa(naa,knu_sw), &
+             aero_int_sw%g(naa,knu_sw), &
+             aero_int_sw%f(naa,knu_sw) )
+
+
+!  Interpolate aero_int_sw from standard table aero_tab_sw
+
+     
+          
+     aero_int_sw%wn(:)=nu_sw
+     
+     do I=1,naa
+      do K=1,knu_sw
+     
+      aero_int_sw%kaero(I,K) = &
+       Interpolate(aero_tab_sw%wn, aero_tab_sw%kaero(I,:), nu_sw(K))
+      aero_int_sw%ssa(I,K) = &
+       Interpolate(aero_tab_sw%wn, aero_tab_sw%ssa(I,:), nu_sw(K))     
+      aero_int_sw%g(I,K) = &
+       Interpolate(aero_tab_sw%wn, aero_tab_sw%g(I,:), nu_sw(K))
+      aero_int_sw%f(I,K) = &
+       Interpolate(aero_tab_sw%wn, aero_tab_sw%f(I,:), nu_sw(K))
+       
+      enddo
+     enddo  
+  
+  
+ Return
+
+end subroutine interpaero_sw
+
+! ------------------------------------------------------------------------
+
+
+subroutine opgcm_sw_gas_opas(pint,colmmr_g,taug)
+!=======================================================================
+! AJF 4-8-09, modified from URANUS "get_gas_opas.F90", version for use in OPGCM
+! 1. Get gas opacity data for methane for solar heating calculation
+! Absorption coefficients currently taken from Irwin et al 2006 for
+! 2000-9500 cm^-1 and from Karkoschka 1998 out to ~33289 cm^-1 (300.4 nm)
+!
+! 2. Calculate optical thickness of atm layer for each gauss point and 
+! spectral interval
+!
+!=======================================================================
+!  USES:
+
+  use physconst, only: gravit
+  
+  implicit none
+  
+! Arguments
+ 
+  real(r8), intent(in) :: pint(pverp)  ! interface pressures, Pa
+  real(r8), intent(in) :: colmmr_g(pver)  ! layer ch4 mass mix ratio in column
+
+! Layer gas optical thicknesses are defined from layer 1 (top layer for SW calc)
+!   to layer pver (deepest layer)
+
+  real(r8), dimension(Nwn_sw,Ng_sw,0:pver), intent(out) :: taug  !layer gas opt. thkns  
+    
+! Local variables
+
+  real(r8), parameter :: conv_p = 10.0 !convert from Pa to dyne/cm^2
+  integer :: ibnd,j,ik,numbnd
+  real(r8)  apcon  !conversion constant between abundance and d(pressure)
+                   ! for appropriate units of Ck_sw (cm^2 g^-1)
+  real(r8) :: grav !gravity in cgs units
+  real(r8) :: tauk
+
+  
+  numbnd=Nwn_sw
+  grav=gravit*100.0 ! need cgs units
+  apcon=conv_p/grav !Abundance(g cm^-2)= (mass mix-ratio)*apcon*Delta-P(Pa)
+  
+  
+! - Compute gas optical thickness in each spec interval, at each gauss point,
+!   in each layer: (***The index on Ck_sw fixed to 1 means only methane ***)
+
+    do ibnd=1,numbnd
+
+	do ik=1,Ng_sw
+	  j=0
+	  tauk=Ck_sw(1)%Val(ik, 1, ibnd) !Use props of layer 1
+	  tauk=tauk*colmmr_g(1)*apcon*pint(1)      !for atm above interface-1            
+          taug(ibnd,ik,j)=tauk
+	 do j=1,pver
+	  tauk=Ck_sw(1)%Val(ik, j, ibnd)
+	  tauk=tauk*colmmr_g(j)*apcon*(pint(j+1)-pint(j))            
+          taug(ibnd,ik,j)=tauk !layer 1 at top, layer pver at bottom          
+	 enddo	       
+	enddo
+	
+    enddo  !end loop over ibnd
+              
+
+! -------------------------------------------------------------------------------------    
+ return
+end subroutine opgcm_sw_gas_opas
+
+subroutine opgcm_sw_aer_opas(pint,mmr_aero,taua)
+!=======================================================================
+! AJF 4-12-09, modified from URANUS "get_gas_opas.F90", version for use in OPGCM
+! 1. Get aer opacity data for solar heating calculation
+!
+! 2. Calculate optical thickness of atm layer for each gauss point and 
+! spectral interval (i.e. on nu_sw grid)
+!
+!=======================================================================
+!  USES:
+
+  use physconst, only: gravit
+  
+  implicit none
+  
+! Arguments
+ 
+  real(r8), intent(in) :: pint(pverp)  ! interface pressures, Pa
+  real(r8), intent(in) :: mmr_aero(:,:)  ! layer aerosol mass mix ratio in column
+
+! Layer aerosol optical thicknesses are defined from layer 0 (above top interface)
+!   to layer pver (deepest layer)
+
+  real(r8), dimension(aero_int_sw%Na,knu_sw,0:pver) :: taua  !layer aer opt. thkns for Na types
+    
+! Local variables
+
+  real(r8), parameter :: conv_p = 10.0 !convert from Pa to dyne/cm^2
+  integer :: k,j,i,Naa
+  real(r8)  apcon  !conversion constant between abundance and d(pressure)
+                   ! for appropriate units of kaero (cm^2 g^-1)
+  real(r8) :: grav !gravity in cgs units
+  real(r8) :: tauk
+
+      
+
+  grav=gravit*100.0 ! need cgs units
+  apcon=conv_p/grav !Abundance(g cm^-2)= (mass mix-ratio)*apcon*Delta-P(Pa)
+  
+  Naa=aero_int_sw%Na
+  
+! - Compute aerosol optical thickness at each wn gridpoint
+
+   do i=1,Naa
+   
+    do k=1,knu_sw
+
+	  j=0
+	  tauk=aero_int_sw%kaero(i,k)  
+	  tauk=tauk*mmr_aero(1,i)*apcon*pint(1)      !for atm above interface-1            
+          taua(i,k,j)=tauk
+	 do j=1,pver
+	  tauk=aero_int_sw%kaero(i,k)
+	  taua(i,k,j)=tauk*mmr_aero(j,i)*apcon*(pint(j+1)-pint(j))                      
+	 enddo	       
+    enddo
+	
+   enddo  !end loop over i
+              
+
+
+ return
+end subroutine opgcm_sw_aer_opas
+
+! -------------------------------------------------------------------------------------     
+
+subroutine rayleigh_n2(density,sigma)
+
+  implicit none
+
+  ! This procedure calculates the Rayleigh scattering cross section for molecular
+  ! nitrogen = sigma (square cm) at wavelength lambda (micron), n2 density (molecules/cc)
+  !   From Sneep and Ubachs, Journal of Quantitative Spectroscopy &
+  !       Radiative Transfer 92 (2005) 293-310.
+
+! AJF 4-12-09:  Altered from Titan-CAM version 
+
+! Arguments
+
+  double precision, intent(in) :: density     ! in molecules / cm^3
+  double precision, intent(out) :: sigma(knu_sw)  ! in cm^2
+   
+! Local variables
+
+  double precision :: lambda(knu_sw)  ! in microns
+  double precision :: nu(knu_sw)  ! cm^-1, copy of nu_sw
+  
+  double precision :: pi  
+  double precision, dimension(knu_sw) ::  nusq, Fk, n, top, n_nusq, temp
+  
+  pi = 4.0 * atan(1.0)
+
+  !sz = size(lambda)
+
+  !allocate(nu(sz), nusq(sz), Fk(sz), n(sz), top(sz), n_nusq(sz), temp(sz))
+
+  ! try some default values for testing
+
+  !density = 2.547e+19 ; Reference p. 304
+  !lambda = [10000./18788.4, 1.0] ! lambda can be an array of wavelengths or just a single number
+  !lambda = 10000./18788.4 ! see reference table 2
+
+  nu=nu_sw
+  lambda = 10000.0 / nu ! Converts frequency (cm^{-1}) to lambda (microns)
+  nusq = nu**2
+  Fk = 1.034 + 3.17e-12*nusq ! Eqn. 12
+
+  n = lambda 
+  top = n
+  n_nusq = n
+
+  where (nu < 21360.0)
+     temp = 1.0d-08*(6498.2 + 307.43305D12/(14.4d09-nusq))*density/2.547e+19 ! Eqn. 10
+     n = 1.0 + temp
+     top = 2.0*temp + temp*temp ! = n^2 - 1
+     n_nusq = n*n
+  elsewhere
+     temp = 1.e-08*(5677.465 + 318.81874D12/(14.4e09-nusq))*density/2.547e+19 ! Eqn. 11
+     n = 1.0 + temp
+     top = temp*(2.0 + temp) ! = n^2 - 1
+     n_nusq = n*n
+  endwhere
+
+  sigma = (24*pi**3*(nusq/density)**2) * ((top/(n_nusq+2.0))**2) * Fk ! Eqn. 2
+  
+  !deallocate(nu, nusq, Fk, n, top, n_nusq, temp)
+  
+  !if n_params() lt 3 then
+  ! print, 'sigma = ',sigma
+  ! print, ' the test case sigma should be 5.30E-027'
+  !endif
+
+end subroutine rayleigh_n2
+
+subroutine rayleigh_h2(sigma)  !AJF, 4-12-09
+
+  implicit none
+
+  ! This procedure calculates the Rayleigh scattering cross section for molecular
+  ! hydrogen = sigma (square cm) at wavenumber nu_sw
+  
+  real(r8), intent(out) :: sigma(knu_sw)  ! in cm^2
+  real(r8), parameter :: alpha_h2=8.04e-25  !polarizability of H2, cm^3
+
+  ! local variables
+  real(r8) :: pi
+  
+  pi = 4.0 * atan(1.0)
+
+  sigma=128.0/3.0*pi*pi*pi*pi*pi*(nu_sw*nu_sw*alpha_h2)**2
+    
+end subroutine rayleigh_h2
+
+
+subroutine tau_rayleigh_n2(tau, mmr, pmid, pint, tmid)
+
+!  AJF 4-12-09: modified from Titan-CAM version
+
+  use physconst, only: gravit ! m/s^2
+
+  implicit none
+  
+  real(r8), parameter :: m_N2 = 4.6495088e-23  ! mass of N2 (g)
+  real(r8), parameter :: conv_p = 10.0 !convert from Pa to dyne/cm^2
+  real(r8), parameter :: k_boltz = 1.38054e-16  ! Boltz in cgs units
+
+
+! Arguments:
+
+  real(r8), intent(in) :: pint(pverp) ! Interface press, dyne cm^-2
+  real(r8), intent(in) :: mmr(pver)  ! gas mass mixing ratio of CH4 (TITAN)
+  real(r8), intent(in) :: pmid(pver) ! Mid-layer pressure (Pa)
+  real(r8), intent(in) :: tmid(pver) ! Layer temperature (K)
+
+  real(r8), intent(out) :: tau(knu_sw,0:pver)
+  
+! Local Variables:
+
+  integer i,k,f
+  real(r8) :: pmid_0
+  real(r8) :: u, density
+  real(r8) :: sigma(knu_sw) ! scattering cross section
+
+  tau(:,:) = 0.0d0
+
+  do k=1,pver
+     
+     u = (1.0 - mmr(k)) * conv_p*(pint(k+1) - pint(k)) / (1.0e2*gravit) ! g / cm^2
+     density = conv_p*pmid(k) / (k_boltz * tmid(k) )  ! molecules / cm^3
+
+     call rayleigh_n2(density,sigma)
+
+     do f=1,knu_sw
+        tau(f,k) = (sigma(f) / m_N2) * u
+
+!!        if (i .eq. 1 .and. masterproc .and. lambda(f) .lt. 1.01 .and. lambda(f).gt.0.99) then
+!!           ! grep FAO_N2R camrun.o | uniq | awk '{print $3,$4,$5,$6,$7,$8}'
+!!           !write(6,'(a,i3,e12.4,e12.4,e12.4,e12.4,e12.4,e12.4)'), 'FAO_N2R', &
+!!           !     k, pmid(i,k), pflx(i,k), density, lambda(f), sigma(f), tau(i,k,f)
+!!        endif
+
+     enddo
+     
+  enddo
+
+  
+  ! FAO: treat k=0 as a special case
+
+     pmid_0 = 0.5*pint(1)*conv_p  !dyne cm-2
+     ! Use layer-1 values for k=0 layer
+     u = (1.0 - mmr(1))*conv_p*pint(1)/(1.0e2*gravit)   ! g / cm^2
+     density = pmid_0/ (k_boltz * tmid(1) )  ! molecules / cm^3
+     
+     call rayleigh_n2(density, sigma)
+
+     do f=1,knu_sw
+        tau(f,0) = (sigma(f) / m_N2) * u
+     enddo
+     
+
+
+end subroutine tau_rayleigh_n2
+
+subroutine tau_rayleigh_h2(tau, pint)
+
+! AJF 4=-12-09
+
+  use physconst, only: gravit ! m/s^2
+  use shr_const_mod, only : SHR_CONST_MWDAIR,SHR_CONST_QH2
+
+  implicit none
+  
+  real(r8), parameter :: m_H2 = 3.34478e-24  ! mass of H2 (g)
+  real(r8), parameter :: conv_p = 10.0 !convert from Pa to dyne/cm^2
+
+  real(r8), intent(in) :: pint(pverp) ! Interface press, Pa
+  real(r8), intent(out) :: tau(knu_sw,0:pver)
+
+  integer i,k,f
+  real(r8) :: u              ! Total gas abundance, g cm^-2
+  real(r8) :: abun_h2        ! H2 abundance in layer, cm^-2
+  real(r8) :: sigma(knu_sw) ! scattering cross section, cm^2
+
+  tau(:,:) = 0.0
+
+     call rayleigh_h2(sigma)
+
+  do k=1,pver
+
+     ! AJF 4-12-09:
+     u = conv_p*(pint(k+1) - pint(k)) / (1.0e2*gravit) ! g / cm^2
+     abun_h2 = 2.0/SHR_CONST_MWDAIR*SHR_CONST_QH2*u/m_H2  !cm^-2
+
+     do f=1,knu_sw
+        tau(f,k) = sigma(f)*abun_h2
+     enddo
+     
+  enddo
+  
+  ! FAO: treat k=0 as a special case
+  
+  k=0
+
+     u = conv_p*pint(1)/(1.0e2*gravit) ! g / cm^2
+     abun_h2 = 2.0/SHR_CONST_MWDAIR*SHR_CONST_QH2*u/m_H2  !cm^-2
+
+     do f=1,knu_sw
+        tau(f,k) = sigma(f)*abun_h2
+     enddo
+     
+
+end subroutine tau_rayleigh_h2
+
+! ----------------------------------------------------------------------------- 
+
+subroutine get_sw_layer_props(pmid,pint,tmid,mmr_g,mmr_a) 
+
+! AJF 4-13-09 (converted [significantly] from URANUS get_opt_sw) 
+! Computes TOTAL optical thicknesses in column for short-wave RT calculation
+! Computes gas-absorption opacity on sw spectral grid 
+! Computes continuum opacity due to aerosols + rayleigh scattering  
+! Bulk layer single scattering albedos, forward scattering fractions, and asymmetry
+!  parameters also calculated here as a function of layer from individual aerosol
+!  parameters
+!
+!=======================================================================
+!  USES:
+
+  use physconst, only: gravit !m s^-2
+
+    
+  implicit none
+  
+! Arguments
+
+  real(r8), intent(in) :: mmr_g(pver) ! gas mass mixing ratio, just methane
+  real(r8), intent(in) :: mmr_a(pver,aero_int_sw%Na) ! aero mass mixing ratio
+  real(r8), intent(in) :: pint(pverp) ! Interface press, Pa
+  real(r8), intent(in) :: pmid(pver) ! Mid-layer pressure (Pa)
+  real(r8), intent(in) :: tmid(pver) ! Layer temperature (K)   
+
+! Local variables
+  
+  integer i,j,k,Naa
+  real(r8), dimension(Nwn_sw,Ng_sw,0:pver) :: taug  !layer gas opt. thkns
+  real(r8), dimension(knu_sw,0:pver) :: tau_gas  !layer gas opt. thkns
+  real(r8), dimension(aero_int_sw%Na,knu_sw,0:pver) :: tau_aer  !layer aer opt. thkns
+  real(r8), dimension(knu_sw,0:pver) :: tau_ray  !Rayleigh scattering opt. thkns
+
+  real(r8) :: abuna                    !abundance (g-cm^-2) of aerosol in layer
+  real(r8) :: abung                    !abundance (g-cm^-2) of ch4 in layer
+  real(r8) :: tau_min,tau_max,tauscl,ssa_min   !min,max allowable tau-range
+  real(r8), parameter :: conv_p = 10.0 !convert from Pa to dyne/cm^2
+  real(r8) :: sum_a
+ 
+  
+  Naa=aero_int_sw%Na
+
+      tau_min=1.e-10  !prevent tau_aer=tau_gas=tau=0
+      tau_max=20.0    !do not use tau values greater than tau_max
+      ssa_min=1.e-8      
+
+! Get information about gas absorption: gas opt thicknesses  
+
+
+  call opgcm_sw_gas_opas(pint,mmr_g,taug)
+  
+    
+  do k=1,knu_sw
+   if (de%ibnd_taug(k) == 0) then
+    tau_gas(k,:) = 0.0
+   else
+    do j=0,pver  
+     tau_gas(k,j)=taug(de%ibnd_taug(k),de%kg_taug(k),j)
+    enddo
+   endif
+  enddo
+
+
+! Compute aerosol extinction optical thickness of layers:
+
+  call opgcm_sw_aer_opas(pint,mmr_a,tau_aer)
+
+   
+! Compute Rayleigh scattering optical thickness of layers:
+
+#ifdef _TITAN
+   call tau_rayleigh_n2(tau_ray, mmr_g, pmid, pint, tmid)
+#else
+   call tau_rayleigh_h2(tau_ray, pint)
+#endif
+
+   
+! Compute total optical depth of each layer:
+
+   do k=1,knu_sw
+    do j=0,pver  !layer 0 above topmost interface, pver is deepest layer
+      sum_a=0.0
+      do i=1,Naa
+       sum_a = sum_a + tau_aer(i,k,j)
+      enddo
+      de%tau(k,j)=tau_gas(k,j)+sum_a+tau_ray(k,j) +tau_min
+      if (de%tau(k,j) > tau_max) then  !limit optical thickness of single layer to tau_max
+        tauscl=tau_max/de%tau(k,j)
+        de%tau(k,j)=tau_max
+        tau_aer(1:Naa,k,j)=tauscl*tau_aer(1:Naa,k,j)
+        tau_ray(k,j)=tauscl*tau_ray(k,j)
+        tau_gas(k,j)=tauscl*tau_gas(k,j)
+      endif
+    enddo
+   enddo
+   
+! Compute bulk scattering properties of layers:    
+    
+   do k=1,knu_sw
+    do j=0,pver
+      sum_a=0.0
+      do i=1,Naa
+       sum_a = sum_a + aero_int_sw%ssa(i,k)*tau_aer(i,k,j)
+      enddo
+       sum_a = sum_a + tau_ray(k,j)
+      de%ssa(k,j)=sum_a/de%tau(k,j) + ssa_min
+      sum_a=0.0
+      do i=1,Naa
+       sum_a = sum_a + aero_int_sw%g(i,k)*aero_int_sw%ssa(i,k)*tau_aer(i,k,j)
+      enddo
+      de%g(k,j)=sum_a/(de%ssa(k,j)*de%tau(k,j))
+      sum_a=0.0
+      do i=1,Naa
+       sum_a = sum_a + aero_int_sw%f(i,k)*aero_int_sw%ssa(i,k)*tau_aer(i,k,j)
+      enddo      
+      de%f(k,j)=sum_a/(de%ssa(k,j)*de%tau(k,j))
+    enddo
+   enddo
+
+     
+#ifdef RADIATION_DEBUG
+    if (debug_sw) then   
+   
+     print*,'HERE IS WAVENUMBER GRID INFO, level 31'
+     print*,' Pressure = ',conv_p*pmid(31)/1.e6,' bars'
+     print*,'Optical Depths (k,nu,dnu,tau,tau_gas,tau_aer(1:Naa),tau_ray)'
+      do k=1,knu_sw
+        write(6,200)  k,nu_sw(k),dnu_c_sw(k),de%tau(k,31),tau_gas(k,31), &
+         (tau_aer(i,k,31),i=1,Naa),tau_ray(k,31)
+     enddo 
+200   format(i4,2f12.3,7e15.5)
+
+        k=1388 !continuum (29375 cm-1)
+    write(7321,*) 'FOCUS ON TAU WITH DEPTH, k= ',k
+    write(7321,*) ' nu = ',nu_sw(k),' cm^-1'
+      j=0
+      write(7321,*) 'layer= ',j,' pbot= ',pint(1)*conv_p,' ptop= ',j, &
+         'mmr_g= ',mmr_g(1),' abung= ',mmr_g(1)*conv_p*pint(1)/(1.e2*gravit), &
+         'k(gas)= ',Ck_sw(1)%Val(de%kg_taug(k),1,de%ibnd_taug(k))  
+      write(7321,*) ' total tau= ',de%tau(k,j),' tau_ray= ',tau_ray(k,j), &
+       'tau_gas= ',tau_gas(k,j),' tau_aer(total)= ',sum(tau_aer(:,k,j))
+      write(7321,*) ' ssa= ',de%ssa(k,j),' g= ',de%g(k,j),' f= ',de%f(k,j)
+       do i=1,Naa
+        abuna=mmr_a(1,i)*conv_p*pint(1)/(1.e2*gravit)
+        write(7321,*) 'aerosol= ',i,' abundance(g cm-2)= ',abuna,' kaero= ',&
+         aero_int_sw%kaero(i,k),' ssa = ',aero_int_sw%ssa(i,k), &
+         ' g= ',aero_int_sw%g(i,k),' f= ',aero_int_sw%f(i,k)
+       enddo
+        write(7321,*) ' tau(1:Naa,j)= '
+        write(7321,201) (tau_aer(i,k,j), i=1,Naa)
+        
+      do j=1,pver
+      write(7321,*) 'layer= ',j,' pbot= ',pint(j+1)*conv_p,' ptop= ',pint(j)*conv_p, &
+         'mmr_g= ',mmr_g(j),' abung= ',mmr_g(j)* &
+          conv_p*(pint(j+1)-pint(j))/(1.e2*gravit), &
+         'k(gas)= ',Ck_sw(1)%Val(de%kg_taug(k),j,de%ibnd_taug(k))
+      write(7321,*) ' total tau= ',de%tau(k,j),' tau_ray= ',tau_ray(k,j), &
+       'tau_gas= ',tau_gas(k,j),' tau_aer(total)= ',sum(tau_aer(:,k,j))
+      write(7321,*) ' ssa= ',de%ssa(k,j),' g= ',de%g(k,j),' f= ',de%f(k,j)
+       do i=1,Naa
+        abuna=mmr_a(j,i)*conv_p*(pint(j+1)-pint(j))/(1.e2*gravit)
+        write(7321,*) 'aerosol= ',i,' abundance(g cm-2)= ',abuna
+       enddo
+        write(7321,*) ' tau(1:Naa,j)= '
+        write(7321,201) (tau_aer(i,k,j), i=1,Naa)
+      enddo 
+201   format(4e15.5) 
+   
+    endif
+#endif         
+    
+ return
+ end subroutine get_sw_layer_props 
+
+! -------------------------------------------------------------------------------------
+
+subroutine opgcm_deding(mu0, tau, ssa, g, f, salb, fnet, fup, fdn, &
+                        print_diag)
+
+! Bob West, IDL version, 6/06/ Fortran ajf 8/4 - (added 1 to index definition)
+! Delta-Eddington as defined by Breigleb, J. Geophys. Res. 97, 7603-7612, 1992.
+! Indexing convention:  Layer 1 is the top layer, interface 1 is the top interface
+!  AJF 4-14-09 :  Layer 0 is top layer, interface 0 is top interface, following Briegleb
+!
+!
+!  AJF 4-14-09 : Modify for OPGCM to include a layer "0" above topmost interface:  
+!   --> # of model layers (=pver),  # layers + "0-layer" ( =pverp) 
+!   # interfaces + "p=0" interface (pverp+1)
+!
+!  USES:
+
+
+   implicit none 
+
+! Arguments
+    
+   real(r8), intent(in) :: mu0         !cos(zenith angle) of incident sunlight
+   real(r8), intent(in) :: tau(0:pver) ! optical depth of layers for wn = nu 
+   real(r8), intent(in) :: ssa(0:pver) ! single scattering albedo of layer
+   real(r8), intent(in) :: g(0:pver)   ! asymmetry parameter in layer
+   real(r8), intent(in) :: f(0:pver)   ! forward scattering peak in layer 
+   real(r8), intent(in) :: salb     ! "surface albedo" for column
+   real(r8), intent(out) :: fnet(0:pverp) ! net *upward* solar flux at interface
+   real(r8), intent(out) :: fup(0:pverp),fdn(0:pverp)   !upward, downward fluxes
+   logical, intent(in) :: print_diag
+     
+! Local variables 
+ 
+  integer num_interfaces,i,j
+  real(r8), dimension(0:pverp) :: rdn,rup   !  "      " reflectivities
+  real(r8), dimension(0:pverp) :: tdn            !downward transmissivity  
+  real(r8), dimension(0:pverp) :: rbardn,rbarup !diffuse reflectivities  
+  real(r8), dimension(0:pverp) :: tbardn         !diffuse transmissivity
+  real(r8), dimension(0:pverp) :: taustardn    !cumulative op. depth (scaled)
+  real(r8) :: direct, r1r2            !direct beam, multiple reflection factor
+  real(r8), parameter :: transmin=1.e-4
+  
+! Scaled layer properties:
+
+  real(r8) :: taustar(0:pver),ssastar(0:pver),gstar(0:pver)
+  
+! Single layer transmissivities, reflectivities for direct, diffuse beams
+
+  real(r8) :: t(0:pver),r(0:pver),tbar(0:pver),rbar(0:pver)
+  
+! Intermediate arrays:
+
+  real(r8) :: lambda(0:pver),alpha(0:pver),gamma(0:pver),u(0:pver),N(0:pver)
+  
+!! *** SET  num_interfaces = index of deepest interface used in model *** 
+!! top interface of d-e structure labelled 0, top layer=0
+
+  num_interfaces=pverp    
+  
+!  Define single-layer properties :
+
+ do i=0,pver
+
+ taustar(i) = tau(i)*(1.0-ssa(i)*f(i))
+ ssastar(i) = ssa(i)*((1.0-f(i))/(1.0-ssa(i)*f(i)))
+ gstar(i) = (g(i)-f(i))/(1.0-f(i))
+
+ lambda(i) = sqrt(3.*(1.-ssastar(i))*(1.-ssastar(i)*gstar(i)))
+ 
+! ajf,7-30-08: Kludge - Small ssa means lambda can be > 1 --> creates possibility of
+!   divergence for certain mu0
+!   if reset lambda < 1, slightly alters behavior in strong absorption bands, 
+!   but testing shows effect is very minor for overall global budget
+!   lambda < 1 prevents occasional "spikes" in heating rates caused by divergence
+!   at certain values of mu0
+
+ if (lambda(i) .ge. 0.97) lambda(i)=0.97  !Guard against (1-lambda^2 mu0^2) --> 0 when ssa is small
+
+ alpha(i) = 0.75*ssastar(i)*mu0*((1.0 + gstar(i)*(1.0-ssastar(i))) &
+           /(1.0 -(lambda(i)*mu0)**2))
+ gamma(i) = 0.5*ssastar(i)*((1.+3.*gstar(i)*(1.-ssastar(i))*mu0*mu0) &
+           /(1.-(lambda(i)*mu0)**2))
+ u(i) = 1.5*(1.-ssastar(i)*gstar(i))/lambda(i)
+ N(i) = (u(i)+1.)**2*exp(lambda(i)*taustar(i)) - & 
+       (u(i)-1.)**2*exp(-lambda(i)*taustar(i))
+       
+ enddo
+ 
+ do i=0,pver
+
+ tbar(i) = 4.*u(i)/N(i)
+ rbar(i) = ((u(i)+1.0)*(u(i)-1.0)*(exp(lambda(i)*taustar(i)) & 
+          - exp((-lambda(i)*taustar(i))))/N(i))
+          
+ if (rbar(i) < 0.0) rbar(i)=0.
+ if (tbar(i) < 0.0) tbar(i)=0.
+  
+ t(i) = (alpha(i) + gamma(i))*tbar(i) +  &
+       (alpha(i)-gamma(i))*rbar(i)*exp(-taustar(i)/mu0) - &
+       (alpha(i) + gamma(i) -1.0)*exp(-taustar(i)/mu0)
+ r(i) = (alpha(i) - gamma(i))*tbar(i)*exp(-taustar(i)/mu0) +  &
+       (alpha(i) + gamma(i))*rbar(i) - (alpha(i)-gamma(i))
+
+ if (r(i) < 0.0) r(i)=0.
+ if (t(i) < 0.0) t(i)=0.
+       
+  if (print_diag) then
+   print*,i,'lambda= ',lambda(i),' u= ',u(i)
+  endif
+
+ enddo
+ 
+! Initialize the composite reflection and transmission functions to zero:
+
+   fup(:)=0.0
+   fdn(:)=0.0
+   fnet(:)=0.0
+   rdn(:)=0.0
+   rup(:)=0.0
+   tdn(:)=0.0
+   rbardn(:)=0.0   
+   rbarup(:)=0.0
+   tbardn(:)=0.0
+   taustardn(:)=0.0
+
+! first calculate down-propagating R and T functions
+!
+   if( print_diag) print*,'FROM DEDING:'
+
+ i=1  !second-highest interface, top of layer 1. [layer index matches upper interf index]
+
+ Rdn(i) = r(0)  ! Refl property at interface 1 to upward-inc light = r(0)
+ rbardn(i) = rbar(0)
+ tdn(i) = t(0)  !Transmission property at interface 1 = that of layer 0
+ tbardn(i) = tbar(0)  !etc.
+ taustardn(i) = taustar(0)
+ 
+  if( print_diag) then
+   print*,'Downwrd sweep' 
+   print*,i,'rdn= ',rdn(i),' tdn= ',tdn(i)
+   print*,i,'rbardn= ',rbardn(i),' tbardn= ',tbardn(i)
+   print*,i,'taustardn= ',taustardn(i) 
+  endif
+
+ do i = 2,num_interfaces  ! i is the interface index, with 0 at top of atmosphere
+
+!
+!  Note: there can be confusion about the indexing because rbar(i) refers to rbar for
+!  layer i whereas rbardn(i) refers to rbardn for interface i.
+!
+!  Definitions:
+!  tdn and rdn are the t r functions for downward-propagating light for the cumulative
+!  atmosphere above interface i.  Rup is the r function for upward-propagating lignt
+!  for the cumulative atmosphere + surface below interface i.
+!  These definitions agree with those on p. 7610 of briegleb 1992.
+
+
+ r1r2 = 1.0 - rbardn(i-1)*rbar(i-1) ! multiple bounces at the interface
+
+ Tbardn(i) = Tbardn(i-1)*tbar(i-1)/r1r2
+ rbardn(i) = rbar(i-1) + tbar(i-1)*rbardn(i-1)*tbar(i-1)/r1r2
+ taustardn(i) = taustardn(i-1) + taustar(i-1)
+ direct = exp(-taustardn(i-1)/mu0)
+ 
+!!! if (direct <= transmin) return  !*** STOP computation if transmission of direct
+                                 !radiation falls below transmin
+
+ tdn(i) = direct*t(i-1) + tbar(i-1)*((tdn(i-1) - direct) + &
+          direct*r(i-1)*rbardn(i-1))/r1r2
+
+ rdn(i) = r(i-1) + tbar(i-1)*((t(i-1) - exp(-taustar(i-1)/mu0))*rbardn(i-1) + &
+                exp(-taustar(i-1)/mu0) *rdn(i-1))/r1r2
+                
+  if (print_diag) then
+   print*,i,'rdn= ',rdn(i),' tdn= ',tdn(i)
+   print*,i,'rbardn= ',rbardn(i),' tbardn= ',tbardn(i)
+   print*,i,'taustardn= ',taustardn(i)
+   print*,i,'direct= ',direct,' r1r2= ',r1r2
+  endif
+ 
+ enddo  ! end loop over interfaces, downward sweep
+
+
+
+! now calculate composite reflection function for up-propagating light
+
+   if( print_diag)  print*,'upwrd sweep'
+
+  j = 0 
+
+   i = num_interfaces  ! interface index starting at the "surface" and counting down
+
+    rup(i) = salb  ! for a Lambert surface
+    rbarup(i) = salb ! hope this is right for a Lambert surface
+
+  do j = 1, num_interfaces
+  
+     i = num_interfaces - j ! interface index decreases to i=0
+
+  r1r2 = 1.0 - rbar(i)*rbarup(i+1)
+  direct = exp(-taustar(i)/mu0)
+  rup(i) = r(i) + tbar(i)*((t(i)-direct)*rbarup(i+1) + direct*rup(i+1))/r1r2
+  rbarup(i) = rbar(i) + tbar(i)*rbarup(i+1)*tbar(i)/r1r2
+  
+  if (print_diag) then
+   print*,i,'rup= ',rup(i)
+   print*,i,'rbarup= ',rbarup(i)
+   print*,i,'taustar= ',taustar(i)
+   print*,i,'direct= ',direct,' r1r2= ',r1r2
+  endif
+
+  enddo
+
+! Calculate up and down fluxes at each interface, normalized to 1
+!  (These fluxes have to be scaled by the incident solar intensity)
+
+  if( print_diag)   print*,'flux calculation'
+
+ do i=1,num_interfaces
+
+  direct = exp(-taustardn(i)/mu0)
+  r1r2 = 1.0 - rbardn(i)*rbarup(i)
+
+  fup(i) = (direct*rup(i) + (tdn(i) - direct)*rbarup(i))/r1r2
+  fup(i) = fup(i)*mu0  ! need to multiply by mu0 to get correct flux
+  
+  fdn(i) = direct + ((tdn(i) - direct) + direct*rup(i)*rbardn(i))/r1r2
+  fdn(i) = fdn(i)*mu0  ! need to multiply by mu0 to get correct flux
+  
+  if (print_diag) then
+   print*,i,'rup= ',rup(i),' tdn= ',tdn(i)
+   print*,i,'rbarup= ',rbarup(i),' rbardn= ',rbardn(i)
+   print*,i,'taustardn= ',taustardn(i)
+   print*,i,'direct= ',direct,' r1r2= ',r1r2
+  endif
+  
+ enddo
+
+ fup(0) = mu0*rup(0) ! need to multiply by mu0 to get correct flux
+
+
+ fdn(0) = mu0   ! need to multiply by mu0 to get correct flux
+
+ do i=0,num_interfaces
+  fnet(i) = fup(i)-fdn(i)
+ enddo
+
+end subroutine opgcm_deding
+
+! FAO:  tiny helper function for debugging
+subroutine str_of_int_less_than_1000(str,n)
+  character*(*) str
+  integer n
+
+  if (n<10) then
+     write(str,'(i1)') n
+  else if (n<100) then
+     write(str,'(i2)') n
+  else if (n<1000) then
+     write(str,'(i3)') n
+  else
+     str=''
+  endif
+
+end subroutine str_of_int_less_than_1000
+
+!=============================================================================
+end module opgcm_sw_rad_mod

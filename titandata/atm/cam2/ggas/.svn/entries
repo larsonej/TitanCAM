@@ -1,0 +1,54 @@
+8
+
+dir
+5
+https://hpc.jpl.nasa.gov/repos/cam_titan_data/trunk/atm/cam2/ggas
+https://hpc.jpl.nasa.gov/repos/cam_titan_data
+
+
+
+2008-06-09T17:25:38.569599Z
+5
+cam_titan
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+e25d4b2a-5c24-0410-b85c-fdc914af71da
+
+ghg_1870_2100_c040122.nc
+file
+
+
+
+
+2008-06-23T19:57:12.000000Z
+9552a59385021036bda614004a40c09f
+2008-06-09T17:25:38.569599Z
+5
+cam_titan
+has-props
+
+noaamisc.r8.nc
+file
+
+
+
+
+2008-06-23T19:57:12.000000Z
+c0c378bff548f2846bc8ef61b79b114b
+2008-06-09T17:25:38.569599Z
+5
+cam_titan
+has-props
+

@@ -1,0 +1,55 @@
+       subroutine gsolve
+c
+c
+c  @(#) gsolve.f  Ackerman  Dec-1995
+c  This routine calculates new gas concentrations.
+c
+c  Modified  Sep-1997  (McKie)
+c  To calculate at one spatial point per call.
+c  Globals <ix>, <iy>, <iz>, <ixy>, <ixyz> specify current spatial pt's indices.
+c
+c  Argument list input:
+c    None.
+c
+c  Argument list output:
+c    None.
+c
+c
+c  Include global constants and variables
+c
+      include 'globaer.h'
+c
+c
+c  Announce entry to this routine
+c
+      if( DEBUG ) write(LUNOPRT,'(/,a)') 'Enter gsolve'
+c
+c
+c  Update each gas concentration using gas production rates
+c 
+c     if(zl3(ixyz).le.30.0d5) then 
+c       gasloss = 1.069d-8             ! rainout rate
+c     if(zl3(ixyz).le.20.0d5) then 
+c       gasloss = 1.8335d-9             ! rainout rate
+
+
+c     if(zl3(ixyz).lt.30.0d5) then 
+c       gasloss = 3.1688d-8            ! year rainout time
+
+      if(zl3(ixyz).lt.30.0d5) then
+        gasloss = 3.8580d-7            ! 30 day rainout time
+
+      else 
+        gasloss = 0.
+      endif
+
+      do igas = 1,NGAS
+        gc3(ixyz,igas) = (gc3(ixyz,igas) + dtime * gasprod(igas))
+     $                   / (ONE + gasloss*dtime)
+      enddo
+c
+c
+c  Return to caller with new gas concentrations.
+c
+      return
+      end

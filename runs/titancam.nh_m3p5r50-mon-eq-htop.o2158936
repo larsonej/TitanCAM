@@ -1,0 +1,36 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0373/mom_priv/jobs/2158936.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0373/mom_priv/jobs/2158936.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/ib/bin/mpirun
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0373/mom_priv/jobs/2158936.moab.rc.colorado.edu.SC:  Running on node0373
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0373/mom_priv/jobs/2158936.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0373/mom_priv/jobs/2158936.moab.rc.colorado.edu.SC:  Set run to nh_m3p5r50-mon-eq-htop
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0373/mom_priv/jobs/2158936.moab.rc.colorado.edu.SC:  Set debug to ON
+/home/larsonej/titancam
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0373/mom_priv/jobs/2158936.moab.rc.colorado.edu.SC:  Set runtype to INITIAL
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0373/mom_priv/jobs/2158936.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0373/mom_priv/jobs/2158936.moab.rc.colorado.edu.SC:  copying cam from /projects/larsonej/titancam/build_nh_m3p5r50-mon-eq-htop ...
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0373/mom_priv/jobs/2158936.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/nh_m3p5r50-mon-eq-htop using MPI
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0373/mom_priv/jobs/2158936.moab.rc.colorado.edu.SC:  Started at Fri Aug 30 12:54:55 MDT 2013
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0373/mom_priv/jobs/2158936.moab.rc.colorado.edu.SC: Running on nodes ...
+node0373 node0373 node0373 node0373 node0373 node0373 node0373 node0373 node0373 node0373 node0373 node0373 node0374 node0374 node0374 node0374 node0374 node0374 node0374 node0374 node0374 node0374 node0374 node0374 node0375 node0375 node0375 node0375 node0375 node0375 node0375 node0375 node0375 node0375 node0375 node0375 node0376 node0376 node0376 node0376 node0376 node0376 node0376 node0376 node0376 node0376 node0376 node0376
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0373/mom_priv/jobs/2158936.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    4  48  /curc/torque/4.2.3-redhat_6_x86_64/nodes/node0373/aux//2158936.moab.rc.colorado.edu 
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0373/mom_priv/jobs/2158936.moab.rc.colorado.edu.SC:  CAM run failed
+/curc/torque/scripts/benchmark_stream.sh: line 11: /home/molu8455/projects/redhat_6/software/stream/stream: No such file or directory
+/curc/torque/scripts/benchmark_stream.sh: line 21: [: -lt: unary operator expected
+/curc/torque/scripts/benchmark_stream.sh: line 21: [: -lt: unary operator expected
+/curc/torque/scripts/benchmark_stream.sh: line 21: [: -lt: unary operator expected
+/curc/torque/scripts/benchmark_stream.sh: line 21: [: -lt: unary operator expected
+/curc/torque/scripts/benchmark_linpack.sh: line 22: /home/molu8455/projects/redhat_6/software/linpack/linpack_11.0.3/benchmarks/linpack/xlinpack_xeon64: No such file or directory
+/curc/torque/scripts/benchmark_linpack.sh: line 31: [: -lt: unary operator expected
+/curc/torque/scripts/benchmark_linpack.sh: line 31: [: -lt: unary operator expected
+/curc/torque/scripts/benchmark_linpack.sh: line 31: [: -lt: unary operator expected
+/curc/torque/scripts/benchmark_linpack.sh: line 31: [: -lt: unary operator expected
+/curc/torque/scripts/benchmark_stream.sh: line 11: /home/molu8455/projects/redhat_6/software/stream/stream: No such file or directory
+/curc/torque/scripts/benchmark_stream.sh: line 21: [: -lt: unary operator expected
+/curc/torque/scripts/benchmark_stream.sh: line 21: [: -lt: unary operator expected
+/curc/torque/scripts/benchmark_stream.sh: line 21: [: -lt: unary operator expected
+/curc/torque/scripts/benchmark_stream.sh: line 21: [: -lt: unary operator expected
+/curc/torque/scripts/benchmark_linpack.sh: line 22: /home/molu8455/projects/redhat_6/software/linpack/linpack_11.0.3/benchmarks/linpack/xlinpack_xeon64: No such file or directory
+/curc/torque/scripts/benchmark_linpack.sh: line 31: [: -lt: unary operator expected
+/curc/torque/scripts/benchmark_linpack.sh: line 31: [: -lt: unary operator expected

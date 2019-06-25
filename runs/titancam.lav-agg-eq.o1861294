@@ -1,0 +1,12 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/nodes/node0177/mom_priv/jobs/1861294.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/nodes/node0177/mom_priv/jobs/1861294.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/nodes/node0177/mom_priv/jobs/1861294.moab.rc.colorado.edu.SC:  Running on node0177
+/curc/torque/nodes/node0177/mom_priv/jobs/1861294.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/nodes/node0177/mom_priv/jobs/1861294.moab.rc.colorado.edu.SC:  Set run to lav-agg-eq
+/curc/torque/nodes/node0177/mom_priv/jobs/1861294.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/nodes/node0177/mom_priv/jobs/1861294.moab.rc.colorado.edu.SC:  Set runtype to RESTART
+/curc/torque/nodes/node0177/mom_priv/jobs/1861294.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/nodes/node0177/mom_priv/jobs/1861294.moab.rc.colorado.edu.SC:  /lustre/janus_scratch/larsonej/run/lav-agg-eq/cam not found, do an INITIAL run first ...

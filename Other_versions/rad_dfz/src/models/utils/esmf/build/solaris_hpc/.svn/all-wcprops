@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris_hpc
+END
+buildtest
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris_hpc/buildtest
+END
+base_variables
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris_hpc/base_variables
+END
+ESMF_conf.h
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris_hpc/ESMF_conf.h
+END
+base
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris_hpc/base
+END
+fix.h
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris_hpc/fix.h
+END
+base.site
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris_hpc/base.site
+END
+base_variables.start
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris_hpc/base_variables.start
+END

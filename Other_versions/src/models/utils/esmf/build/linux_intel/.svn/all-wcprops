@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/linux_intel
+END
+base_variables
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/linux_intel/base_variables
+END
+ESMF_conf.h
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/linux_intel/ESMF_conf.h
+END
+base
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/linux_intel/base
+END
+fix.h
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/linux_intel/fix.h
+END
+base.site
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/linux_intel/base.site
+END

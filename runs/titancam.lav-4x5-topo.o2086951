@@ -1,0 +1,19 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1477/mom_priv/jobs/2086951.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1477/mom_priv/jobs/2086951.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/x_86_64/rh6/openmpi/1.6.4/intel/13.0.0/torque/4.1.4/bin/mpirun
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1477/mom_priv/jobs/2086951.moab.rc.colorado.edu.SC:  Running on node1477
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1477/mom_priv/jobs/2086951.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1477/mom_priv/jobs/2086951.moab.rc.colorado.edu.SC:  Set run to lav-4x5-topo
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1477/mom_priv/jobs/2086951.moab.rc.colorado.edu.SC:  Set debug to ON
+/home/larsonej/titancam
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1477/mom_priv/jobs/2086951.moab.rc.colorado.edu.SC:  Set runtype to INITIAL
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1477/mom_priv/jobs/2086951.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1477/mom_priv/jobs/2086951.moab.rc.colorado.edu.SC:  copying cam from /projects/larsonej/titancam/build_lav-4x5-topo ...
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1477/mom_priv/jobs/2086951.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/lav-4x5-topo_rh6 using MPI
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1477/mom_priv/jobs/2086951.moab.rc.colorado.edu.SC:  Started at Thu Jul 25 15:31:55 MDT 2013
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1477/mom_priv/jobs/2086951.moab.rc.colorado.edu.SC: Running on nodes ...
+node1477 node1477 node1477 node1477 node1477 node1477 node1477 node1477 node1477 node1477 node1477 node1477 node1458 node1458 node1458 node1458 node1458 node1458 node1458 node1458 node1458 node1458 node1458 node1458 node1468 node1468 node1468 node1468 node1468 node1468 node1468 node1468 node1468 node1468 node1468 node1468 node1407 node1407 node1407 node1407 node1407 node1407 node1407 node1407 node1407 node1407 node1407 node1407
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node1477/mom_priv/jobs/2086951.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    4  48  /curc/torque/4.2.3-redhat_6_x86_64/nodes/node1477/aux//2086951.moab.rc.colorado.edu 
+Terminated
+=>> PBS: job killed: walltime 3641 exceeded limit 3600

@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/projects/ncar_models/!svn/ver/21/cam/branches/carma/source/cam1/models/utils/carma/doc
+END
+01.REVISIONS
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/doc/01.REVISIONS
+END
+02.CODE_GUIDE
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/doc/02.CODE_GUIDE
+END
+04.TASKS
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/doc/04.TASKS
+END
+03.CALL_MAP
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/doc/03.CALL_MAP
+END
+05.DEFAULT_RUN
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/doc/05.DEFAULT_RUN
+END

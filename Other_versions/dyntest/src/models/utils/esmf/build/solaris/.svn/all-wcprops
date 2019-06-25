@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris
+END
+buildtest
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris/buildtest
+END
+base_variables
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris/base_variables
+END
+ESMF_conf.h
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris/ESMF_conf.h
+END
+base
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris/base
+END
+fix.h
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris/fix.h
+END
+base.site
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris/base.site
+END
+base_variables.start
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/solaris/base_variables.start
+END

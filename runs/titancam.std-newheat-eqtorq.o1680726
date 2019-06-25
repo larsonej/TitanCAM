@@ -1,0 +1,27 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/nodes/node0837/mom_priv/jobs/1680726.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/nodes/node0837/mom_priv/jobs/1680726.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/nodes/node0837/mom_priv/jobs/1680726.moab.rc.colorado.edu.SC:  Running on node0837
+/curc/torque/nodes/node0837/mom_priv/jobs/1680726.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/nodes/node0837/mom_priv/jobs/1680726.moab.rc.colorado.edu.SC:  Set run to std-newheat-eqtorq
+/curc/torque/nodes/node0837/mom_priv/jobs/1680726.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/nodes/node0837/mom_priv/jobs/1680726.moab.rc.colorado.edu.SC:  Set runtype to INITIAL
+/curc/torque/nodes/node0837/mom_priv/jobs/1680726.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/nodes/node0837/mom_priv/jobs/1680726.moab.rc.colorado.edu.SC:  copying cam from /home/larsonej/titancam/build_std-newheat-eqtorq ...
+/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/namelist: No such file or directory.
+mv: cannot stat `/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/tmp.namelist': No such file or directory
+/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/namelist: No such file or directory.
+mv: cannot stat `/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/tmp.namelist': No such file or directory
+/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/namelist: No such file or directory.
+mv: cannot stat `/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/tmp.namelist': No such file or directory
+/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/namelist: No such file or directory.
+mv: cannot stat `/lustre/janus_scratch/larsonej/run/std-newheat-eqtorq/tmp.namelist': No such file or directory
+/curc/torque/nodes/node0837/mom_priv/jobs/1680726.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/std-newheat-eqtorq using MPI
+/curc/torque/nodes/node0837/mom_priv/jobs/1680726.moab.rc.colorado.edu.SC:  Started at Mon Jan 28 11:32:16 MST 2013
+/curc/torque/nodes/node0837/mom_priv/jobs/1680726.moab.rc.colorado.edu.SC: Running on nodes ...
+node0837 node0837 node0837 node0837 node0837 node0837 node0837 node0837 node0837 node0837 node0837 node0837 node0726 node0726 node0726 node0726 node0726 node0726 node0726 node0726 node0726 node0726 node0726 node0726 node0606 node0606 node0606 node0606 node0606 node0606 node0606 node0606 node0606 node0606 node0606 node0606 node1763 node1763 node1763 node1763 node1763 node1763 node1763 node1763 node1763 node1763 node1763 node1763
+/curc/torque/nodes/node0837/mom_priv/jobs/1680726.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    4  48  /curc/torque/nodes/node0837/aux//1680726.moab.rc.colorado.edu 
+=>> PBS: job killed: walltime 86434 exceeded limit 86400
+Terminated

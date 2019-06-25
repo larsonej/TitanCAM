@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+
+<config_bld>
+
+<comment>
+This file was produced by the following command:
+
+/home/larsonej/titancam/src/models/atm/cam/bld/configure -spmd -nosmp -dyn fv -res 10x15 -nadv 47 -nnadv 9 -nlev 61 -pcols 4
+
+This is a configuration file for building CAM.  It is the file format
+produced by the configure script to store a build configuration.  It
+may also be read by the configure script (via setting the -defaults
+option) to provide a default build configuration.
+
+This file may be edited by hand to quickly customize a configuration.  If
+hand editing is done it should be recognized that XML parser used to read
+this file is not able to check the file for valid syntax.  Also, the
+current parser places some restrictions on the normally valid XML syntax:
+1. Attribute values must be enclosed in DOUBLE QUOTED STRINGS!!!
+</comment>
+
+<comment>
+cam_bld    CAM build directory, contains .o and .mod files
+cam_exedir Directory where CAM executable will be created
+cam_root   Root directory of CAM distribution
+esmf_bld   Build directory for ESMF, only needed if ESMF lib will be built
+esmf_root  Root directory of ESMF distribution, only needed if ESMF lib will be built
+usr_src    User source directories to prepend to the filepath.  Multiple directories
+           are specified as a comma separated list with no embedded white space.
+</comment>
+
+<directories
+cam_bld="/home/larsonej/titancam/build"
+cam_exedir="/home/larsonej/titancam/build"
+cam_root="/home/larsonej/titancam/src"
+esmf_bld="/home/larsonej/titancam/build/esmf"
+esmf_root="/home/larsonej/titancam/src/models/utils/esmf"
+usr_src=""
+/>
+
+<comment>
+dyn    Dynamics package: eul, sld, or fv
+phys   Physics package: cam1 or waccm
+chem   Chemistry package: [waccm_mozart | waccm_ghg]
+lnd    Land model: clm2
+ocn    Use SST data or slab ocean model: dom or som
+sice   Sea ice package: csim4
+pergro Use modifications that allow perturbation growth testing
+           0 => no, 1 => yes
+</comment>
+
+<packages
+dyn="fv"
+phys="cam1"
+chem=""
+lnd="clm2"
+ocn="dom"
+sice="csim4"
+pergro="0"
+/>
+
+<comment>
+res     Horizontal grid resolution.  Spectral dycores use Gaussian grids are specified
+        by nlat x nlon.  The finite volume dycore uses an equally spaced grid that includes
+        pole points and is specified as lat_cell_size x lon_cell_size in degrees.
+nlon    Number of longitude grid points
+nlat    Number of latitude grid points
+nlev    Number of vertical levels
+nadv    Number of advected constituents
+nnadv   Number of non-advected constituents
+trm     Maximum Fourier wavenumber
+trn     Highest degree of the Legendre polynomials for m=0
+trk     Highest degree of the associated Legendre polynomials
+pcols   Maximum number of columns in a chunk
+</comment>
+
+<resolution
+res="10x15"
+nlon="24"
+nlat="19"
+nlev="61"
+nadv="47"
+nnadv="9"
+trm="1"
+trn="1"
+trk="1"
+pcols="4"
+/>
+
+<comment>
+cam_exe    Name of CAM executable
+cppdefs    User specified CPP defines to append to Makefile defaults.
+cc         User specified C compiler overrides Makefile default.
+cflags     User specified C compiler options to append to Makefile defaults.
+fc         User specified Fortran compiler overrides Makefile default.
+debug      Switch to enable debugging options for Fortran compiler.
+fflags     User specified Fortran compiler flags to append to Makefile defaults.
+fopt       User specified Fortran optimization flags to override Makefile defaults.
+ldflags    User specified ld options to append to Makefile defaults.
+spmd       Switch to enable or disable building SPMD version of CAM.
+smp        Switch to enable or disable building SMP version of CAM.
+nc_inc     Directory containing NetCDF include files.
+nc_lib     Directory containing NetCDF library.
+nc_mod     Directory containing NetCDF module files.
+nested_omp Switch for nested OpenMP
+mpi_inc    Directory containing MPI include files.
+mpi_lib    Directory containing MPI library.
+mpi_lib_name Name of MPI library.
+target_os  OS for which CAM is being built.
+</comment>
+
+<makefile
+cam_exe="cam"
+cppdefs=""
+cc="mpicc"
+cflags=""
+fc="mpif90"
+debug="0"
+fflags=""
+fopt=""
+ldflags=""
+spmd="1"
+smp="0"
+nc_inc="/curc/tools/free/redhat_5_x86_64/netcdf-4.1.3_ict-3.2.2.013_hdf-4.2.6_hdf5-1.8.7/include"
+nc_lib="/curc/tools/free/redhat_5_x86_64/netcdf-4.1.3_ict-3.2.2.013_hdf-4.2.6_hdf5-1.8.7/lib"
+nc_mod="/curc/tools/free/redhat_5_x86_64/netcdf-4.1.3_ict-3.2.2.013_hdf-4.2.6_hdf5-1.8.7/include"
+nested_omp="0"
+mpi_inc="/curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/include"
+mpi_lib="/curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/lib"
+mpi_lib_name="mpi"
+target_os="linux"
+/>
+
+</config_bld>

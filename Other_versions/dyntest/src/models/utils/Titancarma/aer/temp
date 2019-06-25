@@ -1,0 +1,45 @@
+carma2.0/aer/
+-------------
+actdropl.f      hydrostat.f           postrad.f          setupnuc.f
+charge.f        ieee_retrospective.f  prerad.f           setupvfall.f
+chekres.f       initaer.f             prestep.f          setupvf.f
+coagl.f         initatm.f             print2d.f          smallconc.f
+coagp.f         init.f                project.f          smoluchowski.f
+coremelt.f      initgas.f             prtflux.f          step.f
+csolve.f        initnew.f             prtrates.f         supersat.f
+dblank.f        initrad.f             prtsep.f           temp.f
+downgevapply.f  initres.f             psolve.f           template.f
+downgxfer.f     lognormal.f           quit.f             test.f
+evapp.f         main.f                rescale.f          testhis.f
+extrapolate.f   melticel.f            restart.f          tprint2d.f
+freezaerl.f     meltmixedl.f          rhopart.f          tsolve.f
+freezdropl.f    microfast.f           seinfeld86.f       updatecoag.f
+freezmixedl.f   microslow.f           setupaer.10elem.f  upgxfer.f
+gasexchange.f   newckern.f            setupaer.1elem.f   vaporp.f
+glkcoef.f       newstate.f            setupaer.3elem.f   varstep.f
+growevapl.f     nsubsteps.f           setupaer.f         versol.f
+growp.f         outhis_bin.f          setupbins.f        vertadv.f
+gsolve.f        outhis.f              setupckern.f       vertdif.f
+hordif.f        outhis_ncdf.f         setupcoag.f        vertical.f
+horizont.f      outprt.f              setuperr.f         zeromicro.f
+htranfosl.f     outres.f              setupgkern.f       zerorad.f
+htranglk.f      parcel.f              setupgrow.f
+htranppm.f      postep.f              setupmprod.f
+
+
+
+Changes to standard model:
+--------------------------
+initaer.f.2km     initatm.f.2km   initgas.f.30km  restart.f.2km
+initaer.f.30km    initatm.f.4km   initgas.f.46km  restart.f.4km
+initaer.f.46km  
+
+gsolve.f.rain     psolve.f.rain
+
+actdropl.f.c2h2   initgas.f.c2h2  setupaer.f.c2h2  vaporp.f.c2h2
+
+setupaer.f.crun   outprt.f.crun
+
+initaer.f.interp
+
+initatm.f.laraKdiff

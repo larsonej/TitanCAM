@@ -1,0 +1,28 @@
+62c62
+< EXE=		carmas.exe
+---
+> EXE=		carma.exe
+71c71
+< SYSTYP=		sunos
+---
+> SYSTYP=		linux
+81,82c81,82
+< #FORTRAN=	g77
+<  FORTRAN=	f77
+---
+> FORTRAN=	g77
+> #FORTRAN=	f77
+102c102
+< #FFLAGS=	-c -w -ff90 -O
+---
+> FFLAGS=	-c -w -ff90 -O
+105c105
+<  FFLAGS=	-c -O
+---
+> #FFLAGS=	-c -O
+150,151c150,151
+< #LINK=		g77
+< LINK=		f77
+---
+> LINK=		g77
+> #LINK=		f77

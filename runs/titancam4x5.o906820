@@ -1,0 +1,18 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/nodes/node0364/mom_priv/jobs/906820.torque.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/nodes/node0364/mom_priv/jobs/906820.torque.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/nodes/node0364/mom_priv/jobs/906820.torque.rc.colorado.edu.SC:  Running on node0364
+/curc/torque/nodes/node0364/mom_priv/jobs/906820.torque.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/nodes/node0364/mom_priv/jobs/906820.torque.rc.colorado.edu.SC:  Set run to p10m10r50-agg_4x5
+/curc/torque/nodes/node0364/mom_priv/jobs/906820.torque.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/nodes/node0364/mom_priv/jobs/906820.torque.rc.colorado.edu.SC:  Set runtype to INITIAL
+/curc/torque/nodes/node0364/mom_priv/jobs/906820.torque.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/nodes/node0364/mom_priv/jobs/906820.torque.rc.colorado.edu.SC:  copying cam from /home/larsonej/titancam/build_p10m10r50-agg_4x5 ...
+/curc/torque/nodes/node0364/mom_priv/jobs/906820.torque.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/p10m10r50-agg_4x5 using MPI
+/curc/torque/nodes/node0364/mom_priv/jobs/906820.torque.rc.colorado.edu.SC:  Started at Fri May 18 11:03:53 MDT 2012
+/curc/torque/nodes/node0364/mom_priv/jobs/906820.torque.rc.colorado.edu.SC: Running on nodes ...
+node0364 node0364 node0364 node0364 node0364 node0364 node0364 node0364 node0364 node0364 node0364 node0364 node0320 node0320 node0320 node0320 node0320 node0320 node0320 node0320 node0320 node0320 node0320 node0320 node1769 node1769 node1769 node1769 node1769 node1769 node1769 node1769 node1769 node1769 node1769 node1769 node1766 node1766 node1766 node1766 node1766 node1766 node1766 node1766 node1766 node1766 node1766 node1766 node0868 node0868 node0868 node0868 node0868 node0868 node0868 node0868 node0868 node0868 node0868 node0868 node0842 node0842 node0842 node0842 node0842 node0842 node0842 node0842 node0842 node0842 node0842 node0842 node0815 node0815 node0815 node0815 node0815 node0815 node0815 node0815 node0815 node0815 node0815 node0815 node0814 node0814 node0814 node0814 node0814 node0814 node0814 node0814 node0814 node0814 node0814 node0814 node0809 node0809 node0809 node0809 node0809 node0809 node0809 node0809 node0809 node0809 node0809 node0809 node0801 node0801 node0801 node0801 node0801 node0801 node0801 node0801 node0801 node0801 node0801 node0801 node0331 node0331 node0331 node0331 node0331 node0331 node0331 node0331 node0331 node0331 node0331 node0331 node0325 node0325 node0325 node0325 node0325 node0325 node0325 node0325 node0325 node0325 node0325 node0325
+/curc/torque/nodes/node0364/mom_priv/jobs/906820.torque.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    12  144  /curc/torque/nodes/node0364/aux//906820.torque.rc.colorado.edu 
+/curc/torque/nodes/node0364/mom_priv/jobs/906820.torque.rc.colorado.edu.SC:  CAM run failed

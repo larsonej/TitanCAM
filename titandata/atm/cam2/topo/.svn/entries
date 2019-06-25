@@ -1,0 +1,41 @@
+8
+
+dir
+5
+https://hpc.jpl.nasa.gov/repos/cam_titan_data/trunk/atm/cam2/topo
+https://hpc.jpl.nasa.gov/repos/cam_titan_data
+
+
+
+2008-06-09T17:25:38.569599Z
+5
+cam_titan
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+e25d4b2a-5c24-0410-b85c-fdc914af71da
+
+topo-from-cami_0000-01-01_10x15_L26_c030918.nc
+file
+
+
+
+
+2008-06-23T19:57:11.000000Z
+db4ff54f6ce8a4561bf0068d5a13d436
+2008-06-09T17:25:38.569599Z
+5
+cam_titan
+has-props
+

@@ -1,0 +1,19 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/mom_priv/jobs/2305015.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/mom_priv/jobs/2305015.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/mom_priv/jobs/2305015.moab.rc.colorado.edu.SC:  Running on node0811
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/mom_priv/jobs/2305015.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/mom_priv/jobs/2305015.moab.rc.colorado.edu.SC:  Set run to lav-agg
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/mom_priv/jobs/2305015.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/mom_priv/jobs/2305015.moab.rc.colorado.edu.SC:  Set runtype to RESTART
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/mom_priv/jobs/2305015.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/mom_priv/jobs/2305015.moab.rc.colorado.edu.SC:  using cam from /lustre/janus_scratch/larsonej/run/lav-agg ...
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/mom_priv/jobs/2305015.moab.rc.colorado.edu.SC:  using namelist from /lustre/janus_scratch/larsonej/run/lav-agg ...
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/mom_priv/jobs/2305015.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/lav-agg using MPI
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/mom_priv/jobs/2305015.moab.rc.colorado.edu.SC:  Started at Mon Oct 28 20:50:21 MDT 2013
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/mom_priv/jobs/2305015.moab.rc.colorado.edu.SC: Running on nodes ...
+node0811 node0811 node0811 node0811 node0811 node0811 node0811 node0811 node0811 node0811 node0811 node0811 node0813 node0813 node0813 node0813 node0813 node0813 node0813 node0813 node0813 node0813 node0813 node0813 node0832 node0832 node0832 node0832 node0832 node0832 node0832 node0832 node0832 node0832 node0832 node0832 node0844 node0844 node0844 node0844 node0844 node0844 node0844 node0844 node0844 node0844 node0844 node0844
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/mom_priv/jobs/2305015.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    4  48  /curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/aux//2305015.moab.rc.colorado.edu 
+/curc/torque/4.2.3-redhat_6_x86_64/nodes/node0811/mom_priv/jobs/2305015.moab.rc.colorado.edu.SC:  CAM run failed

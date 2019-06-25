@@ -1,0 +1,17 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/nodes/node0949/mom_priv/jobs/1924438.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/nodes/node0949/mom_priv/jobs/1924438.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/nodes/node0949/mom_priv/jobs/1924438.moab.rc.colorado.edu.SC:  Running on node0949
+/curc/torque/nodes/node0949/mom_priv/jobs/1924438.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/nodes/node0949/mom_priv/jobs/1924438.moab.rc.colorado.edu.SC:  Set run to drydeptest
+/curc/torque/nodes/node0949/mom_priv/jobs/1924438.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/nodes/node0949/mom_priv/jobs/1924438.moab.rc.colorado.edu.SC:  Set runtype to INITIAL
+/curc/torque/nodes/node0949/mom_priv/jobs/1924438.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/nodes/node0949/mom_priv/jobs/1924438.moab.rc.colorado.edu.SC:  copying cam from /projects/larsonej/titancam/build_drydeptest ...
+/curc/torque/nodes/node0949/mom_priv/jobs/1924438.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/drydeptest using MPI
+/curc/torque/nodes/node0949/mom_priv/jobs/1924438.moab.rc.colorado.edu.SC:  Started at Thu May  9 04:19:58 MDT 2013
+/curc/torque/nodes/node0949/mom_priv/jobs/1924438.moab.rc.colorado.edu.SC: Running on nodes ...
+node0949 node0949 node0949 node0949 node0949 node0949 node0949 node0949 node0949 node0949 node0949 node0949 node0945 node0945 node0945 node0945 node0945 node0945 node0945 node0945 node0945 node0945 node0945 node0945 node0944 node0944 node0944 node0944 node0944 node0944 node0944 node0944 node0944 node0944 node0944 node0944 node0943 node0943 node0943 node0943 node0943 node0943 node0943 node0943 node0943 node0943 node0943 node0943
+/curc/torque/nodes/node0949/mom_priv/jobs/1924438.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    4  48  /curc/torque/nodes/node0949/aux//1924438.moab.rc.colorado.edu 

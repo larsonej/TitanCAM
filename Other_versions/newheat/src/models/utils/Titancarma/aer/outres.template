@@ -1,0 +1,49 @@
+      subroutine outres
+c
+c
+c  @(#) outres.f  McKie  Oct-1995
+c  This routine outputs the current critical global model
+c  information to the output restart file.
+c  This routine is created automatically from a template file.
+c  So edits should be made to the template file, otherwise they
+c  could be lost due to recreation.
+c  (Template file is usually outres.template)
+c
+c  Argument list input:
+c    None.
+c
+c  Argument list output:
+c    None.
+c
+c
+c  Include global constants and variables
+c
+      include 'globaer.h'
+c
+c
+c  Define formats
+c
+    1 format('Restart info written at itime = ',i6,
+     $       3x,'time=',f12.4,4x,'to file ',a)
+c
+c
+c  Announce entry to this routine
+c
+      if( DEBUG ) write(LUNOPRT,'(/,a)') 'Enter outres'
+c
+c
+c  <<< Insert restart i/o code here >>>
+c
+c
+c
+c  Report that restart info has been output
+c
+      call prtsep
+      call dblank(resofil, ns)
+      write(LUNOPRT,1) itime, time, resofil(1:ns)
+c
+c
+c  Return to caller with model info output to restart file
+c
+      return
+      end

@@ -1,0 +1,19 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/nodes/node0855/mom_priv/jobs/1788907.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/nodes/node0855/mom_priv/jobs/1788907.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/nodes/node0855/mom_priv/jobs/1788907.moab.rc.colorado.edu.SC:  Running on node0855
+/curc/torque/nodes/node0855/mom_priv/jobs/1788907.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/nodes/node0855/mom_priv/jobs/1788907.moab.rc.colorado.edu.SC:  Set run to nh_lavvas-norain
+/curc/torque/nodes/node0855/mom_priv/jobs/1788907.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/nodes/node0855/mom_priv/jobs/1788907.moab.rc.colorado.edu.SC:  Set runtype to INITIAL
+/curc/torque/nodes/node0855/mom_priv/jobs/1788907.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/nodes/node0855/mom_priv/jobs/1788907.moab.rc.colorado.edu.SC:  copying cam from /projects/larsonej/titancam/build_nh_lavvas-norain ...
+/curc/torque/nodes/node0855/mom_priv/jobs/1788907.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/nh_lavvas-norain using MPI
+/curc/torque/nodes/node0855/mom_priv/jobs/1788907.moab.rc.colorado.edu.SC:  Started at Tue Mar  5 14:44:51 MST 2013
+/curc/torque/nodes/node0855/mom_priv/jobs/1788907.moab.rc.colorado.edu.SC: Running on nodes ...
+node0855 node0855 node0855 node0855 node0855 node0855 node0855 node0855 node0855 node0855 node0855 node0855 node0866 node0866 node0866 node0866 node0866 node0866 node0866 node0866 node0866 node0866 node0866 node0866 node0802 node0802 node0802 node0802 node0802 node0802 node0802 node0802 node0802 node0802 node0802 node0802 node0806 node0806 node0806 node0806 node0806 node0806 node0806 node0806 node0806 node0806 node0806 node0806
+/curc/torque/nodes/node0855/mom_priv/jobs/1788907.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    4  48  /curc/torque/nodes/node0855/aux//1788907.moab.rc.colorado.edu 
+=>> PBS: job killed: walltime 3627 exceeded limit 3600
+Terminated

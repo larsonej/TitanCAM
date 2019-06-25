@@ -1,0 +1,314 @@
+/home/tauntaun/barthe/Titan/src/TitanMethane/rad
+
+
+add.f
+C     ***************************************************************
+C     *  Purpose             :  Defines source terms, form matrix   *
+C     *                         for multiple layers and solve tri-  *
+C     *                         diagnol equations to obtain mean    *
+C     *                         intensity and net flux.             *
+C     *  Subroutines Called  :  None                                *
+C     *  Input               :  G0, U0, RSFX, TAUL, OPD             *
+C     *  Output              :  B3, EE3, DIRECT, SFCS, CPB, CMB, DS *
+C     * *************************************************************
+C
+      include 'globrad.h'
+C
+C     THIS SUBROUTINE FORMS THE MATRIX FOR THE MULTIPLE LAYERS AND
+C     USES A TRIDIAGONAL ROUTINE TO FIND RADIATION IN THE ENTIRE
+C     ATMOSPHERE.
+C
+
+cvmgt.f
+
+dmiess.f
+C **********************************************************************
+C    THIS SUBROUTINE COMPUTES MIE SCATTERING BY A STRATIFIED SPHERE,
+C    I.E. A PARTICLE CONSISTING OF A SPHERICAL CORE SURROUNDED BY A
+C    SPHERICAL SHELL.  THE BASIC CODE USED WAS THAT DESCRIBED IN THE
+C    REPORT: " SUBROUTINES FOR COMPUTING THE PARAMETERS OF THE
+C    ELECTROMAGNETIC RADIATION SCATTERED BY A SPHERE " J.V. DAVE,
+C    I B M SCIENTIFIC CENTER, PALO ALTO , CALIFORNIA.
+C    REPORT NO. 320 - 3236 .. MAY 1968 .
+C
+C    THE MODIFICATIONS FOR STRATIFIED SPHERES ARE DESCRIBED IN
+C        TOON AND ACKERMAN, APPL. OPTICS, IN PRESS, 1981
+C
+C    THE PARAMETERS IN THE CALLING STATEMENT ARE DEFINED AS FOLLOWS :
+C      RO IS THE OUTER (SHELL) RADIUS;
+C      R  IS THE CORE RADIUS;
+C      RFR, RFI  ARE THE REAL AND IMAGINARY PARTS OF THE SHELL INDEX
+C          OF REFRACTION IN THE FORM (RFR - I* RFI);
+C      RE2, TMAG2  ARE THE INDEX PARTS FOR THE CORE;
+C          ( WE ASSUME SPACE HAS UNIT INDEX. )
+C      THETD(J): ANGLE IN DEGREES BETWEEN THE DIRECTIONS OF THE INCIDENT
+C          AND THE SCATTERED RADIATION.  THETD(J) IS< OR= 90.0
+C          IF THETD(J) SHOULD HAPPEN TO BE GREATER THAN 90.0, ENTER WITH
+C          SUPPLEMENTARY VALUE, SEE COMMENTS BELOW ON ELTRMX;
+C      JX: TOTAL NUMBER OF THETD FOR WHICH THE COMPUTATIONS ARE
+C          REQUIRED.  JX SHOULD NOT EXCEED IT UNLESS THE DIMENSIONS
+C          STATEMENTS ARE APPROPRIATEDLY MODIFIED;
+C
+C      THE DEFINITIONS FOR THE FOLLOWING SYMBOLS CAN BE FOUND IN"LIGHT
+C          SCATTERING BY SMALL PARTICLES,H.C.VAN DE HULST, JOHN WILEY '
+C          SONS, INC., NEW YORK, 1957" .
+C      QEXT: EFFICIENCY FACTOR FOR EXTINCTION,VAN DE HULST,P.14 ' 127.
+C      QSCAT: EFFICIENCY FACTOR FOR SCATTERING,V.D. HULST,P.14 ' 127.
+C      CTBRQS: AVERAGE(COSINE THETA) * QSCAT,VAN DE HULST,P.128
+C      ELTRMX(I,J,K): ELEMENTS OF THE TRANSFORMATION MATRIX F,V.D.HULST
+C          ,P.34,45 ' 125. I=1: ELEMENT M SUB 2..I=2: ELEMENT M SUB 1..
+C          I = 3: ELEMENT S SUB 21.. I = 4: ELEMENT D SUB 21..
+C      ELTRMX(I,J,1) REPRESENTS THE ITH ELEMENT OF THE MATRIX FOR
+C          THE ANGLE THETD(J).. ELTRMX(I,J,2) REPRESENTS THE ITH ELEMENT
+C          OF THE MATRIX FOR THE ANGLE 180.0 - THETD(J) ..
+C      QBS IS THE BACK SCATTER CROSS SECTION.
+C
+C      IT: IS THE DIMENSION OF THETD, ELTRMX, CSTHT, PI, TAU, SI2THT,
+C          IT MUST CORRESPOND EXACTLY TO THE SECOND DIMENSION OF ELTRMX.
+C      IACAP IS THE DIMENSION OF ACAP
+C          IN THE ORIGINAL PROGRAM THE DIMENSION OF ACAP WAS 7000.
+C          FOR CONSERVING SPACE THIS SHOULD BE NOT MUCH HIGHER THAN
+C          THE VALUE, N=1.1*(NREAL**2 + NIMAG**2)**.5 * X + 1
+C      WVNO: 2*PI / WAVELENGTH
+C
+C    ALSO THE SUBROUTINE COMPUTES THE CAPITAL A FUNCTION BY MAKING USE O
+C    DOWNWARD RECURRENCE RELATIONSHIP.
+C
+C      TA(1): REAL PART OF WFN(1).  TA(2): IMAGINARY PART OF WFN(1).
+C      TA(3): REAL PART OF WFN(2).  TA(4): IMAGINARY PART OF WFN(2).
+C      TB(1): REAL PART OF FNA.     TB(2): IMAGINARY PART OF FNA.
+C      TC(1): REAL PART OF FNB.     TC(2): IMAGINARY PART OF FNB.
+C      TD(1): REAL PART OF FNAP.    TD(2): IMAGINARY PART OF FNAP.
+C      TE(1): REAL PART OF FNBP.    TE(2): IMAGINARY PART OF FNBP.
+C      FNAP, FNBP  ARE THE PRECEDING VALUES OF FNA, FNB RESPECTIVELY.
+C **********************************************************************
+
+gather.f
+
+newflux1.f
+C     **************************************************************
+C     *  Purpose             :  Calculate upward and downward      *
+C     *                         intensities and fluxes using Gauss *
+C     *                         Quadrature angles and weights.     *
+C     *  Subroutines Called  :  None                               *
+C     *  Input               :  PTEMP, SLOPE, Y3, B3, EE1, EE2     *
+C     *  Output              :  DINTENT, UINTENT, DIREC, DIRECTU   *
+C     * ************************************************************
+
+oppr.f
+C     **************************************************************
+C     *  Purpose             :  CaLculates optical properties      *
+C     *                         such as single scattering albedo,  *
+C     *                         asymmetry parameter, etc.          *
+C     *                         This routine is case dependent and *
+C     *                         wiLL have to be repLaced by the    *
+C     *                         user.                              *
+C     *  Subroutines Called  :  None                               *
+C     *  Input               :  PAH2O, RDH2O, CO2, O3, ETC         *
+C     *  Output              :  TAUL, W0, G0, OPD, Y3              *
+C     * ************************************************************
+C
+C     W0(NWAVE,NLAYER) : SINGLE SCATTERING ALBEDO *** delta scaled ***
+C     G0(NWAVE,NLAYER) : ASYMMETRY PARAMETER *** delta scaled ***
+C     OPD(NWAVE,NLAYER): cumulative OPTICAL DEPTH *** delta scaled ***
+C     SFL(NWAVE)       : SOLAR FLUX
+C    uW0(NWAVE,NLAYER)  : unscaled SINGLE SCATTERING ALBEDO
+C    uG0(NWAVE,NLAYER)  : unscaled ASYMMETRY PARAMETER
+C    uTAUL(NWAVE,NLAYER): unscaled OPTICAL DEPTH of layer
+C
+C     ASSUME THAT P IS SAME ON ALL SIGMA LEVELS. IF PSURFACE
+C     VARIES A LOT, THEN WE MAY NEED TO CALCULATE TAUO3,
+C     TAUCO2, TAUO2 FOR EACH POINT.
+C
+C     NOTE : THE TOP LAYER IS A DUMMY. IT CONTAINS A DEFINED GAS
+C            AMOUNT. DIFFERENT MODELS WILL REQUIRE DIFFERENT
+C            TREATMENT OF THIS.
+C     CALCULATE TOTAL OPTICAL DEPTH INCLUDING GASES. THEN
+C     GIVEN THE AEROSOL OPTICAL DEPTHS AND CLOUD OPTICAL DEPTHS,
+C     CALCULATE FINAL OPTICAL PROPERTIES. WE USE A DELTA
+C     TWO STREAM APPROACH TO FIND W0, SINGLE SCATTERING ALBEDO,
+C     G0, ASYMMMETRY PARAMETER, TAUL, LAYER OPTICAL DEPTH,
+C     OPD, CUMULATIVE OPTICAL DEPTH TO BASE OF LAYER.
+
+oppr1.f
+C     **********************************************************
+C     *  Purpose             :  Calculate Planck Function and  *
+C     *                         and its derivative at ground   *
+C     *                         and at all altitudes.          *
+C     *  Subroutines Called  :  None                           *
+C     *  Input               :  TGRND, NLOW, WEIGHT            *
+C     *  Output              :  PTEMP, PTEMPG, SLOPE           *
+C     * ********************************************************
+
+plnk.f
+C     ******************************************************
+C     *  Purpose             :  Calculate Planck Function  *
+C     *  Subroutines Called  :  None                       *
+C     *  Input               :  WAVE, NCOUNT               *
+C     *  Output              :  PLANK                      *
+C     * ****************************************************
+C
+C  THIS SUBROUTINE COMPUTES THE INTEGRAL OF THE PLANCK FUNCTION BETWEEN
+C  ZERO AND THE SPECIFIED VALUE OF LAMBDA.  THUS (USING XL AS LAMBDA)
+C  WE WANT TO INTEGRATE
+C  R = INTEGRAL(XL=0 TO XL=XLSPEC) ( C1*XL**-5* / (EXP(C2/XL*T)-1) )*DXL
+C  SUBSTITUTING U=C2/(XL*T), THE INTEGRAL BECOMES
+C  R = A CONSTANT TIMES INTEGRAL (USPEC TO INFINITY) OF
+C            ( U**3 / (EXP(U) - 1) )*DU
+C  THE APPROXIMATIONS SHOWN HERE ARE ON PAGE 998 OF ABRAMOWITZ AND SEGUN
+C  UNDER THE HEADING OF DEBYE FUNCTIONS.  C2 IS THE PRODUCT OF PLANCK'S
+C  CONSTANT AND THE SPEED OF LIGHT DIVIDED BY BOLTZMANN'S CONSTANT.
+C  C2 = 14390 WHEN LAMBDA IS IN MICRONS.
+C  THE FACTOR 0.15399 IS THE RECIPROCAL OF SIX TIMES
+C  THE SUM OF (1/N**2) FOR ALL N FROM ONE TO INFINITY.  IT IS CHOSEN TO
+C  NORMALIZE THE INTEGRAL TO A MAXIMUM VALUE OF UNITY.
+C  RADIATION IN REAL UNITS IS OBTAINED BY MULTIPLYING THE INTEGRAL BY
+C  THE STEFAN-BOLTZMANN CONSTANT TIMES T**4.
+
+radout.f
+C     **************************************************************
+C     *  Purpose             :  Prints out radiative transfer      *
+C     *                         results.                           *
+C     **************************************************************
+
+radtran.f
+C     **************************************************************
+C     Purpose:    Driver routine for radiative transfer model.
+C
+C     Input:      Temperature, vapor, and aerosol profiles and solar
+C                 zenith angle are taken from interface common block.
+C
+C     Output:     Profiles of radiative fluxes, heating
+C                 rates for air and particles; vertically
+C                 integrated optical depths; and albedos (which
+C                 are all loaded into interface common block).
+C     **************************************************************
+
+rrestart.f
+C     *************************************************************
+c     IF (iswitch == 0) THEN read common blocks
+c     ELSE write them
+c
+c     The success of this routine depends upon coordinated managment
+c     of the common blocks in file RADCOMM.H.  The algorithm is
+c     based upon the contiguous storage of common block variables,
+c     and requires that the first and last variables in each block
+c     be identified in this subroutine, in order to determine their
+c     addresses in memory.  The difference between the two addresses
+c     determines the number of words in the common block, which are
+c     read (or written) through an equivalenced array.
+c
+c     This subroutine is called by RESTART, where the file is
+c     opened and closed.
+c
+c     It is assumed that a system library routine LOC exists, and
+c     returns the location of a variable in memory.
+C     *************************************************************
+
+setuprad.f
+C     *********************************************************
+C     *  Purpose            :  Defines all constants, and     *
+C     *                        calculates pressure averaged   *
+C     *                        absorption coefficients.       *
+C     * *******************************************************
+
+twostr.f
+C    ******************************************************************
+C    *  Purpose             :  Defines matrix properties and sets up  *
+C    *                         matrix coefficients that do not depend *
+C    *                         on zenith angle or temperature.        *
+C    *  Subroutines Called  :  None                                   *
+C    *  Input               :  W0, G0                                 *
+C    *  Output              :  B1, B2, GAMI, ACON, EL1, AF, ETC       *
+C    * ****************************************************************
+
+
+=======================================================================
+/home/tauntaun/barthe/Titan/src/TitanRT
+
+
+DMiLay.f
+c **********************************************************************
+c    DOUBLE PRECISION version of MieLay, which computes electromagnetic
+c    scattering by a stratified sphere, i.e. a particle consisting of a
+c    spherical core surrounded by a spherical shell.  The surrounding
+c    medium is assumed to have refractive index unity.  The formulas,
+c    manipulated to avoid the ill-conditioning that plagued earlier
+c    formulations, were published in:
+                                                                                                    
+c        Toon, O. and T. Ackerman, Applied Optics 20, 3657 (1981)
+                                                                                                    
+c    Further documentation, including definitons of input and output
+c    arguments, is inside the single precision version of this program
+c    (SUBROUTINE MieLay, available by anonymous ftp from
+c    climate.gsfc.nasa.gov in directory pub/wiscombe).
+                                                                                                    
+c    It is recommended to use this DOUBLE PRECISION version for IEEE
+c    arithmetic (32-bit floating point) computers, just to be safe.
+c    If computer time is critical, back-to-back tests with the single
+c    precision version should be done for ranges of radii and refractive
+c    index relevant to your particular problem, before adopting the
+c    single precision version.  This version is also recommended for
+c    cases of large size parameter (bigger than 10 or so) and/or large
+c    imaginary refractive index (bigger than 1 or so) and also whenever
+c    overflows or strange behavior are encountered in running the
+c    single precision version.  Sometimes the bigger exponent range in
+c    DOUBLE PRECISION is as important as the added precision.
+                                                                                                    
+c    This version is designed to be interchangeable with the single
+c    precision version:  all the floating-point input arguments are
+c    still single precision.  Only the name of the routine has been
+c    changed to prevent confusion (and it is strongly urged not to
+c    change it to MieLay for the same reason).
+c **********************************************************************
+
+ErrPack.f
+c        Print out a warning or error message;  abort if error
+c        after making symbolic dump (machine-specific)
+
+GetFile.f
+
+MIEV0.f
+c    Computes Mie scattering and extinction efficiencies; asymmetry
+c    factor;  forward- and backscatter amplitude;  scattering
+c    amplitudes vs. scattering angle for incident polarization parallel
+c    and perpendicular to the plane of scattering;
+c    coefficients in the Legendre polynomial expansions of either the
+c    unpolarized phase function or the polarized phase matrix;
+c    some quantities needed in polarized radiative transfer;  and
+c    information about whether or not a resonance has been hit.
+                                                                                                   
+c    Input and output variables are described in file MIEV.doc.
+c    Many statements are accompanied by comments referring to
+c    references in MIEV.doc, notably the NCAR Mie report which is now
+c    available electronically and which is referred to using the
+c    shorthand (Rn), meaning Eq. (n) of the report.
+
+MainRT.f
+c   This is the main program for the radiative transfer calculations
+c   First call the Mie code (MIEV0) to calculate optical properties.
+c   Next call RADTRANS, the driver routine for the flux calculations
+
+add.f
+coef.f
+makecloud.f
+newflx.f
+numb.f
+oppr.f
+oppr1.f
+optout.f
+planck.f
+radout.f
+radtrans.f
+rayleigh.f
+setupatm.f
+setuprad.f
+solarflux.f
+taugasses.f
+taugasses2.f
+test.f
+twostrm.f
+v.f
+voigt.f
+xy.f
+zangle.f

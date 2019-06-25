@@ -1,0 +1,421 @@
+@(#) REVISIONS  Jensen_group Oct-1995
+
+This file contains a record of the major revisions to
+the Ames Aerosol Model.
+
+
+03-Oct-1995 v1.00
+ Basic top level model structure, including:
+  Main program overall control.
+  Initialization hierarchy of routines (cold & restart).
+  Timestep hierarchy of routines.
+  History & print output.
+  Restart output.
+  Termination.
+  Makefile general build & maintain structure.
+  Beginning README doc.
+  Beginning REVISION doc.
+ Coding by b.m.
+
+
+30-Oct-1995 v1.01
+ Added coagulation prediction.
+ Cleaned up comments.
+ Added separate implicit.h real & integer implied type include file.
+ Coding by e.j.
+
+
+10-Nov-1995 v1.02
+ Added coagulation kernel initialization.
+ Changed some names of subroutines.
+ Made some comments consistent with code.
+ Reversed subscripts on some arrays.
+ Made chekres.f more general in subr chkres by avoiding string concat.
+ Added 02.CODEGUIDE document.
+ Added debugger error trapping control in machine-dep setuperr.f.
+  setuperr.f.{sunos,sgi,unicos,linux}
+ Added run-time selector flags: if_coag and do_error.
+ Added chekres target to Makefile.
+ Coding by a.a., & a small amount by b.m.
+
+
+10-Nov-1995 v1.03
+ Changed some variable names to use "i" prefix instead of "n" for indices.
+ Coding by b.m.
+
+
+26-Nov-1995 v1.04
+ Added core mass moment to coagulation routines.
+ Cleaned up a few comments.
+ Added Seinfeld [1986] self-consistent solution to coagulation tests.
+ Put flags in init.f routine.
+ Changed p, t, rhoa, etc. to 3-D variables.
+ Fixed some documentation statements in the 00.*, 01.*, & 02.* files.
+ Fixed some machine-specific dependencies in Makefile & elsewhere.
+ Coding by e.j. & a small amount by b.m.
+
+05-Dec-1995 v1.05
+  Changed names of variables and parameters (e.g. c becomes pc,
+   nc2 becomes nxy).
+  Coding by a.a.
+
+29-Jan-1996 v1.06
+  Added nucleation, condensational growth and evaporation with muliple cores
+   (total evaporation using core moments not yet implemented, though).
+  Coagulation revised to handle multiple cores (not really; just a first step).
+  Particle mass densities are now updated every time step.
+  All aerosol setup routines now called from new routine setupaer.f.
+  Changed names of some routines and variables.
+  Coding by a.a. and e.j.
+   
+21-Feb-1996 v1.06a
+  Added total evaporation from multiple cores and/or using core second moment,
+   which required treating nucleation from CN particles with multiple cores.
+  Coding by a.a.
+
+25-Jun-1996 v1.07b
+  Generalized coag to handle multiple cores.
+  Changed vapor pressure expressions to Buck [197?].
+  Added vapor pressure over ice and saturation w.r.t. ice.
+  Added freezing nucleation.
+  Added routine to solve thermodynamic equation (tsolve.f).
+  Added variable time-step.
+  Added vertical transport.
+
+11-Jul-1996 v1.08
+  01.REVISIONS: Updated with old v1.07b & new v1.08 revisions.
+  main.f: Changed from timestepping by do loop with if escape
+          to if loop that checks both time index & simulation time. 
+  setupgkern.f:  line 75:  <gsticl> -> <gstickl>
+                 lines 159,162: <R_AIR> -> <RGAS>
+  init.f:  line 58: Made comment on <stepofil> more descriptive
+           Improved descriptive comments on <ibtime> & <ietime>.
+  prestep.f:  Precompute wave constant for calc of w(ix,iy,k)
+  varstep.f: line 43: "Alos" -> "Also" in comment
+             line 46: Check for itype() .eq. 0 .or. .eq. 1
+             line 48: Run ixyz index in loop from 1,nxyz, not 2,nxyz
+             line 56: Leftover debugging comment removed
+  globals.h --> globaer.h
+             Changed all references to this file to new name in Makefile *.h *.f
+  postep.f:  Added detection of last timestep for current run,
+             and final restart & print file output if on last timestep.
+  chekres.f:  Rewritten to automatically change initres &/or outres.f
+              to make their i/o statements for restart consistent with
+              all globaer.h state variables.
+              Changed code in the toupper routine to avoid non-std or()
+               bitwise boolean function, using integer arithmetic instead.
+  Makefile:  Added automated compiling & running of the chekres program.
+             Added use of FFLAGS to chekres target's Fortran compilation.
+  outhis.f:  nsol -> nsolute,  MAXNSOL -> MAXNSOLUTE
+  setupckern.f:  ifcolec -> icollec
+  globaer.h:  vf_const added to common block /aer7/
+  growevapl.f:  ixzy -> ixyz
+  Test case set up to exercise most parts of the model.
+  Benchmark timing testing on the various supported computer systems.
+  Code changes by e.j. & b.m.
+
+
+??-Sep-1996 v1.09
+  Makefile changed to conditionally run the chekres pre-processing program
+   only if globaer.h or initres.template or outres.template have changed.
+  Added support for hp machines: Makefile, setuperr.f.hp, implicit.h
+  Fixed array declaration dimensions of w3(), dkv3(), alt3() in globaer.h
+  Changed history output to use explicit implied do in write stmts in
+   outhis.f, with one array per output record.
+  Changed Makefile to force compile of chekres.f on every "make chekres".
+  Added new program byteorder.c & its Makefile target to convert
+   model's binary history file between little-endian and big-endian
+   byte ordering.
+  Added new program testhis.f & its Makefile target to test reading
+   through a model-generated history file.
+  Added the "help" target to the Makefile.
+  Changed Makefile symbol LIBRARIES to LIB_MODEL.
+  Added Makefile symbol LIB_TESTHIS.
+  Code changes by b.m.
+
+11-Dec-1996 v1.10
+  Changed nucleation mapping arrays to allow particle elements to nucleate
+   to multiple elements.
+  rlh replaced by rlhe and rlhm (evaporation and melting).
+  Added variables alt_midold, pold, rhoaold, etc., for box model
+   simulations.
+  Changed particle growth and vertical advection algorithms.  The
+   Piecewise Polynomial Method [Colela and Woodard, J. Comp. Phys., 54,
+   174-201, 1984] is now used.  Vertical advection transport rates are
+   now calculated in routine vertadv.f.  The Toon et al. algorithm is
+   still used to calculate vertical diffusion rates in routine vertdif.f.
+   The advection and diffusion transport rates are used to calculate new
+   concentrations in versol.f.
+  Code changes by e.j.
+
+27-Apr-1997 v1.11
+  Added horizontal grid variables xc, xl, xu, dx, yc, yl, yu, dy, u, and v.
+  Coded PPM and FOSL algorithm for horizontal transport, with periodic boundary
+   conditions.
+  Coded finite element (Toon et al., 1989) Galerkin scheme for horizontal
+   transport, including smoothing to remove negative concentrations.
+  Modified outhis.f to loop over nx, ny, and nz independently (rather than
+   just looping over nxyz).
+  Code changes by e.j.
+
+  Added netcdf support for history output, retaining old binary output as an option.
+   New global vars:  do_netcdf, ncdf_file in globaer.h
+   Int & fp netcdf types controlled in implicit.h
+   hisout.f now calls either hisout_ncdf.f or hisout_bin.f
+   quit.f closes the netcdf history output file when do_netcdf=.t.
+   Makefile changed to include netcdf library in symbol LIB_MODEL
+    and to add new outhis_bin & outhis_ncdf routines.
+  Code changes by b.m.
+
+  Added parameters for values of flags itype and itbndpart.
+  Fixed bug in vertadv.f flux calculation.
+  Fixed various minor problems in vertical transport and time-steping noted by a.a.
+  Fixed bug in setupckern.f (misplaced endif).
+  Code changes by e.j.
+
+19-Aug-1997 v1.12
+  Generalized vertical and horizontal transport routines to allow
+   non-uniform grids.
+  Fixed various bugs in horizontal transport routines
+  Added check to make sure there are enough grid points if horizontal
+   transport is switched on.
+  Enforced equivalence of nx,ny,nz to MAX{NX,NY,NZ} in initnew.f.
+  Added use of extended continuation line compiler flag in Makefiles.
+  Fixed SYSTYP Makefile symbol passing to sub-Makefiles.
+  Moved integer arithmetic from array declarations to parameter stmts
+   in globaer.h.
+  Changed names of the principal symbolic constants used for dimensions:
+   E.g. MAXNX --> NX, MAXNY --> NY, ...
+  Used new symbolic dimension constants NX, NY, ... as upper limits
+   for looping etc at run time, and regular variables nx, ny, ...
+   were removed.  This is to ensure that collapse of multi-dimensional
+   arrays into smaller numbers of dimensions are handled properly
+   by ensuring that the model uses exactly the dimensioned space in
+   arrays as its indexing limits.
+  Added support for generalized coordinates, grids, map projections:
+   initatm.f split into subprograms to handle coord/grid/projections:
+     horiz=geometric             vert=geometric   subr: g_geo_geo
+     horiz=lon-lat               vert=sigma       subr: g_ll_sig
+     horiz=Lambert conformal     vert=sigma       subr: g_ll_sig
+     horiz=Polar Stereographic   vert=sigma       subr: g_ll_sig
+     horiz=Mercator              vert=sigma       subr: g_ll_sig
+  Added initialization prints of fields, etc in initatm.f
+  Added new subroutine print2d.f to handle 2-D subset prints of 3-D arrays.
+  New globaer.h stuff:
+   Added new symbolic constants  RAD2DEG, DEG2RAD, RMB2CGS, NYP1, NXORNYP1
+   Added <p_surf> to /aer9/
+   Set up /aer1/ to be the grid-related stuff
+   Moved <{x,y,z}{c,l,u}{,2,3}> to /aer1/ from /aer9/
+   Added <{x,y,z}met{,2,3}> to /aer1/
+   Added <dky> to /aer9/
+   Changed dimension:  htrans(NXP1) to htrans(NXORNYP1) as needed by glkcoef.f
+  Added coordinate system metric factors in several init, setup, and output
+   routines
+  Changed <vf> to a 3-D variable (to allow variations over spatial grid)
+  Changed variable names related to generalized vertical coord:
+    delz-->dz  dkv-->dkz  alt-->zl  alt_mid-->zc  alt_midold-->zc_old
+  Fixed printout column headings in outprt.f & initgas.f
+  <dky> now used independently from <dkx> in horizont.f
+  New grid/coord/projection parameters from /aer1/ added to outhis_{ncdf,bin}.f
+  Corrected vertical.f such that <ptli>*<rhoa> is the quantity transported
+  Code changes by e.j. & b.m.
+
+
+21-Sep-1997 v1.13
+  Fixed bug in setupgkern.f (missing 4*PI in gro2).
+  Removed <pt> and <ptli> and added <ptc>, which is potential temperature
+   times air density (a properly transported quantity for flux form eqs).
+  Changed single variable <igrid>, which embedded horiz and vert grid selection,
+   to <igridv> and <igridh>.
+  Added subroutine g_cart_sig (initializes atmospheric profiles for horiz=cartesian,
+   vert=sigma) to initatm.f.
+  Fixed bugs in initatm.f: <p> inititalization in sigma coords was incorrect, and
+   argument iyb to some printd calls was 0 when NY = 1
+  Modified pressure initialization in cartesian coords to use <t> averaged between
+   layers when integrating hydrostatically.
+  Modified vertical.f to update <rhoa> from transport (mass continuity).
+  Added hydrostat.f, which hydrostatically integrates <p> downwards from top
+   of model domain (when in sigma coords also updates <t>, <rhoa>, and <zmet>).
+  Replaced local variable <ptop> with global array <p_top(NX,NY)>.
+  Added rescale.f, which rescales velocities (wind and fall) and diffusion
+   coefficients when in sigma coords.
+  Added option <do_parcel>, to run parcel simulations, in which case 
+   do_thermo = .true., do_vtran = do_ns = do_ew = .false., NXY = 1, igridv = I_CART,
+   and hydrostat.f is not called.
+  Added <pprint>, time period between print outputs (used when nprint < 0), and
+   <tprint>, which is time of next print output (likewise <phist> and <thist> for
+   history output, and <prest> and <trest> for restart output).
+  Added <pconcmax>, which is scaled maximum particle concentration in each spatial
+   grid box for each particle group.  Microphysics processes (coagulation,
+   condensational growth, and nucleation) are not calculated when pconcmax < FEW_PC
+   (a newly defined symbolic constant, which is always in cgs units).
+  Removed setupsol.f.
+  Rearranged definitions of symbolic constants in globaer.h, so that user-defined
+   parameters appear first (motivated by P. Hamill).
+  Edited <rhoelem> array to be consistent with <rhosol> array in setupaer.f
+   (prior inconsistency noted by P. Hamill).
+  Added new subroutine parcel.f to update altitudes, pressures, temperatures,
+   and air densities due to (Lagrangian) parcel vertical velocities.
+  Added new subroutine lognormal.f to calculate log-normal fit particle number
+   distributions.
+  Code changes by a.a.
+  globaer.h:
+   New do_{print,hist,rest} logical variables for overall output control.
+   Removed t{print,hist,rest}.
+   I_{SIG,CART,ME,...} made unique, since I_CART is shared by both horiz & vert.
+  prtsep.f:  New routine to handle print file visual separation.
+  initnew.f:
+   Remove t{print,hist,rest} (no longer needed for output time period control)
+  init.f:
+   New do_{print,hist,rest} definitions & reports.
+   Moved symbolic constant consistency check after print file opened.
+  postep.f:
+   New scheme for print, history, restart output using simulation time period,
+   using {do_,p}{print,hist,rest} but not t{print,hist,rest}, allows output
+   times to remain synchronized on original time interval.
+  Code changes by b.m.
+
+
+01-Oct-1997 v1.14
+  Makefile:  OFILES & .o: dependencies sorted alphabetically (except for main)
+  globaer.h:  <ix>, <iy>, <iz>, <ixy>, <ixyz> added to common block /aer2/.
+  newstate.f:
+   Call to microphy replaced with calls to microslow (new) & microfast (new).
+   Microslow called to do its own spatial indexing.
+   Microfast called within spatial & sub-timestep loop in newstate.f.
+   Removed redundant if( do_vtran .or. do_ew .or. do_ns ) test.
+  microslow.f:  Handles coagulation
+  csolve.f: (new) Handles part concent updates for microslow (like psolve)
+  psolve.f: Removed coag stuff.
+  03.CALLMAP:  Updated to show new calling sequences from newstate.
+  Following routines had their (ixy) arg list removed, since <ixy> is now in common.
+   vertadv.f   vertdif.f   versol.f ; all called by: vertical.f
+  Following routines (all called by microfast) had their spatial loops removed,
+   since microfast now called in spatial & sub-timestep loop from newstate:
+     supersat.f   vaporp.f   nucl.f         freznucl.f   growevapl.f   nucgrowp.f
+     psolve.f     evapp.f    gasexchange.f  evapply.f    gsolve.f      tsolve.f
+     rhopart.f     
+  initgas.f: The calls to supersat.f & vaporp.f were each wrapped in spatial 
+   indexing loop, since supersat & vaporp now do 1 spatial point per call.
+  outprt.f:
+   Added printout of <ix>, <iy>, <iz> for distribution table prints.
+   Print distribution headings after every element heading. 
+  Code changes by b.m.
+
+
+10-Oct-1997 v1.15
+  glkcoef.f:
+   4 <cb()> or <cf()> calcs with expression extending beyond column 72
+   shortened to ensure variable <x2> not truncated by the compiler to <x>.
+  rescale.f:
+   Definition for <frac> inserted.
+  hydrostat.f:
+   Initialization of p_surf2(ix,iy) corrected.
+  setupckern.f:
+   c_coll2(ibin1,ibin2) collection efficient function of 2 bins used instead of 
+   previous constant efficiency as in Beard & Ochs (1984).  Constant small
+   collection efficiency continued to be used for smaller particle pairs.
+  Renamed implicit.h to precision.h and moved definitions of precision-dependent
+   global parameters <SMALL_PC>, <ALMOST_ONE>, and <POWMAX> into precision.h.
+   Set up 3 sections to choose precision, commenting all but one section.
+  Added zerofast.f, which zeroes fast microphysics sinks and sources.
+  Removed spatial dependence of fast microphysics sinks and sources (also <cmf>
+   and <totevap> in evapp.f).
+  Added ieee_retrospective.f to setuperr.f.sunos to better control error reporting.
+  Code changes by a.a., e.j., & b.m.
+
+
+15-Oct-1997 v1.16
+  Renamed zerofast.f to microzero.f.
+  growevapl.f:
+   Removed overzealous efficiency trick (if pc < SMALL_PC), which had undesirable
+   side-effect of preventing the cascade of condensational growth across multiple bins.
+  setupgkern.f:
+   Implemented a more general treatment of latent heat in growth kernel.
+  Expunged <gls> from code and renamed <gpd> to <gasprod>.
+  Added new scalar variable <rlhprod>, which is the latent heat production term,
+   calculated in gasexchange.f and used in tsolve.f.
+  Replaced references to <k> with <iz> in some fast microphysics subroutines.
+  Code changes by a.a.
+
+21-Oct-1997 v1.17
+  Renamed microzero.f to zeromicro.f (to be consistent with zerorad.f).
+  Renamed <rlhprod> to be <rlheat>, which is now latent heating rate, always in deg_K/s.
+  Corrected treatment of heating rates in gasexchange.f and tsolve.f for cartesian
+   coordinates and extended the calculations to general coordinates.
+  Fixed bug in initgas.f: supersat.f now called after metric scaling of <gc>.
+  Linked in old Toon & Ackerman radiative transfer code (as previously modified
+   by A. Ackerman for 1-D marine stratus model), for which new routines were added to
+   the aerosol sub-directory:
+    initrad.f, prerad.f, postrad.f, and zerorad.f.  Data is passed through symbolic
+     constants and common blocks defined/declared in aerad.h.
+  Code changes by a.a.
+  cartesian coordinates, and (2) 
+
+04-Nov-1999 v1.18
+  Added 2-stream radiative transfer code
+  Corrected bug in 1-D divergence correction
+  Added sinks in psolve.f and gsolve.f for adiabatic expansion when in parcel model mode
+  Modified code to allow zero particle concentrations
+  Fixed order of fl pt calcs in versol.f to avoid infinities on some machines.
+  Code changes by e.j.
+  ----
+  Modified 2-level Makefile system to force all critical symbols to be passed from
+   the top level CARMA Makefile, with the aer & rad submodel make files split into
+   a pseudo Makefile and a real Makefile.work.  The submodel Makefiles call the
+   the top level Makefile, which passes symbols to the worker Makefile.real files.
+  Added dumnetcdf.f dummy netcdf library routines for sites that wish not to
+   use netcdf i/o.  This is under dumnetcdf/, along with Makefile & Makefile.work.
+  Changed rad submodel's print output to standard output in radout.f to 
+   a file whose name is in <radofil> & whose lun is <LUNORAD>, with
+   <radofil> defined in aer submodel's init.f .
+  Updated 00.README in the top level carma directory to include info about
+   compiling with real or dummy netcdf support. 
+  Removed aer/setuperr.f from SYSTYP dependency.  Provided do-nothing shell routine.
+  Added sysdepend targets in {aer,rad}/Makefile.work .
+  Added special run/ subdirectory to receive carma executable.
+  Parameterized "mv" command path in top level Makefile.
+  Default is to use dummy netcdf routines that are provided in the distribution.
+  Parameterized generic intrinsic function imag() with GENERIC_IMAG in top Makefile.
+  Code changes by b.m.
+
+10-Feb-2000 v2.0
+  Added new particle type I_VOLCORE for core components that can change by melting
+   or freezing.
+  Added flag <icomp> for element composition specification. e.g., I_H2SO4, I_WATER,
+   I_ICE, and I_MIXEDWAT.  
+  Added logical <is_grp_mixed> to specify whether or not a group is mixed-phase.
+  Renamed nucleation routines and added a few new ones:
+          actdropl     activation of aerosols --> droplets.
+          freezaerl    freezing nucleation of aerosols --> ice crystals.
+          freezdropl   freezing nucleation of drops --> ice crystals.
+          freezmixedl  total freezing of mixed hydrometeors --> ice crystals.
+          meltmixedl   total melting of mixed hydrometeors --> droplets.
+          melticel     initiation of ice melting --> mixed hydrometers.
+  Added variables <if_nuc_lh> and <rlh_nuc> to specify latent heat released during
+   nucleation processes.
+  Renamed nucgrowp.f to growp.f and moved source terms to a new routine called
+   upgxfer.f.
+  Added routine downgxfer.f for down-grid element transfer process source terms.
+  Corrected sign error in tsolve.f calculation of new ptc and reversed signs of
+   <rlheat> in gasexchange.f and growp.f.
+  Added routine coremelt.f to calculate core mass changes due to melting/freezing
+   of mixed hydrometeors.  These changes are applied to core mass <ptc> in this
+   routine.  The latent heat released by melting/freezing is also calculated here.
+  Added code to varstep.f to check for changes in core mass.
+  Modified varstep.f to check for changes in supsati/supsatl depending upon
+   whether T is greater/less than 0 C.
+  Added hack to setupckern.f to avoid production of non-physical large
+   hydrometeors: when r1 > 1200 microns and r2 > 10 microns, decrease ckernel
+   by 6 orders of magnitude.
+  Corrected coagulation mapping bug: <icoag> needs to be filled in setupckern.f
+   (It was filled in setupcoag, which was too late.)
+  Modified setupcoag.f to accomodate coagulation of drops + ice --> mixed
+   properly.
+  Added code to allow radiative transfer calculations in layers below the
+   aerosol model domain.
+  Changed code in newstate.f such that substeps are taken for fast microphysics
+   and fractional advective forcings are applice to <pc>, <gc>, and <ptc>.
+  Added routine nsubsteps.f to calculate the number of substeps to use.
+  Code changes by e.j.
+

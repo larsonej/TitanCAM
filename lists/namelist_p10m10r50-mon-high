@@ -1,0 +1,42 @@
+&camexp
+ bndtvdms		= '/home/larsonej/titancam/titandata/'
+ bndtvghg		= '/home/larsonej/titancam/titandata/atm/cam2/ggas/ghg_1870_2100_c040122.nc'
+ bndtvoxid		= '/home/larsonej/titancam/titandata/'
+ bndtvs			= '/home/larsonej/titancam/titandata/atm/cam2/sst/sst_HadOIBl_bc_10x15_clim_c030303.nc'
+ bndtvscon		= '/home/larsonej/titancam/titandata/atm/cam2/rad/scon_1870_2100_c040122.nc'
+ bndtvsox		= '/home/larsonej/titancam/titandata/'
+ carma_optics_file	= '/home/larsonej/titancam/titandata/atm/cam2/rad/khare.n40.nc'
+ carma_do_coag		= .true.
+ carma_do_emission	= .true.
+ carma_do_vtran		= .true.
+ carma_do_wetdep	= .false.
+ carma_do_drydep	= .true.
+ carma_flag		= .true.
+ caseid			= 'janus_hightop'
+ dtime			= 1800
+ inithist 		= 'NONE'
+ iyear_ad		= 1950
+ mfilt(1)		= 1
+ ncdata			= '/home/larsonej/titancam/titandata/atm/cam2/inic/fv/titan_fv_10x15_hightop.nc'
+ nelapse		= -109500
+ nhtfrq(1)		= 10800
+ npr_yz 		= 6,8,8,6
+ nsrest			= 0
+ nrefrq			= 1
+ nsplit			= 4
+ phys_loadbalance	= 4
+ nrevsn 		= '/home/larsonej/titancam/run/test/fracrad_n30_massive.cam2.r.2191-08-02-00000' 
+ fincl1 		= 'US:I','VS:I','OMEGA:I','PS:I','Q:I','T:I','Z3:I','U:I','V:I'
+ fincl2 		= 'DUST01DD:I','DUST02DD:I','DUST01EM:I','DUST02EM:I','DUST01TC:I','DUST02TC:I','DUST01SF:I','DUST02SF:I','TAUVIS:I','AEROD_v:I','BGOD_v:I','OMEGAU:I','SOLL:I','SOLLD:I','SOLS:I','SOLSD:I','ALDIF:I','ALDIR:I','ASDIF:I','ASDIR:I','SOLIN:I','HR:I'
+ fil_radcnst		= '/home/larsonej/titancam/titandata/atm/cam2/rad/radcnst_topint_toma07.nc'
+ iradae			= 10800
+ iradlw			= 200
+ iradsw			= 200
+ start_ymd 		= 20060114
+/
+&clmexp
+ nrevsn 		= '/home/larsonej/titancam/run/test/fracrad_n30_massive.cam2.r.2191-08-02-00000'
+ fpftcon		= '/home/larsonej/titancam/titandata/lnd/clm2/pftdata/pft-physiology'
+ fsurdat		= '/home/larsonej/titancam/titandata/lnd/clm2/srfdata/cam/surfinic_fv_10x15_20L.nc'
+ finidat		= '/home/larsonej/titancam/titandata/lnd/clm2/srfdata/cam/clmi_titan_fv_10x15_alb_93.5_20L.nc' 
+/

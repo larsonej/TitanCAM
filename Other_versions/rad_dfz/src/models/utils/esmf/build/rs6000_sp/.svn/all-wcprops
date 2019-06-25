@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/rs6000_sp
+END
+buildtest
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/rs6000_sp/buildtest
+END
+base_variables
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/rs6000_sp/base_variables
+END
+ESMF_conf.h
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/rs6000_sp/ESMF_conf.h
+END
+base
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/rs6000_sp/base
+END
+fix.h
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/rs6000_sp/fix.h
+END
+base.site
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/rs6000_sp/base.site
+END

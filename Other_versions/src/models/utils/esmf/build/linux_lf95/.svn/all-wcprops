@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/linux_lf95
+END
+buildtest
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/linux_lf95/buildtest
+END
+base_variables
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/linux_lf95/base_variables
+END
+ESMF_conf.h
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/linux_lf95/ESMF_conf.h
+END
+base
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/linux_lf95/base
+END
+fix.h
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/linux_lf95/fix.h
+END
+base.site
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/cam_titan/!svn/ver/62/branches/toon/src/models/utils/esmf/build/linux_lf95/base.site
+END

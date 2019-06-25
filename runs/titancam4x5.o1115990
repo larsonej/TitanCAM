@@ -1,0 +1,20 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/nodes/node0724/mom_priv/jobs/1115990.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/nodes/node0724/mom_priv/jobs/1115990.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/nodes/node0724/mom_priv/jobs/1115990.moab.rc.colorado.edu.SC:  Running on node0724
+/curc/torque/nodes/node0724/mom_priv/jobs/1115990.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/nodes/node0724/mom_priv/jobs/1115990.moab.rc.colorado.edu.SC:  Set run to p10m10r50-agg_4x5
+/curc/torque/nodes/node0724/mom_priv/jobs/1115990.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/nodes/node0724/mom_priv/jobs/1115990.moab.rc.colorado.edu.SC:  Set runtype to RESTART
+/curc/torque/nodes/node0724/mom_priv/jobs/1115990.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/nodes/node0724/mom_priv/jobs/1115990.moab.rc.colorado.edu.SC:  using cam from /lustre/janus_scratch/larsonej/run/p10m10r50-agg_4x5 ...
+/curc/torque/nodes/node0724/mom_priv/jobs/1115990.moab.rc.colorado.edu.SC:  using namelist from /lustre/janus_scratch/larsonej/run/p10m10r50-agg_4x5 ...
+/curc/torque/nodes/node0724/mom_priv/jobs/1115990.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/p10m10r50-agg_4x5 using MPI
+/curc/torque/nodes/node0724/mom_priv/jobs/1115990.moab.rc.colorado.edu.SC:  Started at Tue Jul  3 12:42:25 MDT 2012
+/curc/torque/nodes/node0724/mom_priv/jobs/1115990.moab.rc.colorado.edu.SC: Running on nodes ...
+node0724 node0724 node0724 node0724 node0724 node0724 node0724 node0724 node0724 node0724 node0724 node0724 node0725 node0725 node0725 node0725 node0725 node0725 node0725 node0725 node0725 node0725 node0725 node0725 node0726 node0726 node0726 node0726 node0726 node0726 node0726 node0726 node0726 node0726 node0726 node0726 node0731 node0731 node0731 node0731 node0731 node0731 node0731 node0731 node0731 node0731 node0731 node0731 node0733 node0733 node0733 node0733 node0733 node0733 node0733 node0733 node0733 node0733 node0733 node0733 node0735 node0735 node0735 node0735 node0735 node0735 node0735 node0735 node0735 node0735 node0735 node0735 node0739 node0739 node0739 node0739 node0739 node0739 node0739 node0739 node0739 node0739 node0739 node0739 node0740 node0740 node0740 node0740 node0740 node0740 node0740 node0740 node0740 node0740 node0740 node0740 node0741 node0741 node0741 node0741 node0741 node0741 node0741 node0741 node0741 node0741 node0741 node0741 node0742 node0742 node0742 node0742 node0742 node0742 node0742 node0742 node0742 node0742 node0742 node0742 node0745 node0745 node0745 node0745 node0745 node0745 node0745 node0745 node0745 node0745 node0745 node0745 node0748 node0748 node0748 node0748 node0748 node0748 node0748 node0748 node0748 node0748 node0748 node0748 node0749 node0749 node0749 node0749 node0749 node0749 node0749 node0749 node0749 node0749 node0749 node0749 node0752 node0752 node0752 node0752 node0752 node0752 node0752 node0752 node0752 node0752 node0752 node0752 node0754 node0754 node0754 node0754 node0754 node0754 node0754 node0754 node0754 node0754 node0754 node0754 node0756 node0756 node0756 node0756 node0756 node0756 node0756 node0756 node0756 node0756 node0756 node0756 node0761 node0761 node0761 node0761 node0761 node0761 node0761 node0761 node0761 node0761 node0761 node0761 node0763 node0763 node0763 node0763 node0763 node0763 node0763 node0763 node0763 node0763 node0763 node0763 node0765 node0765 node0765 node0765 node0765 node0765 node0765 node0765 node0765 node0765 node0765 node0765 node0769 node0769 node0769 node0769 node0769 node0769 node0769 node0769 node0769 node0769 node0769 node0769
+/curc/torque/nodes/node0724/mom_priv/jobs/1115990.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    20  240  /curc/torque/nodes/node0724/aux//1115990.moab.rc.colorado.edu 
+=>> PBS: job killed: walltime 3643 exceeded limit 3600
+Terminated

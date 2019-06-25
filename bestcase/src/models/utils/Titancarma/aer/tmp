@@ -1,0 +1,15 @@
+ ;Flags and indexes for types of clouds
+pure_C2H6=1
+ic2h6=0        ;index for C2H6 clouds
+pure_CH4ice=0  ;logical for designating run as pure CH4 ice run
+               ;corresponding index variable is <ich4ice>
+pure_CH4liq=0  ;logical for designating run as pure CH4 droplet run
+               ;corresponding index variable is <ich4liq>
+mixed_ice=0    ;logical for designating run as mixed ice cloud run
+               ;corresponding index variable is <imixice>
+mixed_liq=0    ;logical for designating run as liquid CH4+N2 run
+               ;corresponding index variable is <imixliq>
+
+   GROWCORE = 0
+   ncloudg = 1    ;Number of cloud groups
+

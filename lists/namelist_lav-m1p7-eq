@@ -1,0 +1,46 @@
+&camexp
+ absems_data		= '/home/larsonej/titancam/titandata/atm/cam2/rad/abs_ems_factors_fastvx.c030508.nc'
+ aeroptics		= '/home/larsonej/titancam/titandata/atm/cam2/rad/AerosolOptics_c040105.nc'
+ bndtvaer		= '/home/larsonej/titancam/titandata/atm/cam2/rad/AerosolMass_V_10x15_clim_c031022.nc'
+ bndtvdms		= '/home/larsonej/titancam/titandata/'
+ bndtvghg		= '/home/larsonej/titancam/titandata/atm/cam2/ggas/ghg_1870_2100_c040122.nc'
+ bndtvo			= '/home/larsonej/titancam/titandata/atm/cam2/ozone/pcmdio3.r8.64x1_L60_clim_c970515.nc'
+ bndtvoxid		= '/home/larsonej/titancam/titandata/'
+ bndtvs			= '/home/larsonej/titancam/titandata/atm/cam2/sst/sst_HadOIBl_bc_10x15_clim_c030303.nc'
+ bndtvscon		= '/home/larsonej/titancam/titandata/atm/cam2/rad/scon_1870_2100_c040122.nc'
+ bndtvsox		= '/home/larsonej/titancam/titandata/'
+ bndtvvolc		= '/home/larsonej/titancam/titandata/atm/cam2/rad/VolcanicMass_1870-1999_64x1_L18_c040115.nc'
+ carma_optics_file	= '/home/larsonej/titancam/titandata/atm/cam2/rad/disr.fractal.n30.rm2.5rho.8.rmin2e7dfmax3.nc'
+ carma_do_coag		= .true.
+ carma_do_emission	= .true.
+ carma_do_vtran		= .true.
+ carma_do_wetdep	= .false.
+ carma_do_drydep	= .true.
+ carma_flag		= .true.
+ caseid			= 'lav-m1p7-eq'
+ dtime			= 1800
+ inithist 		= 'NONE'
+ iyear_ad		= 1950
+ mss_irt		= 0
+ mfilt(1)		= 1
+ ncdata			= '/home/larsonej/titancam/titandata/atm/cam2/inic/fv/titantracr_aer_fv_10x15_ha_mrs_hightop5x_topo.nc'
+ nelapse		= -109500
+ nhtfrq(1)		= 10800
+ npr_yz 		= 6,8,8,6
+ nsrest			= 0
+ nrefrq			= 1
+ nsplit			= 4
+ phys_loadbalance	= 4
+ fincl1 		= 'US:I','VS:I','OMEGA:I','PS:I','Q:I','T:I','Z3:I','U:I','V:I'
+ fincl2 		= 'DUST21DD:I','DUST22DD:I','DUST21EM:I','DUST22EM:I','DUST21TC:I','DUST22TC:I','DUST21SF:I','DUST02SF:I','TAUVIS:I','AEROD_v:I','BGOD_v:I','OMEGAU:I','SOLL:I','SOLLD:I','SOLS:I','SOLSD:I','ALDIF:I','ALDIR:I','ASDIF:I','ASDIR:I','SOLIN:I','HR:I'
+ fil_radcnst		= '/home/larsonej/titancam/titandata/atm/cam2/rad/radcnst_topint_toma07.nc'
+ iradae			= 10800
+ iradlw			= 200
+ iradsw			= 200
+ start_ymd 		= 20060114
+/
+&clmexp
+ fpftcon		= '/home/larsonej/titancam/titandata/lnd/clm2/pftdata/pft-physiology'
+ fsurdat		= '/home/larsonej/titancam/titandata/lnd/clm2/srfdata/cam/surfinic_fv_10x15_20L.nc'
+ finidat		= '/home/larsonej/titancam/titandata/lnd/clm2/srfdata/cam/clmi_titan_fv_10x15_alb_93.5_20L.nc' 
+/

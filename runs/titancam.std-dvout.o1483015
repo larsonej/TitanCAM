@@ -1,0 +1,19 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/curc/torque/nodes/node0427/mom_priv/jobs/1483015.moab.rc.colorado.edu.SC:  Running CAM on Linux using PBS.
+/curc/torque/nodes/node0427/mom_priv/jobs/1483015.moab.rc.colorado.edu.SC:  Set mpirun to /curc/tools/free/redhat_5_x86_64/openmpi-1.4.3_ict-3.2.2.013_torque-2.5.8_ib/bin/mpirun
+/curc/torque/nodes/node0427/mom_priv/jobs/1483015.moab.rc.colorado.edu.SC:  Running on node0427
+/curc/torque/nodes/node0427/mom_priv/jobs/1483015.moab.rc.colorado.edu.SC:  Working directory is /home/larsonej/titancam
+/curc/torque/nodes/node0427/mom_priv/jobs/1483015.moab.rc.colorado.edu.SC:  Set run to p10m10r50-mon
+/curc/torque/nodes/node0427/mom_priv/jobs/1483015.moab.rc.colorado.edu.SC:  Set debug to OFF
+/home/larsonej/titancam
+/curc/torque/nodes/node0427/mom_priv/jobs/1483015.moab.rc.colorado.edu.SC:  Set runtype to BRANCH
+/curc/torque/nodes/node0427/mom_priv/jobs/1483015.moab.rc.colorado.edu.SC:  Set model to MPI
+/curc/torque/nodes/node0427/mom_priv/jobs/1483015.moab.rc.colorado.edu.SC:  using cam from /lustre/janus_scratch/larsonej/run/p10m10r50-mon ...
+/curc/torque/nodes/node0427/mom_priv/jobs/1483015.moab.rc.colorado.edu.SC:  using namelist from /lustre/janus_scratch/larsonej/run/p10m10r50-mon ...
+/curc/torque/nodes/node0427/mom_priv/jobs/1483015.moab.rc.colorado.edu.SC:  Running CAM in /lustre/janus_scratch/larsonej/run/p10m10r50-mon using MPI
+/curc/torque/nodes/node0427/mom_priv/jobs/1483015.moab.rc.colorado.edu.SC:  Started at Thu Nov  1 13:33:42 MDT 2012
+/curc/torque/nodes/node0427/mom_priv/jobs/1483015.moab.rc.colorado.edu.SC: Running on nodes ...
+node0427 node0427 node0427 node0427 node0427 node0427 node0427 node0427 node0427 node0427 node0427 node0427 node0412 node0412 node0412 node0412 node0412 node0412 node0412 node0412 node0412 node0412 node0412 node0412 node0774 node0774 node0774 node0774 node0774 node0774 node0774 node0774 node0774 node0774 node0774 node0774 node0768 node0768 node0768 node0768 node0768 node0768 node0768 node0768 node0768 node0768 node0768 node0768
+/curc/torque/nodes/node0427/mom_priv/jobs/1483015.moab.rc.colorado.edu.SC: NNODES, nproc, PBS_NODEFILE    4  48  /curc/torque/nodes/node0427/aux//1483015.moab.rc.colorado.edu 
+/curc/torque/nodes/node0427/mom_priv/jobs/1483015.moab.rc.colorado.edu.SC:  CAM run failed

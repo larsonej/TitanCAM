@@ -1,0 +1,46 @@
+gprod_grow:    1   5.2919E-68 evap:  1.5394E-03 pc(i+1):  1.0000E-50 gain:  3.4377E-15 grow:  0.0000E+00 pc(i):  1.0000E-50 diff:  3.4377E-15 bin   1
+gprod_grow:    1   1.0729E-67 evap:  7.9087E-04 pc(i+1):  1.0000E-50 gain:  6.8753E-15 grow:  0.0000E+00 pc(i):  1.0000E-50 diff:  6.8753E-15 bin   2
+gprod_grow:    1   1.6338E-67 evap:  4.0785E-04 pc(i+1):  1.0000E-50 gain:  1.3751E-14 grow:  0.0000E+00 pc(i):  1.0000E-50 diff:  1.3751E-14 bin   3
+gprod_grow:    1   2.0697E-67 evap:  1.5853E-04 pc(i+1):  1.0000E-50 gain:  2.7501E-14 grow:  0.0000E+00 pc(i):  1.0000E-50 diff:  2.7501E-14 bin   4
+gprod_grow:    1   8.3730E-34 evap:  1.3850E-05 pc(i+1):  1.1000E-15 gain:  5.4960E-14 grow:  0.0000E+00 pc(i):  1.0000E-50 diff:  5.5002E-14 bin   5
+gprod_grow:    1   5.3384E-29 evap:  2.0589E-05 pc(i+1):  2.3587E-11 gain:  1.0992E-13 grow:  0.0000E+00 pc(i):  1.1000E-15 diff:  1.1000E-13 bin   6
+gprod_grow:    1   5.1885E-28 evap:  2.0994E-05 pc(i+1):  6.9022E-11 gain:  3.2123E-13 grow:  0.0000E+00 pc(i):  2.3587E-11 diff:  2.2001E-13 bin   7
+gprod_grow:    1   1.3442E-25 evap:  5.4912E-06 pc(i+1):  3.2164E-08 gain:  7.5816E-13 grow:  0.0000E+00 pc(i):  6.9022E-11 diff:  4.4002E-13 bin   8
+gprod_grow:    1   1.0192E-24 evap:  5.9897E-06 pc(i+1):  9.0257E-08 gain:  1.6367E-12 grow:  0.0000E+00 pc(i):  3.2164E-08 diff:  8.8004E-13 bin   9
+gprod_grow:    1   1.2605E-22 evap:  2.9694E-07 pc(i+1):  1.2464E-04 gain:  3.3782E-12 grow:  0.0000E+00 pc(i):  9.0257E-08 diff:  1.7601E-12 bin  10
+gprod_grow:    1   1.3011E-17 evap:  1.2076E-06 pc(i+1):  1.5480E+00 gain:  6.9602E-12 grow:  0.0000E+00 pc(i):  1.2464E-04 diff:  3.5202E-12 bin  11
+gprod_grow:    1   3.7605E-17 evap:  4.9783E-07 pc(i+1):  3.5253E+00 gain:  1.4013E-11 grow:  0.0000E+00 pc(i):  1.5480E+00 diff:  7.0403E-12 bin  12
+gprod_grow:    1   2.1435E-17 evap:  0.0000E+00 pc(i+1):  2.1196E+00 gain:  1.4081E-11 grow:  3.2575E-07 pc(i):  3.5253E+00 diff:  1.4081E-11 bin  13
+gprod_grow:    1   3.9700E-18 evap:  0.0000E+00 pc(i+1):  3.0503E-01 gain:  2.8161E-11 grow:  2.9259E-07 pc(i):  2.1196E+00 diff:  2.8161E-11 bin  14
+gprod_grow:    1  -3.0971E-18 evap:  0.0000E+00 pc(i+1):  2.8785E-02 gain:  5.6323E-11 grow:  4.1135E-07 pc(i):  3.0503E-01 diff:  5.6323E-11 bin  15
+gprod_grow:    1  -4.7651E-18 evap:  0.0000E+00 pc(i+1):  2.2066E-03 gain:  1.1265E-10 grow:  5.1443E-07 pc(i):  2.8785E-02 diff:  1.1265E-10 bin  16
+gprod_grow:    1  -5.0597E-18 evap:  0.0000E+00 pc(i+1):  1.2363E-04 gain:  2.2529E-10 grow:  5.9252E-07 pc(i):  2.2066E-03 diff:  2.2529E-10 bin  17
+gprod_grow:    1  -5.0966E-18 evap:  0.0000E+00 pc(i+1):  5.0937E-06 gain:  4.5058E-10 grow:  6.6220E-07 pc(i):  1.2363E-04 diff:  4.5058E-10 bin  18
+gprod_grow:    1  -5.0999E-18 evap:  0.0000E+00 pc(i+1):  1.5128E-07 gain:  9.0116E-10 grow:  7.2111E-07 pc(i):  5.0937E-06 diff:  9.0116E-10 bin  19
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  3.5390E-09 gain:  1.8023E-09 grow:  7.7063E-07 pc(i):  1.5128E-07 diff:  1.8023E-09 bin  20
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  6.2800E-11 gain:  3.6046E-09 grow:  7.5341E-07 pc(i):  3.5390E-09 diff:  3.6046E-09 bin  21
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  7.9758E-13 gain:  7.2093E-09 grow:  6.9226E-07 pc(i):  6.2800E-11 diff:  7.2093E-09 bin  22
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  7.1549E-15 gain:  1.4419E-08 grow:  6.1846E-07 pc(i):  7.9758E-13 diff:  1.4419E-08 bin  23
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  4.5003E-17 gain:  2.8837E-08 grow:  5.4124E-07 pc(i):  7.1549E-15 diff:  2.8837E-08 bin  24
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  1.9793E-19 gain:  5.7674E-08 grow:  4.6543E-07 pc(i):  4.5003E-17 diff:  5.7674E-08 bin  25
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  6.1124E-22 gain:  1.1535E-07 grow:  3.9398E-07 pc(i):  1.9793E-19 diff:  1.1535E-07 bin  26
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  1.3431E-24 gain:  2.3070E-07 grow:  3.2882E-07 pc(i):  6.1124E-22 diff:  2.3070E-07 bin  27
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  3.4639E-27 gain:  4.6139E-07 grow:  2.7251E-07 pc(i):  1.3431E-24 diff:  4.6139E-07 bin  28
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  7.0534E-30 gain:  9.2279E-07 grow:  2.2135E-07 pc(i):  3.4639E-27 diff:  9.2279E-07 bin  29
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  1.1550E-32 gain:  1.8456E-06 grow:  1.7838E-07 pc(i):  7.0534E-30 diff:  1.8456E-06 bin  30
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  1.5080E-35 gain:  3.6912E-06 grow:  1.4237E-07 pc(i):  1.1550E-32 diff:  3.6912E-06 bin  31
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  1.3999E-38 gain:  7.3823E-06 grow:  1.1257E-07 pc(i):  1.5080E-35 diff:  7.3823E-06 bin  32
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  9.3722E-42 gain:  1.4765E-05 grow:  8.8314E-08 pc(i):  1.3999E-38 diff:  1.4765E-05 bin  33
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  4.6681E-45 gain:  2.9529E-05 grow:  6.8751E-08 pc(i):  9.3722E-42 diff:  2.9529E-05 bin  34
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  1.7808E-48 gain:  5.9058E-05 grow:  5.3124E-08 pc(i):  4.6681E-45 diff:  5.9058E-05 bin  35
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  3.4298E-50 gain:  1.1812E-04 grow:  4.4664E-08 pc(i):  1.7808E-48 diff:  1.1812E-04 bin  36
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  3.4138E-50 gain:  2.3623E-04 grow:  1.0979E-07 pc(i):  3.4298E-50 diff:  2.3623E-04 bin  37
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  3.3681E-50 gain:  4.7247E-04 grow:  8.2196E-08 pc(i):  3.4138E-50 diff:  4.7247E-04 bin  38
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  3.2521E-50 gain:  9.4493E-04 grow:  6.0871E-08 pc(i):  3.3681E-50 diff:  9.4493E-04 bin  39
+gprod_grow:    1  -5.1001E-18 evap:  0.0000E+00 pc(i+1):  3.0844E-50 gain:  1.8899E-03 grow:  6.2667E-08 pc(i):  3.2521E-50 diff:  1.8899E-03 bin  40
+gprod_grow 14  1  Both:-5.1001E-18  CH4: 1.3675E-41  drop: 0.0000E+00  mono: 1.5236E-71  poly: 1.3675E-41
+gasexchange 14  1  gasprod: -5.1001E-18  nucl:  0.0000E+00  grow: -5.1001E-18  ex: 
+gasexchange 14  2  gasprod:  1.3675E-41  nucl:  0.0000E+00  grow:  1.3675E-41  ex: 
+isotope_exc 14 1.2793E-40  2-1.2793E-40
+GSOLVE 26.00 km   1   gc:  1.875320E-10  prod: -5.100115E-18   ss:   -0.05819442    735.30774458 days    18685 itime
+GSOLVE 26.00 km   2   gc:  2.339351E-05  prod: -1.142582E-40   ss:    0.09492735    735.30774458 days    18685 itime

@@ -1,0 +1,86 @@
+1c1
+<       subroutine versol(ixy)
+---
+>       subroutine versol
+9a10,13
+> c  Modified  Sep-1997  (McKie)
+> c  Remove <ixy> from arg list
+> c  <ixy> now available as a global var in common block.
+> c
+11c15
+< c    ixy
+---
+> c    None.
+20d23
+< 
+23c26
+< c  Define local variables
+---
+> c  Declare local variables
+25,26c28,29
+<       dimension al(MAXNZ), bl(MAXNZ), dl(MAXNZ), ul(MAXNZ),
+<      $          el(MAXNZ), fl(MAXNZ), ctempl(MAXNZ), ctempu(MAXNZ)
+---
+>       dimension al(NZ), bl(NZ), dl(NZ), ul(NZ),
+>      $          el(NZ), fl(NZ), ctempl(NZ), ctempu(NZ)
+32d34
+< 
+40c42
+<         cour = delz2(ixy,k)/dtime -
+---
+>         cour = dz2(ixy,k)/dtime -
+46c48
+< c    $       k, delz2(ixy,k)/dtime, vertdifd(k), vertdifu(k+1),
+---
+> c    $       k, dz2(ixy,k)/dtime, vertdifd(k), vertdifu(k+1),
+58a61,63
+> c      if( ibbnd .eq. I_DIFFUSION ) then
+> c        ctempl(1) = ctempl(2)
+> c      else
+59a65,68
+> c      endif
+> c      if( itbnd .eq. I_DIFFUSION ) then
+> c        ctempu(NZ) = ctempu(NZ-1)
+> c      else
+60a70
+> c      endif
+61a72
+> c
+65d75
+< c
+70c80
+<      $             + delz2(ixy,k)/dtime )
+---
+>      $             + dz2(ixy,k)/dtime )
+75c85
+<      $     - delz2(ixy,k)/dtime ) -
+---
+>      $     - dz2(ixy,k)/dtime ) -
+78c88
+<      $     divcor(k) * delz2(ixy,k)
+---
+>      $     divcor(k) * dz2(ixy,k)
+86,87c96,102
+<       if( itbnd .eq. I_FLUX_SPEC ) dl(nz) = dl(nz) + ftop
+<       if( ibbnd .eq. I_FLUX_SPEC ) dl(1) = dl(1) + fbot
+---
+>        if( igridv .eq. I_SIG ) then
+>          if( itbnd .eq. I_FLUX_SPEC ) dl(1) = dl(1) - ftop
+>          if( ibbnd .eq. I_FLUX_SPEC ) dl(NZ) = dl(NZ) - fbot
+>        else
+>          if( itbnd .eq. I_FLUX_SPEC ) dl(NZ) = dl(NZ) - ftop
+>          if( ibbnd .eq. I_FLUX_SPEC ) dl(1) = dl(1) - fbot
+>        endif
+106,107c121,122
+< c		print *,'vert',cvert(k),gcl(k,1)
+< 
+---
+> c       if(cvert(k) .lt. 0.) 
+> c    $     print *,'vert',k,cvert(k)
+109,112d123
+< c       print *,'versol',k,dl(k),
+< c    $                             bl(k),
+< c    $                             fl(k),cvert(k+1),time
+< 
+114d124
+< 

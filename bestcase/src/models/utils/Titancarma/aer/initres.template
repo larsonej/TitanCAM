@@ -1,0 +1,100 @@
+      subroutine initres
+c
+c
+c  @(#) initres.f  McKie  Oct-1995
+c  This routine initializes the model from a restart that
+c  was created in a previous run.  Common blocks are
+c  returned to the state they were in when the requested
+c  restart time values were output in the previous run.
+c
+c  Argument list input:
+c    None.
+c
+c  Argument list output:
+c    None.
+c
+c
+c  Include global constants and variables
+c
+      include 'globaer.h'
+c
+c
+c  Define formats
+c
+    1 format(/,'Attempting to restart from file: ',a)
+    2 format('Looking for restart time index: ',i6)
+    3 format('Unexpected common block value for ',a,': ',i6)
+    4 format('Unexpected common block value for ',a,': ',a)
+    5 format('Input restart file time:  itime: ',i6,3x,'time: ',f12.2)
+    7 format('Requested restart time index ',i6,' found.')
+    8 format('Error--Cant find requested restart time ',i6,
+     $       ' on input restart file.')
+    9 format(/,'Doing a restart initialization from a prev run')
+   10 format('Aborting.')
+c
+c
+c  Announce entry to this routine
+c
+      if( DEBUG ) write(LUNOPRT,'(/,a)') 'Enter initres'
+c
+c
+c  Report that a restart is being done
+c
+      write(LUNOPRT,9)
+c
+c
+c  Report input restart file name
+c
+      call dblank(resifil, ns)
+      write(LUNOPRT,1) resifil(1:ns)
+c
+c
+c  Report requested restart timestep index
+c
+      write(LUNOPRT,2) ibtime
+c
+c
+c  Open input restart file
+c
+      open(unit=LUNIRES,file=resifil,status='old',
+     $     form='unformatted')
+c
+c
+c  Input restart records for next time on restart file
+c
+ 2100 continue
+c
+c
+c  <<< Insert restart i/o code here >>>
+c
+c
+c
+c  If current restart file time is not the requested one, go try next time
+c
+      if( itime .ne. ibtime ) goto 2100
+c
+c
+c  Close input restart file
+c
+      close(unit=LUNIRES)
+c
+c
+c  Report that requested restart info has been input
+c
+      call dblank(resifil, ns)
+      write(LUNOPRT,7) itime
+c
+c
+c  Return to caller with restart initialization complete
+c
+      return
+c
+c
+c  Report that requested restart time was not found on input file & quit
+c
+ 8100 continue
+      write(LUNOPRT,8) ibtime
+      write(LUNOPRT,10)
+      stop
+c
+      end

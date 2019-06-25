@@ -1,0 +1,14 @@
+/home/larsonej/titancam/src/models/atm/cam/src/physics/cam1
+/home/larsonej/titancam/src/models/atm/cam/src/dynamics/fv
+/home/larsonej/titancam/src/models/atm/cam/src/control
+/home/larsonej/titancam/src/models/csm_share/shr
+/home/larsonej/titancam/src/models/atm/cam/src/utils
+/home/larsonej/titancam/src/models/utils/timing
+/home/larsonej/titancam/src/models/utils/pilgrim
+/home/larsonej/titancam/src/models/atm/cam/src/ocnsice/dom
+/home/larsonej/titancam/src/models/lnd/clm2/src/main
+/home/larsonej/titancam/src/models/lnd/clm2/src/biogeophys
+/home/larsonej/titancam/src/models/lnd/clm2/src/biogeochem
+/home/larsonej/titancam/src/models/lnd/clm2/src/mksrfdata
+/home/larsonej/titancam/src/models/lnd/clm2/src/riverroute
+/home/larsonej/titancam/src/models/ice/csim4

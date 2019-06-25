@@ -1,0 +1,1479 @@
+#include <misc.h>
+#include <params.h>
+
+module radcnst
+
+!----------------------------------------------------------------------- 
+! 
+! Purpose: This module is responsible for initializing and computing 
+!          radiative transfer constants.  Modelled after ramp_scon
+! 
+! Author:
+!   Original routines:  CMS
+!   Module:             F. Oyafuso, July 2006
+!
+! $Id: radcnst.F90,v 1.1.1.1 2006/02/15 05:55:49 fabiano Exp $
+! 
+!-----------------------------------------------------------------------
+
+!-----------------------------------------------------------------------
+!- use statements ------------------------------------------------------
+!-----------------------------------------------------------------------
+  use shr_kind_mod, only: r8 => shr_kind_r8
+  use pmgrid, only: masterproc, iam
+  use abortutils, only: endrun
+  use ppgrid, only: pcols, begchunk, endchunk
+!  use taulw_cam
+
+!-----------------------------------------------------------------------
+!- module boilerplate --------------------------------------------------
+!-----------------------------------------------------------------------
+  implicit none
+!  private                   ! Make default access private
+  public
+  save
+
+!-----------------------------------------------------------------------
+! Public interfaces ----------------------------------------------------
+!-----------------------------------------------------------------------
+  public radcnst_initialize
+  public ReadCkPt
+  public ReadWeight, GlobalWn, Unique, Sort, Where, Interpolate
+  public BilinearInterpolate, Sgn       
+
+!-----------------------------------------------------------------------
+! Public data ----------------------------------------------------------
+!-----------------------------------------------------------------------
+  character(len=256), public :: fil_radcnst    ! filename for radtransf data
+  
+! AJF, add structures for passing lw correlated-k data, based on students' work
+
+! Ck data structure with pressure and temperature as *two separate* grids
+  Type GasCkPt
+     real(r8), allocatable :: G(:), P(:), T(:), Wn(:)
+     real(r8), allocatable :: Val(:, :, :, :)
+  End Type 
+  
+! Ck data structure, val(nG, nTP, nWn)=Ck values on *single* pres vs temp grid
+  Type GasCk
+     real(r8), allocatable :: G(:), P(:), T(:), Wn(:)
+     real(r8), allocatable :: Val(:, :, :)
+  End Type GasCk
+
+! Cia data structure, val(nCia, nT, nWn)
+  Type GasCia
+     real(r8), allocatable :: Wn(:)
+     real(r8), allocatable :: T(:)
+     real(r8), allocatable :: Val(:, :, :)
+  End Type GasCia
+
+ 
+
+! Aerosol longwave absorption coefficient structure, ajf 4-11-08. 
+  Type Aer_lw_abs
+     real(r8), allocatable :: Qabs(:), Wn(:)  !Abs coef, wavenumber
+     real(r8)              :: rho, rad        !particle mass density, mean radius 
+     real(r8), allocatable :: Val(:)       !slot for wavenumber [aer type is carried
+                                           !as index of a structure array]
+  End Type Aer_lw_abs
+  
+!  Short-wave variables:
+
+  integer :: Ng, Na, Nv_p1, Nf         ! array dimensions
+
+  real(r8), allocatable :: lambda_min(:), lambda_max(:), frcsol(:)
+  real(r8), allocatable :: spectralweight(:,:)
+  real(r8), allocatable :: kgas(:,:), p_exp(:,:)  !shortwave ck's
+  ! FAO probably will get rid of this
+  real(r8), allocatable :: ztau(:), raytau(:), nirwgt(:)
+
+  real(r8), allocatable, public :: kaero(:,:) ! specific extinction -- indep of rel humidity  ( m^2 g-1 )
+  real(r8), allocatable, public :: waero(:,:) ! single scattering albedo -- indep of rel humidity
+  real(r8), allocatable, public :: gaero(:,:) ! asymmetry parameter -- indep of rel humidity
+  real(r8), allocatable, public :: faero(:,:) ! fwd scattering parameter -- indep of rel humidity
+
+  real(r8), allocatable, public :: mmraero(:,:) ! initial value of aero mmr
+
+
+
+!  Long-wave variables:
+  
+  integer :: Nf_lw, Ng_lw              ! frequency, gauss-point array dimensions
+  integer,  allocatable, public :: num_g(:)
+  real(r8), allocatable, public :: wn_lw(:) ! wavenumbers (cm^-1)
+  real(r8), allocatable, public :: weight_lw(:,:) ! Gaussian weights
+  real(r8), allocatable, public :: wght1d_lw(:)  !Gaussian weights used in CombCk
+
+!  Following line used when taui_lw is calculated from physpkg
+  real(r8), allocatable, public :: taui_lw(:,:,:,:,:) ! integrated lw optical depths
+!  Following line used when taui_lw is calculated from radclwmx_titan
+!  real(r8), allocatable, public :: taui_lw(:,:,:) ! integrated lw optical depths
+  real(r8), allocatable, public :: emis(:) ! ground emissivity
+
+  integer,  allocatable, public :: f_of_glob(:,:)
+  integer,  allocatable, public :: g_of_glob(:,:)
+
+! ajf, 3-20-08:  Variables needed in calculation of CAM ck values  
+  integer, parameter, public :: N_gas_ck = 5
+  integer, parameter, public :: N_cia=10  !Number of different cia collision partners
+  character(len=256), public :: interpck_infil(N_gas_ck),path_radcnst
+  character(len=20), public :: gas_name_lw(N_gas_ck)
+  
+  integer, public  :: n_type_aer
+  
+  Type(GasCkPt), public, dimension(N_gas_ck) :: CkPt
+  Type(GasCk), public, dimension(N_gas_ck) :: Ck
+  Type(GasCk), public, dimension(N_gas_ck) :: Ck_m  !Ck multiplied by mixing ratios
+  Type(GasCk), public :: CkComb
+  integer Ng_ck(N_gas_ck), Nwn_ck(N_gas_ck) ! Number of g-points, wavenumber intervals in CkPt
+                                            ! structure for each separate gas
+  integer Nwn_Ckcomb, Nwn_Cia
+  Type(GasCia), public :: Cia
+  Type(GasCia), public :: CiaComb
+  Type(GasCia), public :: Cia_v  !CiaComb multiplied by volume mixing ratios
+  Type(Aer_lw_abs), allocatable, public :: k_aer_lw(:) !slot is for aer type index
+  character(len=20), allocatable, public :: aer_name_lw(:)
+    
+!-----------------------------------------------------------------------
+! Subroutines and functions --------------------------------------------
+!-----------------------------------------------------------------------
+contains
+
+
+subroutine radcnst_initialize
+!----------------------------------------------------------------------- 
+! 
+! Purpose: 
+! Read radiative transfer data
+! 
+! Author:  F. Oyafuso
+! 
+!-----------------------------------------------------------------------
+
+  use filenames, only: fil_radcnst
+  use ioFileMod, only: getfil
+  use abortutils, only: endrun
+  use ppgrid, only: pver
+
+#if ( defined SPMD )
+  use mpishorthand, only: mpicom, mpiint, mpir8, mpichar
+#endif
+
+  
+  include 'netcdf.inc'
+
+!---------------------------Local variables-----------------------------
+  integer :: ncid
+  integer :: Ng_id, Na_id, Nv_p1_id, Nf_id
+  integer :: Nf_lw_id, Ng_lw_id
+  integer :: lambda_min_id, lambda_max_id, frcsol_id, spectralweight_id
+  integer :: kgas_id, p_exp_id, kaero_id, waero_id, gaero_id, faero_id, mmraero_id
+  integer :: raytau_id, nirwgt_id, ztau_id
+  integer :: num_g_id, wn_lw_id, weight_lw_id, taui_lw_id,  emis_id
+  integer :: f_of_glob_id, g_of_glob_id
+  integer :: ierror
+  integer :: Zv, Zf, Zg
+  integer :: klen                      !length of fil_radcnst character string
+  integer :: i,j, k,Nwn, Ngg
+  character(len=256) :: locfn          ! netcdf local filename to open
+
+  integer, parameter :: Fid=14
+  real(r8), allocatable :: Wn_cia(:)
+  real(r8), allocatable :: Wnglobal(:)  !global lw wn array
+  ! For PGF compiler, need to move sizing of wnglobal outside GlobalWn: 
+  real(r8),                     Allocatable :: Temp(:), Temp_s(:)
+  Integer,                      Allocatable :: TempIndx(:)
+  Integer                                   :: SizeTemp, SizeArr
+!EJL
+!
+! AJF, 3-19-08:  Modify for reading in gas C-K and CIA tables for general P,T
+!
+! NOTE: For lw spectrum, Nf_lw, Ng_lw refer to dimensions of CAM O.D. grid
+!       These *do not necessarily equal* dimensions of same for ck's for each gas
+
+  
+  if (masterproc) then
+     call getfil (fil_radcnst, locfn, 0)
+     call wrap_open (trim(locfn), NF_NOWRITE, ncid)
+     write(6,*)'RADCNST_INITIALIZE:  reading radiative transfer constant data from file ',trim(locfn)
+     call wrap_inq_dimid( ncid, 'Ng', Ng_id )
+     call wrap_inq_dimlen( ncid, Ng_id, Ng )
+     call wrap_inq_dimid( ncid, 'Na', Na_id )
+     call wrap_inq_dimlen( ncid, Na_id, Na )
+     call wrap_inq_dimid( ncid, 'Nv_p1', Nv_p1_id )
+     call wrap_inq_dimlen( ncid, Nv_p1_id, Nv_p1 )
+     call wrap_inq_dimid( ncid, 'Nf', Nf_id )
+     call wrap_inq_dimlen( ncid, Nf_id, Nf )
+!  Do not read lw information from netcdf file when using "online" O.D. calculation
+!!!!     call wrap_inq_dimid( ncid, 'Nf_lw', Nf_lw_id )
+!!!!     call wrap_inq_dimlen( ncid, Nf_lw_id, Nf_lw )
+!!!!     call wrap_inq_dimid( ncid, 'Ng_lw', Ng_lw_id )
+!!!!     call wrap_inq_dimlen( ncid, Ng_lw_id, Ng_lw )
+     
+     call wrap_inq_varid( ncid, 'lambda_min', lambda_min_id)
+     call wrap_inq_varid( ncid, 'lambda_max', lambda_max_id)
+     call wrap_inq_varid( ncid, 'frcsol', frcsol_id)
+     call wrap_inq_varid( ncid, 'spectralweight', spectralweight_id)
+     call wrap_inq_varid( ncid, 'extinction_gas', kgas_id)
+     call wrap_inq_varid( ncid, 'pressure_exponent', p_exp_id)
+     call wrap_inq_varid( ncid, 'extinction_aero', kaero_id)
+     call wrap_inq_varid( ncid, 'ssa_aero', waero_id)
+     call wrap_inq_varid( ncid, 'asm_aero', gaero_id)
+     call wrap_inq_varid( ncid, 'fwd_aero', faero_id)
+     call wrap_inq_varid( ncid, 'mmr_aero', mmraero_id)
+     
+!  Do not read lw information from netcdf file when using "online" O.D. calculation
+!!!!     call wrap_inq_varid( ncid, 'num_g', num_g_id )
+!!!!     call wrap_inq_varid( ncid, 'wn_lw', wn_lw_id )
+!!!!     call wrap_inq_varid( ncid, 'gauss_wt', weight_lw_id )
+!!!!     call wrap_inq_varid( ncid, 'taui_lw', taui_lw_id )
+!!!!     call wrap_inq_varid( ncid, 'emis', emis_id )
+!!!!     call wrap_inq_varid( ncid, 'f_of_glob', f_of_glob_id )
+!!!!     call wrap_inq_varid( ncid, 'g_of_glob', g_of_glob_id )     
+
+     
+     call wrap_inq_varid( ncid, 'ztau', ztau_id)
+     call wrap_inq_varid( ncid, 'raytau', raytau_id)
+     call wrap_inq_varid( ncid, 'nirwgt', nirwgt_id)
+     
+     if (Nv_p1 /= pver+1) then
+        print*, 'Nv_p1=',Nv_p1,'pver=',pver
+        call endrun ('RADCNST_INITIALIZE:  Inconsistency in the number of vertical layers.')
+     endif
+  endif
+  
+#if (defined SPMD )
+  call mpibcast (Ng, 1, mpiint, 0, mpicom)
+  call mpibcast (Na, 1, mpiint, 0, mpicom)
+  call mpibcast (Nv_p1, 1, mpiint, 0, mpicom)
+  call mpibcast (Nf, 1, mpiint, 0, mpicom)
+!!!!  call mpibcast (Nf_lw, 1, mpiint, 0, mpicom)
+!!!!  call mpibcast (Ng_lw, 1, mpiint, 0, mpicom)
+#endif
+  
+  ! sw arrays - these arrays are never deallocated
+  allocate ( lambda_min(Nf), lambda_max(Nf), frcsol(Nf), &
+       spectralweight(Nf,Ng), kgas(Nf,Ng), p_exp(Nf,Ng), &
+       kaero(Nf,Na), waero(Nf,Na), gaero(Nf,Na), faero(Nf,Na), &
+       mmraero(pver,Na), raytau(Nf), nirwgt(Nf), ztau(Nv_p1), &
+       stat=ierror )
+  if (ierror /= 0) then
+     call endrun ('RADCNST_INITIALIZE:  ERROR, s-w allocate() failed')
+  endif
+  
+  if (masterproc) then
+
+     call wrap_get_var_realx (ncid, lambda_min_id, lambda_min)
+     call wrap_get_var_realx (ncid, lambda_max_id, lambda_max)
+     call wrap_get_var_realx (ncid, frcsol_id, frcsol)
+     call wrap_get_var_realx (ncid, spectralweight_id, spectralweight)
+     call wrap_get_var_realx (ncid, kgas_id, kgas)
+     call wrap_get_var_realx (ncid, p_exp_id, p_exp)
+     call wrap_get_var_realx (ncid, kaero_id, kaero)
+     call wrap_get_var_realx (ncid, waero_id, waero)
+     call wrap_get_var_realx (ncid, gaero_id, gaero)
+     call wrap_get_var_realx (ncid, faero_id, faero)
+     call wrap_get_var_realx (ncid, mmraero_id, mmraero)
+     call wrap_get_var_realx (ncid, ztau_id, ztau)
+     call wrap_get_var_realx (ncid, raytau_id, raytau)
+     call wrap_get_var_realx (ncid, nirwgt_id, nirwgt)
+     
+!  Variables now defined below definition of Nf_lw
+!!!!     call wrap_get_var_int (ncid, num_g_id, num_g)
+!!!!     call wrap_get_var_realx (ncid, wn_lw_id, wn_lw)
+!!!!     call wrap_get_var_realx (ncid, weight_lw_id, weight_lw)
+!!!!     call wrap_get_var_realx (ncid, taui_lw_id, taui_lw_tmp)
+!!!!     call wrap_get_var_realx (ncid, emis_id, emis)
+          
+  endif
+  
+#if (defined SPMD )
+  call mpibcast (lambda_min, Nf, mpir8, 0, mpicom)
+  call mpibcast (lambda_max, Nf, mpir8, 0, mpicom)
+  call mpibcast (frcsol, Nf, mpir8, 0, mpicom)
+  call mpibcast (spectralweight, Nf*Ng, mpir8, 0, mpicom)
+  call mpibcast (kgas, Nf*Ng, mpir8, 0, mpicom)
+  call mpibcast (p_exp, Nf*Ng, mpir8, 0, mpicom)
+  call mpibcast (kaero, Nf*Na, mpir8, 0, mpicom)
+  call mpibcast (waero, Nf*Na, mpir8, 0, mpicom)
+  call mpibcast (gaero, Nf*Na, mpir8, 0, mpicom)
+  call mpibcast (faero, Nf*Na, mpir8, 0, mpicom)
+  call mpibcast (mmraero, (Nv_p1-1)*Na, mpir8, 0, mpicom)
+  
+!!!!  call mpibcast (num_g, Nf_lw, mpiint, 0, mpicom)
+!!!!  call mpibcast (wn_lw, Nf_lw, mpir8, 0, mpicom)
+!!!!  call mpibcast (weight_lw, Ng_lw*Nf_lw, mpir8, 0, mpicom)
+!!!!  call mpibcast (taui_lw, Nf_lw*Ng_lw*Nv_p1, mpir8, 0, mpicom)
+!!!!  call mpibcast (emis, Nf_lw, mpir8, 0, mpicom)
+  
+  call mpibcast (ztau, Nv_p1, mpir8, 0, mpicom)
+  call mpibcast (raytau, Nf, mpir8, 0, mpicom)
+  call mpibcast (nirwgt, Nf, mpir8, 0, mpicom)
+#endif
+
+!AJF, 3/18/08: LONGWAVE SECTION
+
+! Find directory of radcnst.nc file.  This is where CkPt and other
+! data tables are stored
+
+  klen = len_trim(fil_radcnst)
+   do i = klen, 1, -1
+      if (fil_radcnst(i:i) == '/') go to 100  !find first / starting from end
+   end do
+   i = 0
+ 100 path_radcnst = fil_radcnst(1:i)
+   if (len_trim(path_radcnst) == 0) then
+      call endrun ('(RADCNST_INITIALIZE): local filename has zero length')
+   else
+     if(masterproc) then
+      write(6,*)'(RADCNST_INITIALIZE): attempting to find directory ', trim(path_radcnst)
+     endif
+   endif
+
+! Add directory name to infil names
+   interpck_infil(1)=trim(path_radcnst) // 'ch4-n2.ck'
+    gas_name_lw(1)='CH4'
+   interpck_infil(2)=trim(path_radcnst) // 'c2h2-n2.ck'
+    gas_name_lw(2)='C2H2'
+   interpck_infil(3)=trim(path_radcnst) // 'c2h4-n2.ck'
+    gas_name_lw(3)='C2H4'
+   interpck_infil(4)=trim(path_radcnst) // 'c2h6-n2.ck'
+    gas_name_lw(4)='C2H6'
+   interpck_infil(5)=trim(path_radcnst) // 'hcn-n2.ck'
+    gas_name_lw(5)='HCN'
+    
+! CORRELATED-K SECTION
+   
+! Read in basic table of lw Ck data for each gas. Allocate space for Ck structure
+
+   do i=1,N_gas_ck
+   
+    if(masterproc) then
+     print*,'(RADCNST_INITIALIZE): Attempting to read file: ',Trim(interpck_infil(i)) 
+    endif   
+     CkPt(i) = ReadCkPt(Trim(interpck_infil(i)))
+     
+! Allocate the Ck structure for each gas. Ck values interpolated
+! onto CAM P-T grid in subroutine interpck
+
+     Allocate(Ck(i)%P(Nv_p1))
+     Allocate(Ck(i)%T(Nv_p1))
+
+     Nwn_ck(i) = Size(CkPt(i)%Wn)
+     Ng_ck(i) = Size(CkPt(i)%G)
+     Allocate(Ck(i)%Val(Ng_ck(i), Nv_p1, Nwn_ck(i)))
+     Allocate(Ck(i)%Wn(Nwn_ck(i)))
+     Allocate(Ck(i)%G(Ng_ck(i)))
+     Ck(i)%Wn = CkPt(i)%Wn
+     Ck(i)%G = CkPt(i)%G
+     
+! Allocate copy of Ck to be multiplied by mixing ratios in taulw_cam:
+
+     Allocate(Ck_m(i)%P(Nv_p1))
+     Allocate(Ck_m(i)%T(Nv_p1))
+     Allocate(Ck_m(i)%Val(Ng_ck(i), Nv_p1, Nwn_ck(i)))
+     Allocate(Ck_m(i)%Wn(Nwn_ck(i)))
+     Allocate(Ck_m(i)%G(Ng_ck(i)))
+     Ck_m(i)%Wn=Ck(i)%Wn
+     Ck_m(i)%G =Ck(i)%G 
+     Ck_m(i)%Val(:,:,:)=0.0
+     
+     if (masterproc) then
+      print*,'RADCNST_INITIALIZE: '
+      print*, 'gas= ',i,' Nwn_ck= ',Nwn_ck(i),' Ng_ck= ',Ng_ck(i)
+      print*,' Nv_p1= ',Nv_p1
+     endif
+  
+   enddo
+
+! Create the global longwave wavenumber array for Ck data ( .ne. to final wn grid)
+!EJL - new code form AJF 
+!  - Determine the size of the non-unique combination of every wavenumber
+!    element of the Ck array.
+    SizeTemp = 0
+    Do I = 1, N_gas_ck
+       SizeTemp = SizeTemp + Size(Ck(I)%Wn)
+    End Do
+
+    Allocate(Temp(SizeTemp))
+    Allocate(Temp_s(SizeTemp))
+    Allocate(TempIndx(SizeTemp))
+
+! Put every wavenumber element of the CK array into the new temp array.
+    J = 1
+    K = 0
+    Do I = 1, SizeTemp
+       K = K + 1
+       If (K > Size(Ck(J)%Wn)) Then
+          K = 1
+          J = J + 1
+       End If
+       Temp(I) = Ck(J)%Wn(K)
+    End Do
+    
+!!!    Call Sort(Temp,SizeTemp)  !AJF, 7-14-09, Sort produces error
+                                 ! writes to 0-element of Arr
+    
+     call indexx(SizeTemp,Temp,TempIndx) !AJF - added to radcnst
+                                         ! changed to "use" in taulw_cam
+
+! Store sorted IR wavenumbers in Temp_s:
+
+    do i=1,SizeTemp
+      Temp_s(i) = Temp(TempIndx(i))
+    enddo
+! Replace Temp entries with sorted values
+
+      Temp(:)=Temp_s(:)
+
+
+! Determine the size of the unique array.
+    SizeArr = SizeTemp
+    Do I = 1, SizeTemp - 1
+       If (Temp(I) == Temp(I + 1)) Then
+          SizeArr = SizeArr - 1
+       End if
+    End Do
+
+    Allocate (Wnglobal(SizeArr))
+
+  Call GlobalWn(Wnglobal, Temp)
+  
+  deallocate(Temp)
+  deallocate(Temp_s)
+  deallocate(TempIndx)
+  !End new code
+  
+  Ngg = Size(Ck(1)%G)
+  Nwn = Size(Wnglobal)  !just the Ck wavenumber grid
+  
+ !EJL debug crashes here with hcn-n2 
+       
+     if (masterproc) then
+      print*,'RADCNST_INITIALIZE: AFTER GlobalWn'
+      print*, 'Ngg= ',Ngg,' Nwn= ',Nwn
+      do i=1,Nwn
+       print*,' i= ',i,' Wnglobal(i)= ',Wnglobal(i)
+      enddo
+     endif
+
+! Allocate memory for CkComb:
+
+  Allocate(CkComb%G(Ngg), &
+           CkComb%P(Nv_p1), &
+           CkComb%T(Nv_p1), &
+           CkComb%Wn(Nwn), &
+           CkComb%Val(Ngg, Nv_p1, Nwn))
+           
+  Nwn_Ckcomb=Nwn
+
+! Partially initialize CkComb to retain the standard G and the global
+!  wavenumber array.  Rest of initialization occurs in subroutine interpck_cam
+
+  CkComb%G = Ck(1)%G
+  CkComb%Wn = Wnglobal
+  CkComb%Val(:,:,:)=0.0
+  
+!  Read in the 1-d array of Gaussian weights used in MixGas (taulw_cam module):
+
+   Allocate(wght1d_lw(Ngg))
+   
+! Now read in data:
+  if(masterproc) then
+     Open(Fid, File = Trim(path_radcnst)//'weights.in', Status = 'old')
+     print*,'Attempting to read file: ',Trim(path_radcnst)//'weights.in'
+     Read(Fid, *) (wght1d_lw(I), I = 1, Ngg)
+     Close(Fid)
+  endif
+! Distribute wght1d_lw to all processors:
+#if ( defined SPMD )
+     call mpibcast (wght1d_lw, Ngg, mpir8, 0, mpicom)
+#endif
+
+
+!!!!  wght1d_lw=ReadWeight(Trim(path_radcnst)//'weights.in', Ngg) !also used in assign_weights
+!!!!  print*,'Size of wght1d_lw= ',size(wght1d_lw)  
+
+     if (masterproc) then
+      print*,'RADCNST_INITIALIZE: wght1d_lw'
+      print*, 'Ngg= ',Ngg
+      do i=1,Ngg
+       print*,' i= ',i,' wght1d_lw(i)= ',wght1d_lw(i)
+      enddo
+     endif
+  
+!  CIA SECTION:
+  
+! Initialize CIA table and the structure that will hold interpolated CIA data on CAM     
+!  grid:
+
+  Cia = ReadCia(Trim(path_radcnst)//'cia.in')  !master table
+     
+! Read in CIA wavenumber grid to be used in model:
+
+!   First get number of wavenumbers on grid and distribute info to all processors 
+  if(masterproc) then
+      Open(Fid, File = Trim(path_radcnst)//'wngrid_cia.in', Status = 'old')
+      Read(Fid, *) Nwn
+  endif
+!   then distribute Nwn to all processors:
+#if ( defined SPMD )
+     call mpibcast (Nwn, 1, mpiint, 0, mpicom)
+#endif
+     
+   Allocate(Wn_cia(Nwn))
+   
+! Now read in wn data:
+  if(masterproc) then
+     Read(Fid, *) (Wn_cia(I), I = 1, Nwn)
+     Close(Fid)
+  endif
+! Distribute Wn_cia to all processors:
+#if ( defined SPMD )
+     call mpibcast (Wn_cia, Nwn, mpir8, 0, mpicom)
+#endif
+
+     if (masterproc) then
+      print*,'RADCNST_INITIALIZE: Wn_cia'
+      print*, 'Nwn= ',Nwn
+      do i=1,Nwn
+       print*,' i= ',i,' Wn_cia(i)= ',Wn_cia(i)
+      enddo
+     endif
+  
+! Allocate memory for the "combined" wn/T cia table used in model
+
+  Allocate(CiaComb%Wn(Nwn), &
+           CiaComb%T(Nv_p1), &
+           CiaComb%Val(N_cia, Nv_p1, Nwn))
+           
+! Create copy of CiaComb which has Cia_v%Val = CiaComb%Val * (volume mixing ratio)
+
+  Allocate(Cia_v%Wn(Nwn), &
+           Cia_v%T(Nv_p1), &
+           Cia_v%Val(N_cia, Nv_p1, Nwn))
+           
+  Nwn_Cia=Nwn
+
+! Initialize the combined cia table
+
+  CiaComb%Wn = Wn_cia
+  CiaComb%T = 0.0      !set in interpcia_cam  
+  CiaComb%Val(:, :, :)=0.0
+  
+  Cia_v%Wn= Wn_cia
+  Cia_v%T = 0.0
+  Cia_v%Val(:,:,:)=0.0
+  
+! COMBINE CIA AND CK WAVENUMBER GRIDS AND WEIGHT DATA:
+
+! Get number of distinct spectral intervals in the ck and cia 
+! wavenumber grids 
+  Nf_lw = num_distinct_elements(CkComb%Wn, CiaComb%Wn)
+  Allocate(wn_lw(Nf_lw))
+  
+  call union(CkComb%Wn, CiaComb%Wn, wn_lw)
+  
+     if (masterproc) then
+      print*,'RADCNST_INITIALIZE: Nf_lw= ', Nf_lw
+      print*,' size(wn_lw) should equal Nf_lw: size= ',size(wn_lw)
+      print*, ' i, wavenumber '
+      do i=1,Nf_lw
+       print*,' i= ',i,' wn_lw(i)= ',wn_lw(i)
+      enddo
+     endif
+  
+! Allocate/initialize certain longwave arrays
+
+  Ng_lw = size(CkComb%G)
+
+  Allocate(emis(Nf_lw), f_of_glob(Ng_lw, Nf_lw), g_of_glob(Ng_lw, Nf_lw), &
+       stat=ierror)
+       
+  if (ierror /= 0) then
+     call endrun ('RADCNST_INITIALIZE:  ERROR, l-w allocate() failed')
+  endif
+
+! Set the initial values of f_of_glob, g_of_glob. These arrays useful in future when
+! using SMT sorting method rather than correlated-k
+
+
+    do i=1,Nf_lw
+     do j=1,Ng_lw
+      f_of_glob(j, i) = i
+      g_of_glob(j, i) = j
+     enddo
+    enddo
+
+
+! Assign gaussian weight values to the combined Ck-CIA grid
+!EJL
+   Allocate(num_g(Nf_lw))
+   Allocate(weight_lw(Ng_lw,Nf_lw))
+
+     call assign_weights (CkComb, Ng_lw, num_g, wn_lw, wght1d_lw, weight_lw)
+     
+    if (masterproc) then
+      print*,'RADCNST_INITIALIZE: Assign_weights, Ng_lw= ', Ng_lw
+      do i=1,Nf_lw
+       print*, ' i, wavenumber= ',i, wn_lw(i)
+       do j=1,Ng_lw
+        print*,' j= ',j,' weight_lw= ',weight_lw(j,i)
+       enddo
+      enddo
+    endif
+     
+
+
+! Allocate optical depth array.  *Used when o.d. calculated inside physpkg
+!  at doabsems frequency -> must be saved across calls to radclwmx_titan*
+
+   Allocate(taui_lw(begchunk:endchunk,pcols,Nf_lw, Ng_lw, Nv_p1))
+   taui_lw(:,:,:,:,:) = 0.0
+   
+!!!
+! Allocate optical depth array.  *Used when o.d. calculated in radclwmx_titan
+! inside loop over columns every lw time step; taui_lw not saved between columns*
+!!!   allocate(taui_lw(Nf_lw, Ng_lw, Nv_p1))
+!!!   taui_lw(:, :, :)=1.0
+   
+! AEROSOL SECTION (longwave absorption) 
+!EJL
+!   Get number of different aerosol types and wavenumbers in table 
+!   IMPORTANT: At present, number of wavenumbers in table MUST EQUAL Nf_lw
+  if(masterproc) then
+!      Open(Fid, File = Trim(path_radcnst)//'aer_lw_props.in', Status = 'old')
+      Open(Fid, File = Trim(path_radcnst)//'aer_lw_mie_rmin2.e7_n30_rat2.5.in', Status='old')
+!      Open(Fid, File = Trim(path_radcnst)//'aer_lw_mie_rmin2.e7_n30_rat2.5_Vinatier2012.in', Status='old')
+      Read(Fid, *) n_type_aer, Nwn
+      if (Nwn .ne. Nf_lw) call endrun('radcnst_initialize: Number of &
+        wavenumbers in aerosol lw input file must equal Nf_lw')
+  endif
+  
+! distribute size info to all processors
+#if ( defined SPMD )
+    call mpibcast (n_type_aer, 1, mpiint, 0, mpicom)
+    call mpibcast (Nwn, 1, mpiint, 0, mpicom)
+#endif
+  
+  Allocate(k_aer_lw(n_type_aer))
+  do j=1,n_type_aer
+   allocate(k_aer_lw(j)%Wn(Nwn))
+   allocate(k_aer_lw(j)%Qabs(Nwn))
+   allocate(k_aer_lw(j)%Val(Nwn))
+  enddo
+  Allocate(aer_name_lw(n_type_aer)) 
+  
+! Read in table of wavenumber, Qabs, particle mass density, and mean radius
+! for each aerosol type.  Remember, lw radiative computation uses cgs unit system,
+! k_aer_lw%Val in units of cm^2/g
+
+  if(masterproc) then
+   do j=1,n_type_aer
+    Read(Fid, '(a)') aer_name_lw(j)
+    Read(Fid, *) k_aer_lw(j)%rho, k_aer_lw(j)%rad  !particle density, radius(um)
+    !Convert radius from microns to cm
+    k_aer_lw(j)%rad=k_aer_lw(j)%rad*1.e-4
+    do i=1,Nwn
+     Read(Fid, *) k_aer_lw(j)%Wn(i),k_aer_lw(j)%Qabs(i)
+!   EJL 7-27-13 
+!   Test, reduce cooling on aeorsols to see if we can warm up the stratosphere. 
+     k_aer_lw(j)%Qabs(i) = k_aer_lw(j)%Qabs(i)!*0.3
+    enddo
+   enddo
+  endif
+
+! Pass this data to all processors  
+#if ( defined SPMD )
+  do j=1,n_type_aer
+   call mpibcast (aer_name_lw(j), 20, mpichar, 0, mpicom)
+   call mpibcast (k_aer_lw(j)%rho, 1, mpir8, 0, mpicom)
+   call mpibcast (k_aer_lw(j)%rad, 1, mpir8, 0, mpicom)    
+   call mpibcast (k_aer_lw(j)%Wn, Nwn, mpir8, 0, mpicom)   
+   call mpibcast (k_aer_lw(j)%Qabs, Nwn, mpir8, 0, mpicom)
+  enddo
+#endif
+
+! Define k_aer_lw(j)%Val:
+
+  do j=1,n_type_aer
+   do i=1,Nwn
+    k_aer_lw(j)%Val(i)=3.*k_aer_lw(j)%Qabs(i)/(4.*k_aer_lw(j)%rho*k_aer_lw(j)%rad)
+   enddo
+  enddo
+  
+  if (masterproc) then
+   print*,'n_type_aer= ',n_type_aer
+   do j=1,n_type_aer
+    print*,aer_name_lw(j)
+    print*,' particle type= ',j,' particle density= ',k_aer_lw(j)%rho,&
+          ' radius (cm) = ',k_aer_lw(j)%rad
+    print*,' '
+    do i =1,Nwn
+     print*,' wn, Qabs, k_aer_lw= ',k_aer_lw(j)%Wn(i),k_aer_lw(j)%Qabs(i),&
+             k_aer_lw(j)%Val(i)
+    enddo
+   enddo
+  endif
+  
+  deallocate(Wn_cia)
+  deallocate(Wnglobal)
+       
+  return
+  
+end subroutine radcnst_initialize
+
+!##############################################################################
+
+  Type(GasCkPt) Function ReadCkPt(Path)
+  
+#if ( defined SPMD )
+  use mpishorthand, only: mpicom, mpiint, mpir8
+#endif
+
+    Implicit None
+
+    Character *(*), Intent(in) :: Path
+    Integer                    :: Ng, Nt, Np, Nwn
+    Integer                    :: I, J, K, L
+    Integer, Parameter         :: Fid = 14
+! FAO, 3/08    
+    Integer :: sz_raw_data
+    Integer :: sizes(4), indx
+    real(r8) , allocatable :: raw_data(:)  ! temporary storage
+
+! first get dimensions of data; only root proc reads
+    if (masterproc) then
+      Open(Fid, File = Path, Status = 'old')
+       print*, 'ReadCkPt: Reading ck-pt table... ' // Path
+       Read(Fid, *) (sizes(I), I=1,4)
+    endif
+    
+! distribute size info to all processors
+#if ( defined SPMD )
+    call mpibcast (sizes, 4, mpiint, 0, mpicom)
+#endif
+
+! unpack data
+    Ng = sizes(1)
+    Np = sizes(2)
+    Nt = sizes(3)
+    Nwn = sizes(4)
+    
+! pack data for more efficient message passing
+    sz_raw_data = Ng+Np+Nt+Nwn+Ng*Np*Nt*Nwn
+    Allocate(raw_data(sz_raw_data))
+
+    Allocate(ReadCkPt%G(Ng), &
+             ReadCkPt%P(Np), &
+             ReadCkPt%T(Nt), &
+             ReadCkPt%Wn(Nwn), &
+             ReadCkPt%Val(Ng, Np, Nt, Nwn))
+             
+! get raw data; only root proc reads
+    if (masterproc) then
+       Read(Fid, *) (raw_data(I), I = 1,sz_raw_data)
+       Close(Fid)
+    endif
+
+! distribute data to all processors
+#if ( defined SPMD )
+    call mpibcast (raw_data, sz_raw_data, mpir8, 0, mpicom)
+#endif
+
+! unpack data
+
+    indx = 0
+    ReadCkPt%G(1:Ng) = raw_data(indx+1:indx+Ng)
+    indx = indx + Ng
+    ReadCkPt%P(1:Np) = raw_data(indx+1:indx+Np)
+    indx = indx + Np
+    ReadCkPt%T(1:Nt) = raw_data(indx+1:indx+Nt)
+    indx = indx + Nt
+    ReadCkPt%Wn(1:Nwn) = raw_data(indx+1:indx+Nwn)
+    indx = indx + Nwn
+    do L=1,Nwn
+    do K=1,Nt
+    do J=1,Np
+    do I=1,Ng
+       indx = indx + 1
+       ReadCkPt%Val(I, J, K, L) = raw_data(indx)
+    enddo
+    enddo
+    enddo
+    enddo
+
+    deallocate(raw_data)
+
+    Return
+
+  End Function ReadCkPt
+  
+!##############################################################################
+
+  ! ReadCia:
+  !    Read the cia data table and return values in a GasCia struct.
+  !
+  !   Arguments:
+  !     Path : Path to the file
+
+  Type(GasCia) Function ReadCia(Path)
+  
+#if ( defined SPMD )
+  use mpishorthand, only: mpicom, mpiint, mpir8
+#endif
+
+    Implicit None
+
+    Character *(*), Intent(in) :: Path
+
+    Integer                    :: Nt, Nwn
+    Integer                    :: I, J, K
+    Integer, Parameter         :: Fid=14
+! AJF 3-28-08, modeled after FAO's version of ReadCkPt    
+    Integer :: sz_raw_data
+    Integer :: sizes(2), indx
+    real(r8) , allocatable :: raw_data(:)  ! temporary storage
+
+! first get dimensions of data; only root proc reads
+    if (masterproc) then
+      Open(Fid, File = Path, Status = 'old', Err = 1)
+      print*, 'Reading cia table... ' // Path
+      Read(Fid, *, Err=2) sizes(1), sizes(2)
+    endif
+    
+! distribute size info to all processors
+#if ( defined SPMD )
+    call mpibcast (sizes, 2, mpiint, 0, mpicom)
+#endif
+
+! unpack dimension data
+
+    Nt=sizes(1)
+    Nwn=sizes(2)
+    
+!!!!    Read(Fid, *, Err = 2) Nt, Nwn
+
+    Allocate(ReadCia%T(Nt))
+    Allocate(ReadCia%Wn(Nwn))
+    
+! pack data for more efficient message passing
+    sz_raw_data = Nt+Nwn+Nt*Nwn*N_cia
+    Allocate(raw_data(sz_raw_data))
+    
+    Allocate(ReadCia%Val(N_cia, Nt, Nwn)) 
+    
+! get raw data; only root proc reads
+    if (masterproc) then
+       Read(Fid, *) (raw_data(I), I = 1,sz_raw_data)
+       Close(Fid)
+    endif   
+
+
+! distribute data to all processors
+#if ( defined SPMD )
+    call mpibcast (raw_data, sz_raw_data, mpir8, 0, mpicom)
+#endif
+
+! unpack data
+    indx = 0
+    ReadCia%T(1:Nt) = raw_data(indx+1:indx+Nt)
+    indx = indx + Nt
+    ReadCia%Wn(1:Nwn) = raw_data(indx+1:indx+Nwn)
+    indx = indx + Nwn
+    do I=1,N_cia
+    do K=1,Nwn
+    do J=1,Nt
+       indx = indx + 1
+       ReadCia%Val(I, J, K) = raw_data(indx)
+    enddo
+    enddo
+    enddo
+
+    deallocate(raw_data)
+
+!  Single-processor form of reads - shows organization of data table:
+
+!!!!    Read(Fid, *, Err = 2) (ReadCia%T(I), I = 1 , Nt)
+!!!!    Read(Fid, *, Err = 2) (ReadCia%Wn(I), I = 1, Nwn)
+
+!!!!    Read(Fid, *, Err = 2) (((ReadCia%Val(I, J, K), &
+!!!!                    J = 1, Nt), &
+!!!!                    K = 1, Nwn), &
+!!!!                    I = 1, N_cia)
+
+!!!!    Close(Fid)
+
+    Return
+
+1   Write(*,*) "Failed to open file: ", Path
+    Stop
+
+2   Write(*,*) "Incorrect file format: ", Path
+    Stop
+  End Function ReadCia
+  
+!##############################################################################
+
+  ! ReadWeight:
+  !   Read the weights data table and return values in array.
+  !
+  !   Arguments:
+  !     Path : Path of the file
+  
+!  AJF,4-2-08:  moved read to radcnst_initialize - had problem transferring data
+!   to wght1d_lw when using this function
+
+  Function ReadWeight(Path, Nw)
+  
+#if ( defined SPMD )
+  use mpishorthand, only: mpicom, mpiint, mpir8
+#endif
+
+    Implicit None
+
+    real(r8), Dimension (Nw)       :: ReadWeight
+    Character *(*), Intent(in) :: Path
+    Integer, Intent(in)        :: Nw
+    Integer                    :: I
+    Integer, Parameter         :: Fid = 14
+
+
+    if (masterproc) then
+      print*,'ReadWeight: Attempting to read file ',Path 
+      Open(Fid, File = Path, Status = 'old', Err = 1)
+      Do I = 1, Nw
+        Read(Fid, *, Err = 2) ReadWeight(I)
+        print*,'ReadWeight(I)= ',ReadWeight(I) 
+      End Do
+      Close(Fid)
+    endif
+
+! distribute data to all processors
+#if ( defined SPMD )
+    call mpibcast (ReadWeight, Nw, mpir8, 0, mpicom)
+#endif
+     
+    Return
+
+1   Write(*,*) "Failed to open file: ", Path
+    Stop
+
+2   Write(*,*) "Incorrect file format: ", Path
+    Stop
+  End Function ReadWeight
+  
+!##############################################################################
+
+  Subroutine GlobalWn(Arr, Temp)
+    Implicit None
+! EJL - changed to AJF fixes
+!    real(r8),        Intent(out), Allocatable :: Arr(:)
+!    Type(GasCk), Intent(in)               :: Ck_loc(:)
+!    real(r8),                     Allocatable :: Temp(:)
+!    Integer                               :: I, J, K, SizeTemp
+    real(r8), Intent(out) :: Arr(:)
+	real(r8), Intent(in)  :: Temp(:)
+	integer :: i 
+	
+!  Modified by ajf 3-20-08
+
+! Determine the size of the non-unique combination of every wavenumber
+! element of the Ck_loc array.
+!    SizeTemp = 0
+!    Do I = 1, Size(Ck_loc)
+!       SizeTemp = SizeTemp + Size(Ck_loc(I)%Wn)
+!    End Do
+!print*,'globalwn1 - sizetemp', SizeTemp
+!    Allocate (Temp(SizeTemp))
+!print*,'glob2'
+! Put every wavenumber element of the CK array into the new temp array.
+!    J = 1
+!    K = 0
+!    Do I = 1, SizeTemp
+!       K = K + 1
+!       If (K > Size(Ck_loc(J)%Wn)) Then
+!          K = 1
+!          J = J + 1
+!       End If
+!       Temp(I) = Ck_loc(J)%Wn(K)
+!    End Do
+!print*,'glob3-temp',Temp
+    ! Sort and take the unique elements of the temp array.
+!    Call Sort(Temp)
+!	print*,'glob4'
+    Call Unique(Arr, Temp)
+!    print*,'glob5'
+!    deallocate(Temp)
+!print*,'glob6'
+  Return
+  End Subroutine GlobalWn
+  
+!##############################################################################
+
+  !Unique:
+  !  Return the unique elements of a sorted array.
+  !
+  !  Arguments:
+  !     Arr  : Unique array
+  !     Temp : Original array
+
+  Subroutine Unique(Arr, Temp)
+    Implicit None
+
+    real(r8), Intent(inout) :: Arr(:)
+    real(r8), Intent(in)               :: Temp(:)
+    Integer                        :: SizeArr
+    Integer                        :: I, J
+
+    ! Determine the size of the unique array.
+!    SizeArr = Size(Temp)
+!    Do I = 1, Size(Temp) - 1
+!       If (Temp(I) == Temp(I + 1)) Then
+!          SizeArr = SizeArr - 1
+!       End if
+!    End Do
+!
+!    Allocate (Arr(SizeArr))
+
+    J = 1
+    Do I = 1, Size(Temp) - 1
+       If (Temp(I) /= Temp(I + 1)) Then
+          Arr(J) = Temp(I)
+          J = J + 1
+       End If
+    End Do
+
+    Arr(J) = Temp(I)
+  Return
+  End Subroutine Unique
+  
+!##############################################################################
+
+  ! Sort:
+  !   Sort elements of an array based on the insertion sort algorithm.
+  !
+  ! Arguments:
+  !   Arr : Array to sort
+
+  Subroutine Sort(Arr,N)
+    Implicit None
+
+    real(r8), Intent(inout) :: Arr (:)
+    real(r8)              :: Value
+    Integer           :: I, J, N
+!print*,'sort',Arr
+    Do I = 2, Size(Arr)
+       Value = Arr(I)
+       J = I - 1
+
+       Do While ((J >= 1) .and. (Arr(J) > Value))
+          Arr(J + 1) = Arr(J)
+          J = J -1
+       End Do
+
+       Arr(J + 1) = Value
+    End Do
+	Return
+  End Subroutine Sort
+
+!##############################################################################
+
+  ! Where:
+  !   Return the index in the array containing a certain value. Return negative
+  !   if the value does not exist in the array.
+  !
+  !   Arguments:
+  !     Arr   : Array to search
+  !     Value : Value to find
+
+  Integer Function Where(Arr, Value)
+    Implicit None
+
+    real(r8), Intent(In) :: Arr(:)
+    real(r8), Intent(In) :: Value
+    Integer          :: I
+
+    Do I = 1, Size(Arr)
+       If (Arr(I) == Value) Then
+          Where = I
+          Return
+       End If
+    End Do
+
+    Where = 0
+   Return
+  End Function Where
+  
+!##############################################################################
+
+  !Interpolate:
+  !  Linearly interpolates for point Y given the X axis, Y axis, and a point X.
+  !  Extrapolate if the values fall out of bounds.
+  !
+  !  Arguments:
+  !     X: X-axis values
+  !     Y: Fuction of X
+  !     pX: X point to interpolate at
+
+  real(r8) Function Interpolate(X, Y, pX)
+    real(r8), Dimension(:) :: X, Y
+    real(r8), Intent(in)               :: pX
+    Integer                        :: I
+    Integer                        :: T, B
+
+    ! Determine what indicies on the X axis the pX value falls between.
+    Do I = 1, Size(X) - 1
+       If (Sgn(X(I) - pX) /= Sgn(X(I + 1) - pX)) Then
+          Exit
+       End if
+    End Do
+
+    ! If extrapolation is necessary, determine whether the X axis is increasing
+    ! or decreasing.
+
+    If (Sgn(X(Size(X)) - X(1)) < 0) Then
+       B = Size(X)
+       T = 1
+    Else
+       B = 1
+       T = Size(X)
+    End If
+
+    If (pX < X(B)) Then
+       I = 1
+    Else If (pX > X(T)) Then
+       I = Size(X) - 1
+    End If
+
+    Interpolate = (pX - X(I))/(X(I + 1) - X(I)) * (Y(I + 1) - Y(I)) + Y(I)
+   Return
+  End Function Interpolate
+
+!##############################################################################
+
+  !Bilinear Interpolate:
+  !  Linearly interpolates functions of two variables on a regular grid. First
+  !  interpolates along the X direction.
+  !
+  !  Arguments:
+  !     X: X-axis values
+  !     Y: Y-axis values
+  !     Z: Function of X and Y
+  !     pX: X point to interpolate at
+  !     pY: Y point to interpolate at
+
+  real(r8) Function BilinearInterpolate(X, Y, Z, pX, pY)
+    real(r8), Intent(in), Dimension(:)    :: X, Y
+    real(r8), Intent(in), Dimension(:, :) :: Z
+    real(r8), Intent(in)                  :: pX, pY
+    Integer                           :: I, J
+
+    Do I = 1, Size(X) - 1
+       If (Sgn(X(I) - pX) /= Sgn(X(I + 1) - pX)) Then
+          Exit
+       End If
+    End Do
+
+    Do J = 1, Size(Y) - 1
+       If (Sgn(Y(J) - pY) /= Sgn(Y(J + 1) - pY)) Then
+          Exit
+       End If
+    End Do
+
+    if (I == Size(X)) Then
+      I = I - 1
+    endif
+    if (J == Size(Y)) Then
+      J = J - 1
+    endif
+
+    BilinearInterpolate = (Z(I, J) * (X(I + 1) - pX) * (Y(J + 1) - pY) + &
+                           Z(I + 1, J) * (pX - X(I)) * (Y(J + 1) - PY) + &
+                           Z(I, J + 1) * (X(I + 1) - pX) * (pY - Y(J)) + &
+                           Z(I + 1, J + 1) * (pX - X(I)) * (pY - Y(J))) / &
+                          ((X(I + 1) - X(I)) * (Y(J + 1) - Y(J)))
+
+  End Function BilinearInterpolate
+
+!##############################################################################
+
+  ! Sgn:
+  !   Returns whether a value is positive, negative, or zero.
+  !   
+  !   Arguments:
+  !     Val: Value to evaluate
+
+  real(r8) Function Sgn(Val)
+    real(r8), Intent(in) :: Val
+
+    If (Val == 0.0) Then
+       Sgn = 0.0
+    Else
+       Sgn =  Sign(1.0, Val)
+    End If
+	Return
+  End Function Sgn
+  
+!##############################################################################
+
+! ARRAY FUNCTIONS WRITTEN/USED BY HAMIK MUKELYAN FOLLOW.  USED FOR DEFINING
+! TOTAL CIA+CK WAVENUMBER ARRAY FOR LONGWAVE PORTION OF SPECTRUM
+
+!==============================================================================
+
+  !--------------------v 
+  ! assign_weights
+  ! Description: Initializes nsm, nsa, and gaussian weight grid. 'nsa(i)' 
+  !              ought to be <= 'nsm' for all 'i', and the gaussian weight
+  !              grid for the combined wavenumber grids should have 
+  !              1 for first gaussian point and 0 for other points on
+  !              a particular wn interval if there is only cia aborption
+  !              (gaussian points from ck table otherwise).
+  !
+  ! In: comb_wn_grd -- Contains wavenumbers 
+  !     ck          -- Contains correlated k coefficients, a pressure
+  !                    grid, gaussian weights, and a wave number grid
+  !     nsm         -- max number of gaussian weights per spectral interval
+  !     nsa         -- actual number of gaussian weights at each interval   
+  !     wts         -- gaussian weight grid
+  !       w         -- 1-d weights from wght1d_lw (not a function of wavenumber)
+  !
+  ! Out: See description.
+  subroutine assign_weights (ck, nsm, nsa, comb_wn_grd, w, wts)
+    type(GasCk), intent(in)               :: ck
+    integer, intent(inout)                :: nsm
+    integer    :: nsa(:)
+    real(r8), intent(in)                  :: comb_wn_grd(:)
+    real(r8), intent(in)                  :: w(:)
+    real(r8)   :: wts(:,:)
+    integer                               :: i,j
+    integer                               :: Nwn        
+
+    Nwn=size(comb_wn_grd)
+    nsm = size(ck%G)
+!    allocate(nsa(Nwn))
+
+    ! right now each wavenumber interval has the same number of gaussian points
+    do i=1, Nwn
+       nsa(i) = nsm  ! number of g-points in specral interval i (initially)
+    end do
+
+!    allocate(wts(nsm,Nwn))
+
+    do i=1, Nwn   !Sets weight to standard ck value unless interval is pure CIA.
+       if (arr_contains (ck%Wn, comb_wn_grd(i))) then
+          do j=1, nsa(i)
+             wts(j,i) = w(j)
+          end do
+       else
+          wts(1,i) = 1.0
+          do j=2, nsa(i)
+             wts(j,i) = 0.0
+          end do
+       end if
+    end do
+	Return
+  end subroutine assign_weights
+
+  !--------------------v
+  ! arr_contains  
+  ! Description: True if array argument contains element argument, false
+  !              otherwise.
+  !
+  ! In: arr  -- array
+  !     elem -- number for which routine searches in 'arr' 
+  !
+  ! Out: See description.
+  logical function arr_contains (arr, elem)
+    real(r8), intent(in) :: arr(:), elem
+    integer :: i
+    arr_contains = .false.
+    do i = 1, size(arr)
+       if (arr(i) == elem) then
+          arr_contains = .true.
+          return
+       end if
+    end do
+	Return
+  end function arr_contains
+  !--------------------^
+
+  
+  !--------------------v
+  ! num_distinct_elements  
+  ! Description: Returns the number of distinct elements in the two array
+  !              arguments.
+  !
+  ! In: arr1 -- array, n elements
+  !     arr2 -- array, m elements, n does not necessarily = m
+  !
+  ! Out: See description.
+  integer function num_distinct_elements (arr1, arr2)
+    real(r8), intent(in) :: arr1(:), arr2(:)
+    integer :: i
+    num_distinct_elements = size(arr1)
+    do i=1, size(arr2)
+       if (.not. arr_contains (arr1, arr2(i))) then
+          num_distinct_elements = num_distinct_elements + 1
+       end if
+    end do
+	Return
+  end function num_distinct_elements
+  !--------------------^
+
+
+  !--------------------v
+  ! union  
+  ! Description: Takes the union of two array arguments. Sorts union.
+  !
+  ! In: arr1      -- array, n elements
+  !     arr2      -- array, m elements, n does not necessarily = m
+  !     union_arr -- allocatable array which will contain sorted union of
+  !                  'arr1' and 'arr2'
+  !
+  ! Out: union_arr
+  subroutine union (arr1, arr2, union_arr)
+    real(r8), intent(in)                  :: arr1(:), arr2(:)
+    real(r8)   :: union_arr(:)
+    integer                           :: i, counter
+!    allocate (union_arr (num_distinct_elements(arr1, arr2)))
+    do i=1, size(arr1)
+       union_arr(i) = arr1(i)
+    end do
+    counter = 1
+    do i=1, size(arr2)
+       if (.not. arr_contains (arr1, arr2(i))) then
+          union_arr(size(arr1) + counter) = arr2(i)
+          counter = counter + 1
+       end if
+    end do
+    call insertion_sort (union_arr)
+	Return
+  end subroutine union
+  !--------------------^
+
+
+  !--------------------v
+  ! insertion_sort  
+  ! Description: Uses insertion sort to sort array argument. (Make sure the
+  !              array is small!)
+  !
+  ! In: arr -- array to be sorted
+  !
+  ! Out: arr
+  subroutine insertion_sort (Arr)
+    real(r8), intent(inout)   :: Arr(:)
+    integer                :: I,J
+    real(r8)                   :: Value
+!    do i=2, size(arr)
+!       val = arr(i)
+!       j=i-1
+!       do 
+!          if(arr(j) > val .and. j >= 1) then
+!             arr(j+1) = arr(j)
+!          else
+!             exit
+!          end if
+!          j=j-1
+!       end do
+!       arr(j+1) = val
+!    end do
+
+!EJL fixing bug where Arr(j=0) causes -check all to fail. This routine is very
+!similar and based on sort1.f90 found at
+! http://jean-pierre.moreau.pagesperso-orange.fr/f_sort.html
+
+    Do I = 2, Size(Arr)
+       Value = Arr(I)
+       Do J=I-1,1,-1
+          If (Arr(J) <= Value) goto 10
+          Arr(J+1) = Arr(J)
+       End Do
+       J=0
+ 10    Arr(J + 1) = Value
+    End Do
+
+	Return
+  end subroutine insertion_sort
+  !--------------------^
+
+
+  !--------------------v  
+  ! Description: Returns index of first instance of 'num' in array argument.
+  !              -1 if not found.
+  !
+  ! In: arr  -- array
+  !     num  -- ...
+  !
+  ! Out: See description.
+  integer function where_arr (arr, num)
+    real(r8), intent(in) :: arr(:), num
+    integer :: i
+    where_arr = -1
+    do i = 1, size(arr)
+       if (arr(i) == num) then
+          where_arr = i
+          return
+       end if
+    end do
+	Return
+  end function where_arr
+
+!###########################################################################
+!EJL - added from AJF code
+      SUBROUTINE INDEXX(N,ARRIN,INDX)
+
+! return array of indices that puts arrin in ascending order
+! Arguments:
+      integer :: N
+      integer, intent(out) :: INDX(N)
+      real(r8), intent(in) :: arrin(N)
+        
+! Local variables:
+      integer :: I, J, L, IR, INDXT
+      real(r8) :: Q
+
+
+
+      DO 11 J=1,N
+        INDX(J)=J
+11    CONTINUE
+      L=N/2+1
+      IR=N
+10    CONTINUE
+        IF(L.GT.1)THEN
+          L=L-1
+          INDXT=INDX(L)
+          Q=ARRIN(INDXT)
+        ELSE
+          INDXT=INDX(IR)
+          Q=ARRIN(INDXT)
+          INDX(IR)=INDX(1)
+          IR=IR-1
+          IF(IR.EQ.1)THEN
+            INDX(1)=INDXT
+            RETURN
+          ENDIF
+        ENDIF
+        I=L
+        J=L+L
+20      IF(J.LE.IR)THEN
+          IF(J.LT.IR)THEN
+            IF(ARRIN(INDX(J)).LT.ARRIN(INDX(J+1)))J=J+1
+          ENDIF
+          IF(Q.LT.ARRIN(INDX(J)))THEN
+            INDX(I)=INDX(J)
+            I=J
+            J=J+J
+          ELSE
+            J=IR+1
+          ENDIF
+        GO TO 20
+        ENDIF
+        INDX(I)=INDXT
+      GO TO 10
+      END SUBROUTINE INDEXX
+
+    
+end module radcnst

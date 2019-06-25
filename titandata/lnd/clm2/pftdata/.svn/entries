@@ -1,0 +1,40 @@
+8
+
+dir
+5
+https://hpc.jpl.nasa.gov/repos/cam_titan_data/trunk/lnd/clm2/pftdata
+https://hpc.jpl.nasa.gov/repos/cam_titan_data
+
+
+
+2008-06-09T17:25:38.569599Z
+5
+cam_titan
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+e25d4b2a-5c24-0410-b85c-fdc914af71da
+
+pft-physiology
+file
+
+
+
+
+2008-06-23T19:57:45.000000Z
+aed0752e06fde80853f1d0c62bdfaa11
+2008-06-09T17:25:38.569599Z
+5
+cam_titan
+

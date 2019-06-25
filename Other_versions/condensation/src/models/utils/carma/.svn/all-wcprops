@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/projects/ncar_models/!svn/ver/409/cam/branches/carma/source/cam1/models/utils/carma
+END
+Makefile.darwin.xlf
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/projects/ncar_models/!svn/ver/168/cam/branches/carma/source/cam1/models/utils/carma/Makefile.darwin.xlf
+END
+Makefile.darwin.intel
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/projects/ncar_models/!svn/ver/409/cam/branches/carma/source/cam1/models/utils/carma/Makefile.darwin.intel
+END
+00.README
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/00.README
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/projects/ncar_models/!svn/ver/20/cam/branches/carma/source/cam1/models/utils/carma/Makefile
+END
+Makefile.linux.pathscale
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/projects/ncar_models/!svn/ver/168/cam/branches/carma/source/cam1/models/utils/carma/Makefile.linux.pathscale
+END

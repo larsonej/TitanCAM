@@ -1,0 +1,485 @@
+#include <misc.h>
+#include <params.h>
+
+module opgcm_radcnst_sw
+
+!----------------------------------------------------------------------- 
+! ajf 4-8-09 - Replace sw treatment in CAM3
+! Purpose: Initialize variables for storing shortwave absorption
+!          coefficients as structures.  Read in the data and
+!          store in structures.  Module contains routines for interpolation of
+!          coefficients from reference P-T table to model-grid P-T
+!          profile.
+! 
+!-----------------------------------------------------------------------
+
+!-----------------------------------------------------------------------
+!USE:
+  use shr_kind_mod, only: r8 => shr_kind_r8
+  use pmgrid, only: masterproc
+  use abortutils, only: endrun
+  use ppgrid, only: pcols, pver, pverp, begchunk, endchunk  
+  implicit none
+  public
+  save
+  
+! Public interfaces
+  
+  public sw_initialize
+  public ReadCkPt_sw
+  
+! Correlated-k (Ck) data structure for reference pressure/temperature table: 
+  Type GasCkPt_sw
+     real(r8), allocatable :: G(:), P(:), T(:), Wn(:), Wn_1(:), Wn_2(:), Wght(:)
+     real(r8), allocatable :: Val(:, :, :, :)
+  End Type GasCkPt_sw
+  
+! Ck data structure, val(nG, nTP, nWn)=Ck values on model pres vs temp grid
+  Type GasCk_sw
+     real(r8), allocatable :: G(:), P(:), T(:), Wght(:)
+     real(r8), allocatable :: Val(:, :, :)
+  End Type GasCk_sw
+  
+! Structure for processing reference table for aerosol parameters
+  Type Aero_Tab
+      integer :: Na, ns  !number of aerosol types, wavelength entries
+      real(r8), allocatable :: wn(:), kaero(:,:),ssa(:,:),g(:,:),f(:,:)
+  End Type Aero_Tab
+
+  integer, parameter, public :: N_gas_ck_sw = 1  !Number of sw gases involved  
+  Type(GasCkPt_sw), public, dimension(N_gas_ck_sw) :: CkPt_sw
+  Type(GasCk_sw), public, dimension(N_gas_ck_sw) :: Ck_sw
+  Type(Aero_Tab), public :: aero_tab_sw
+  integer Nwn_sw,Ng_sw
+
+  character(len=256), public :: sw_ck_infil(N_gas_ck_sw),path_infil,sw_aero_infil
+  character(len=20), public :: gas_name_sw(N_gas_ck_sw)  
+  
+  
+contains
+
+subroutine sw_initialize()
+!----------------------------------------------------------------------- 
+! 
+! Purpose: 
+! Read ck data, establish dimensions for wavenumber grid
+
+!USE:
+
+  use filenames, only: fil_radcnst
+
+  
+! Arguments:
+
+
+! Local variables
+
+  integer  :: klen, i,j, nzm
+
+
+  nzm=pver
+
+! Define path to k-table:
+
+  klen = len_trim(fil_radcnst)
+   do i = klen, 1, -1
+      if (fil_radcnst(i:i) == '/') go to 100  !find first / starting from end
+   end do
+   i = 0
+ 100 path_infil = fil_radcnst(1:i)
+   if (len_trim(path_infil) == 0) then
+      call endrun ('(SW_INITIALIZE): local filename has zero length')
+   else
+     if(masterproc) then
+      write(6,*)'(SW_INITIALIZE): attempting to find directory ', trim(path_infil)
+     endif
+   endif
+  
+! List input c-k tables:
+  sw_ck_infil(1)=trim(path_infil) // 'ch4-h2-sw.ck'
+  
+! Read in basic table of sw Ck data for each gas. Allocate space for Ck structure
+
+   do i=1,N_gas_ck_sw
+   
+    if (masterproc) then
+     print*,'(SW_INITIALIZE): Attempting to read file: ',Trim(sw_ck_infil(i)) 
+    endif   
+     CkPt_sw(i) = ReadCkPt_sw(Trim(sw_ck_infil(i)))
+     
+! Allocate the Ck structure for each gas. Ck values interpolated
+! onto P-T grid in subroutine interpck
+
+     Allocate(Ck_sw(i)%P(nzm))
+     Allocate(Ck_sw(i)%T(nzm))
+
+     Nwn_sw = Size(CkPt_sw(i)%Wn)
+     Ng_sw = Size(CkPt_sw(i)%G)
+     Allocate(Ck_sw(i)%Val(Ng_sw, nzm, Nwn_sw))
+     Allocate(Ck_sw(i)%G(Ng_sw))
+     Allocate(Ck_sw(i)%Wght(Ng_sw))
+     Ck_sw(i)%G = CkPt_sw(i)%G
+     Ck_sw(i)%Wght = CkPt_sw(i)%Wght
+
+! reference pressure-temperature structure passed to Ck in :
+     
+     do j=1,nzm
+      Ck_sw(i)%P(j)=0.   
+      Ck_sw(i)%T(j)=0.
+     enddo
+     
+   enddo
+   
+! Set up table of optical parameters for the aerosols
+
+#ifdef _TITAN
+      sw_aero_infil =trim(path_infil) // 'aer_sw_props_titan.in'  
+#endif
+#ifdef _JUPITER
+      sw_aero_infil =trim(path_infil) // 'aer_sw_props_jupiter.in'
+#endif
+#ifdef _SATURN
+      sw_aero_infil =trim(path_infil) // 'aer_sw_props_saturn.in'
+#endif
+#ifdef _URANUS
+      sw_aero_infil =trim(path_infil) // 'aer_sw_props_uranus.in'
+#endif
+#ifdef _NEPTUNE
+      sw_aero_infil =trim(path_infil) // 'aer_sw_props_neptune.in'
+#endif
+
+     aero_tab_sw = ReadAero_sw(Trim(sw_aero_infil))
+        
+return   
+end subroutine sw_initialize
+
+!--------------------------------------------------------------------------
+
+! interpck_sw:
+!   Interpolates the ck tables for a given temperature and pressure grid and
+!   saves results in table format.
+!
+! author:
+!   David Ye
+!   AJF, 3-12-08: modified for use inside CAM code
+!   AJF, 6-21-08: modified for use in URANUS code
+!   AJF, 4-8-09 : modified for use in OPGCM code
+
+subroutine interpck_sw(state)
+  use shr_kind_mod,    only: r8 => shr_kind_r8
+  use physics_types,   only: physics_state
+  use ppgrid,          only: pcols, pver, pverp, begchunk, endchunk
+  use phys_gmean,      only: gmean
+  use radcnst,         only: BilinearInterpolate
+  Implicit None
+  
+!  Arguments
+
+  type(physics_state), intent(in), dimension(begchunk:endchunk) :: state
+
+!  Local Variables
+
+  Integer I, J, K, n, lchnk, ncol
+  Integer Ngg, Nwn
+  Integer Np           ! Number of vertical layers
+! ajf, 3-17-08/4-8-09: variables for computing global mean P-T profile:
+  real(r8) :: te(pcols,begchunk:endchunk,1)  !temp storage of P,T flds at one vert-lev
+  real(r8) :: te_glob(1)              ! global means of P,T at vertical level
+  real(r8) :: pmean(pver)            ! glob-mean pressure, mid-layer
+  real(r8) :: tmean(pver)            !  "    "   temperature, mid-layer
+
+!  Find global mean pressure, temperature fields at first time or restart step:
+
+   do j=1,pver
+   
+    do lchnk = begchunk, endchunk
+       ncol = state(lchnk)%ncol
+! midlayer pressure, Pascals:
+       te(:ncol,lchnk,1) = state(lchnk)%pmid(:ncol,j)
+    enddo
+    
+    call gmean(te, te_glob, 1)
+    
+    pmean(j)=te_glob(1) !mean pressure of layer
+    
+   enddo
+
+! temperature, layer j
+       
+   do j=1,pver
+   
+    do lchnk = begchunk, endchunk
+       ncol = state(lchnk)%ncol
+! layer temperature, layer j:
+       te(:ncol,lchnk,1) = state(lchnk)%t(:ncol,j)
+    enddo
+    
+    call gmean(te, te_glob, 1)
+    
+    tmean(j)=te_glob(1) !mean temperature in layer j
+    
+   enddo
+   
+   !ajf, 4-8-09:
+    Np=pver
+    do n=1,N_gas_ck_sw
+    do j=1,Np
+     Ck_sw(n)%P(j)=pmean(j)*1.0e-5  !convert pressure from Pa to bars
+    enddo 
+    do j=1,Np
+     Ck_sw(n)%T(j)=tmean(j)
+    enddo
+    enddo
+
+!  Interpolate grand table CkPt_sw onto CAM P-T grid table Ck_sw for each gas
+
+  do n=1,N_gas_ck_sw
+
+  Nwn = Nwn_sw
+  Ngg =  Ng_sw
+  Np  =  pver
+
+! Interpolate at pressure and temperature coordinates specified
+        
+  Do I = 1, Ngg
+  Do J = 1, Np
+  Do K = 1, Nwn
+  
+!!!    if( k == Nwn .and. i == 1 .and. j == 1) then
+!!!     if(ME==0) then
+!!!      print*,'INTERPCK_CAM:'
+!!!      print*,'n= ',n,' k= ',k,' i= ',i,' j= ',j
+!!!      print*,' Nwn= ',Nwn,' Ngg= ',Ngg
+!!!      print*,' Ck(n)%P,T(j)= ',Ck(n)%P(j),Ck(n)%T(j)
+!!!      print*,' CkPt(n)%T(8,9)= ',CkPt(n)%T(8),CkPt(n)%T(9)
+!!!      print*,' CkPt(n)%P(4,5)= ',CkPt(n)%P(4),CkPt(n)%P(5)
+!!!      print*,' CkPt(n)%Val(1,4,8,Nwn)= ',CkPt(n)%Val(1,4,8,Nwn)
+!!!      print*,' CkPt(n)%Val(1,5,8,Nwn)= ',CkPt(n)%Val(1,5,8,Nwn)
+!!!      print*,' CkPt(n)%Val(1,4,9,Nwn)= ',CkPt(n)%Val(1,4,9,Nwn)
+!!!      print*,' CkPt(n)%Val(1,5,9,Nwn)= ',CkPt(n)%Val(1,5,9,Nwn)
+!!!     endif
+!!!    endif     
+          
+     Ck_sw(n)%Val(I, J, K) = BilinearInterpolate(log(CkPt_sw(n)%P), CkPt_sw(n)%T, &
+           CkPt_sw(n)%Val(I, :, :, K), log(Ck_sw(n)%P(J)), Ck_sw(n)%T(J))
+           
+!!!    if( k == Nwn .and. i == 1 .and. j == 1) then
+!!!     if(ME==0) then
+!!!      print*,'Ck(n)%Val(I, J, K)= ',Ck(n)%Val(I, J, K)
+!!!    endif
+!!!    endif           
+    
+  End Do
+  End Do
+  End Do
+  
+  
+  
+  enddo !end loop over the N_gas_ck_sw gases
+
+end subroutine interpck_sw
+
+!--------------------------------------------------------------------------
+
+
+  Type(GasCkPt_sw) Function ReadCkPt_sw(Path)
+  
+! Reads ck table for methane based on data of Karkoschka 1998 and Irwin etal 2006
+! k-data in table are in units of (km-amagat)^-1, converted here to cm^2/g
+! Reference pressures in table in units of atm 
+#if ( defined SPMD )
+    use mpishorthand, only: mpicom, mpiint, mpir8
+#endif  
+    use physconst, only: mwch4  
+
+
+    Implicit None
+
+    Character *(*), Intent(in) :: Path
+    Integer                    :: Ng, Nt, Np, Nwn
+    Integer                    :: I, J, K, L
+    Integer, Parameter         :: Fid = 14
+    real(r8)                   :: conv_units
+    real(r8), parameter :: n0 = 2.687e19  !Loschmidt's number in cm^-3
+    real(r8), parameter :: protmas = 1.672e-24
+    
+    
+    
+! FAO, 3/08    
+    Integer :: sz_raw_data
+    Integer :: sizes(4), indx
+    real(r8) , allocatable :: raw_data(:)  ! temporary storage
+    Integer :: ierr
+
+! define factor for converting from (km-amagat)^-1 to cm^2 g^-1
+
+    conv_units = 1.0/(mwch4*protmas*n0*1.e5)
+
+! first get dimensions of data; only root proc reads
+    if (masterproc) then
+      Open(Fid, File = Path, Status = 'old')
+       print*, 'ReadCkPt_sw: Reading ck-pt table... ' // Path
+       Read(Fid, *) (sizes(I), I=1,4)
+    endif
+    
+! distribute size info to all processors
+#if ( defined SPMD )
+    call mpibcast (sizes, 4, mpiint, 0, mpicom)
+#endif
+
+! unpack data
+    Ng = sizes(1)
+    Np = sizes(2)
+    Nt = sizes(3)
+    Nwn = sizes(4)
+    
+! pack data for more efficient message passing
+    sz_raw_data = Ng+Ng+Np+Nt+3*Nwn+Ng*Np*Nt*Nwn
+    Allocate(raw_data(sz_raw_data))
+
+    Allocate(ReadCkPt_sw%G(Ng), &
+             ReadCkPt_sw%Wght(Ng), &
+             ReadCkPt_sw%P(Np), &
+             ReadCkPt_sw%T(Nt), &
+             ReadCkPt_sw%Wn(Nwn), &
+             ReadCkPt_sw%Wn_1(Nwn), &
+             ReadCkPt_sw%Wn_2(Nwn), &
+             ReadCkPt_sw%Val(Ng, Np, Nt, Nwn))
+             
+! get raw data; only root proc reads
+    if (masterproc) then
+       Read(Fid, *) (raw_data(I), I = 1,sz_raw_data)
+       Close(Fid)
+    endif
+
+! distribute data to all processors
+#if ( defined SPMD )
+    call mpibcast (raw_data, sz_raw_data, mpir8, 0, mpicom)
+#endif
+
+! unpack data
+
+    indx = 0
+    ReadCkPt_sw%G(1:Ng) = raw_data(indx+1:indx+Ng)
+    indx = indx + Ng
+    ReadCkPt_sw%Wght(1:Ng) = raw_data(indx+1:indx+Ng)
+    indx = indx + Ng
+    ReadCkPt_sw%P(1:Np) = raw_data(indx+1:indx+Np)
+    indx = indx + Np
+    ReadCkPt_sw%T(1:Nt) = raw_data(indx+1:indx+Nt)
+    indx = indx + Nt
+    ReadCkPt_sw%Wn(1:Nwn) = raw_data(indx+1:indx+Nwn)
+    indx = indx + Nwn
+    ReadCkPt_sw%Wn_1(1:Nwn) = raw_data(indx+1:indx+Nwn)
+    indx = indx + Nwn
+    ReadCkPt_sw%Wn_2(1:Nwn) = raw_data(indx+1:indx+Nwn)
+    indx = indx + Nwn
+    do L=1,Nwn
+    do K=1,Nt
+    do J=1,Np
+    do I=1,Ng
+       indx = indx + 1
+       ReadCkPt_sw%Val(I, J, K, L) = raw_data(indx)*conv_units
+    enddo
+    enddo
+    enddo
+    enddo
+
+    deallocate(raw_data)
+
+    Return
+
+  End Function ReadCkPt_sw
+
+!----------------------------------------------------------------------------
+  
+  Type(Aero_Tab) Function ReadAero_sw(Path)
+  
+! AJF 4-10-09  
+! Reads aerosol optical parameter table 
+! kaero-data in table are in units of cm^2/g
+! arbitrary particle mass density of 1 g/cc used for kaero, cancels in
+!  defn of mmr_aero
+ 
+#if ( defined SPMD )
+    use mpishorthand, only: mpicom, mpiint, mpir8
+#endif  
+ 
+
+
+    Implicit None
+
+    Character *(*), Intent(in) :: Path
+    Integer                    :: I,K
+    Integer, Parameter         :: Fid = 14
+    real(r8), parameter        :: conv_wl=1.e7 !convert from nm^-1 to cm^-1
+    
+! FAO, 3/08    
+    Integer :: sizes(2), indx, naa, nsa
+ 
+! AJF 4/10/09
+    Real(r8) :: wl_in, kaero_in, ssa_in, g_in, f_in
+    
+
+! first get dimensions of data; only root proc reads
+    if (masterproc) then
+      Open(Fid, File = Path, Status = 'old')
+       print*, 'ReadAero_sw: Reading aerosol optics table... ' // Path
+       Read(Fid, *) (sizes(I), I=1,2)  !Read Na=number of aerosol types
+                                       !     ns=number of wavelengths in table
+    endif
+    
+! distribute size info to all processors
+#if ( defined SPMD )
+    call mpibcast (sizes, 2, mpiint, 0, mpicom)
+#endif
+
+
+! unpack data
+    naa = sizes(1)
+    nsa = sizes(2)
+    ReadAero_sw%Na = naa
+    ReadAero_sw%ns = nsa    
+
+    Allocate(ReadAero_sw%wn(nsa), &
+             ReadAero_sw%kaero(naa,nsa), &
+             ReadAero_sw%ssa(naa,nsa), &
+             ReadAero_sw%g(naa,nsa), &
+             ReadAero_sw%f(naa,nsa) )
+
+             
+! get data; only root proc reads
+    if (masterproc) then
+      do I=1,naa
+       Read(Fid, '(a)')
+       do K=nsa,1,-1 !index in reverse order so that wavenumber increases with index
+        Read(Fid,*) wl_in,kaero_in,ssa_in,g_in,f_in  !wl_in read redundantly...
+        ReadAero_sw%wn(K) = conv_wl/wl_in
+        ReadAero_sw%kaero(I,K) = kaero_in  !cm^2 g^-1
+        ReadAero_sw%ssa(I,K) = ssa_in
+        ReadAero_sw%g(I,K) = g_in
+        ReadAero_sw%f(I,K) = f_in
+       enddo
+      enddo 
+       
+       Close(Fid)
+    endif
+
+! distribute data to all processors
+#if ( defined SPMD )
+    call mpibcast (ReadAero_sw%wn, nsa, mpir8, 0, mpicom)
+    call mpibcast (ReadAero_sw%kaero, naa*nsa, mpir8, 0, mpicom)
+    call mpibcast (ReadAero_sw%ssa, naa*nsa, mpir8, 0, mpicom)
+    call mpibcast (ReadAero_sw%g, naa*nsa, mpir8, 0, mpicom)
+    call mpibcast (ReadAero_sw%f, naa*nsa, mpir8, 0, mpicom)
+#endif
+
+
+
+  Return
+
+  End Function ReadAero_sw
+  
+!-----------------------------------------------------------------------------
+
+end module opgcm_radcnst_sw

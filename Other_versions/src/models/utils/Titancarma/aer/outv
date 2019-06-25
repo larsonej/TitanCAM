@@ -1,0 +1,52 @@
+ add:            9  0.0000000000000000E+000  0.0000000000000000E+000
+ add:           11  0.0000000000000000E+000  0.0000000000000000E+000
+ add:           13 -3.6507852466978936E-006  2.5705481783256627E-017
+gasexchange 15  1  gasprod: -3.6508E-06  nucl:  0.0000E+00  grow: -3.6508E-06  ex: 
+gasexchange 15  2  gasprod:  3.6508E-06  nucl:  0.0000E+00  grow:  3.6508E-06  ex: 
+
+dfdt: -9.2884E-04  frac:  0.0000E+00  df:  0.0000E+00  df_factor: 1.000000 dt:    0.00658   dfdt*dt: -6.1120E-06  f_old:  0.0000E+00  df/f:        -inf  bin  1
+dfdt: -4.2471E-04  frac:  9.9721E-04  df: -2.7947E-06  df_factor: 1.000000 dt:    0.00658   dfdt*dt: -2.7947E-06  f_old:  1.0000E-03  df/f: -2.7947E-03  bin  2
+dfdt: -1.8771E-04  frac:  9.9876E-04  df: -1.2352E-06  df_factor: 1.000000 dt:    0.00658   dfdt*dt: -1.2352E-06  f_old:  1.0000E-03  df/f: -1.2352E-03  bin  3
+dfdt: -7.8486E-05  frac:  9.9948E-04  df: -5.1646E-07  df_factor: 1.000000 dt:    0.00658   dfdt*dt: -5.1646E-07  f_old:  1.0000E-03  df/f: -5.1646E-04  bin  4
+dfdt: -2.9616E-05  frac:  9.9981E-04  df: -1.9488E-07  df_factor: 1.000000 dt:    0.00658   dfdt*dt: -1.9488E-07  f_old:  1.0000E-03  df/f: -1.9488E-04  bin  5
+dfdt: -8.7808E-06  frac:  1.0803E-09  df: -1.0803E-09  df_factor: 1.000000 dt:    0.00658   dfdt*dt: -5.7780E-08  f_old:  2.1606E-09  df/f: -2.6742E+01  bin  6
+dfdt: -5.5131E-07  frac:  3.5211E-10  df: -3.5211E-10  df_factor: 1.000000 dt:    0.00658   dfdt*dt: -3.6277E-09  f_old:  7.0422E-10  df/f: -5.1514E+00  bin  7
+dfdt:  3.8676E-06  frac:  2.9896E-01  df:  2.5449E-08  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  2.5449E-08  f_old:  2.9896E-01  df/f:  8.5126E-08  bin  8
+dfdt:  4.3015E-06  frac:  7.2250E-01  df:  2.8305E-08  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  2.8305E-08  f_old:  7.2250E-01  df/f:  3.9176E-08  bin  9
+dfdt:  2.6286E-06  frac:  1.8369E-01  df:  1.7296E-08  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  1.7296E-08  f_old:  1.8369E-01  df/f:  9.4161E-08  bin 10
+dfdt:  2.1181E-06  frac:  5.6524E-01  df:  1.3937E-08  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  1.3937E-08  f_old:  5.6524E-01  df/f:  2.4658E-08  bin 11
+dfdt:  1.7022E-06  frac:  2.2611E-04  df:  1.1201E-08  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  1.1201E-08  f_old:  2.2610E-04  df/f:  4.9539E-05  bin 12
+dfdt:  1.1971E-06  frac:  4.9745E-01  df:  7.8773E-09  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  7.8773E-09  f_old:  4.9745E-01  df/f:  1.5835E-08  bin 13
+dfdt:  1.0934E-06  frac:  7.1950E-09  df:  7.1950E-09  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  7.1950E-09  f_old:  2.1885E-54  df/f:  3.2876E+45  bin 14
+dfdt:  7.8142E-07  frac:  3.1807E-01  df:  5.1419E-09  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  5.1419E-09  f_old:  3.1807E-01  df/f:  1.6166E-08  bin 15
+dfdt:  6.5730E-07  frac:  2.3975E-01  df:  4.3252E-09  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  4.3252E-09  f_old:  2.3975E-01  df/f:  1.8041E-08  bin 16
+dfdt:  5.6208E-07  frac:  1.7801E-01  df:  3.6986E-09  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  3.6986E-09  f_old:  1.7801E-01  df/f:  2.0778E-08  bin 17
+dfdt:  4.8795E-07  frac:  1.2646E-01  df:  3.2108E-09  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  3.2108E-09  f_old:  1.2646E-01  df/f:  2.5390E-08  bin 18
+dfdt:  4.2861E-07  frac:  8.3859E-02  df:  2.8204E-09  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  2.8204E-09  f_old:  8.3859E-02  df/f:  3.3632E-08  bin 19
+dfdt:  3.7829E-07  frac:  5.4895E-02  df:  2.4892E-09  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  2.4892E-09  f_old:  5.4895E-02  df/f:  4.5345E-08  bin 20
+dfdt:  3.2593E-07  frac:  3.5134E-02  df:  2.1447E-09  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  2.1447E-09  f_old:  3.5134E-02  df/f:  6.1042E-08  bin 21
+dfdt:  7.1606E-08  frac:  9.5182E-03  df:  4.7118E-10  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  4.7118E-10  f_old:  9.5182E-03  df/f:  4.9503E-08  bin 22
+dfdt:  5.9170E-08  frac:  3.0822E-03  df:  3.8935E-10  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  3.8935E-10  f_old:  3.0822E-03  df/f:  1.2632E-07  bin 23
+dfdt:  4.8518E-08  frac:  3.5187E-03  df:  3.1926E-10  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  3.1926E-10  f_old:  3.5187E-03  df/f:  9.0731E-08  bin 24
+dfdt:  3.9302E-08  frac:  1.3190E-02  df:  2.5862E-10  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  2.5862E-10  f_old:  1.3190E-02  df/f:  1.9607E-08  bin 25
+dfdt:  3.1035E-08  frac:  4.6749E-02  df:  2.0422E-10  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  2.0422E-10  f_old:  4.6749E-02  df/f:  4.3684E-09  bin 26
+dfdt:  2.5060E-08  frac:  4.6658E-02  df:  1.6490E-10  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  1.6490E-10  f_old:  4.6658E-02  df/f:  3.5341E-09  bin 27
+dfdt:  2.0456E-08  frac:  2.7036E-02  df:  1.3461E-10  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  1.3461E-10  f_old:  2.7036E-02  df/f:  4.9788E-09  bin 28
+dfdt:  1.6496E-08  frac:  1.4809E-02  df:  1.0855E-10  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  1.0855E-10  f_old:  1.4809E-02  df/f:  7.3301E-09  bin 29
+dfdt:  1.3162E-08  frac:  8.1751E-03  df:  8.6606E-11  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  8.6606E-11  f_old:  8.1751E-03  df/f:  1.0594E-08  bin 30
+dfdt:  1.0411E-08  frac:  4.5761E-03  df:  6.8509E-11  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  6.8509E-11  f_old:  4.5761E-03  df/f:  1.4971E-08  bin 31
+dfdt:  8.9757E-09  frac:  2.5218E-03  df:  5.9062E-11  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  5.9062E-11  f_old:  2.5218E-03  df/f:  2.3421E-08  bin 32
+dfdt:  2.4147E-08  frac:  3.3674E-04  df:  1.5889E-10  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  1.5889E-10  f_old:  3.3674E-04  df/f:  4.7185E-07  bin 33
+dfdt:  1.9071E-08  frac:  2.9297E-04  df:  1.2549E-10  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  1.2549E-10  f_old:  2.9297E-04  df/f:  4.2835E-07  bin 34
+dfdt:  1.4678E-08  frac:  2.6137E-04  df:  9.6586E-11  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  9.6586E-11  f_old:  2.6137E-04  df/f:  3.6954E-07  bin 35
+dfdt:  1.1373E-08  frac:  2.2998E-04  df:  7.4835E-11  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  7.4835E-11  f_old:  2.2998E-04  df/f:  3.2540E-07  bin 36
+dfdt:  8.6262E-09  frac:  2.0267E-04  df:  5.6762E-11  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  5.6762E-11  f_old:  2.0267E-04  df/f:  2.8008E-07  bin 37
+dfdt:  6.4081E-09  frac:  1.8106E-04  df:  4.2167E-11  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  4.2167E-11  f_old:  1.8106E-04  df/f:  2.3289E-07  bin 38
+dfdt:  4.6565E-09  frac:  1.6833E-04  df:  3.0641E-11  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  3.0641E-11  f_old:  1.6833E-04  df/f:  1.8202E-07  bin 39
+dfdt:  4.5100E-09  frac:  1.5686E-04  df:  2.9676E-11  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  2.9676E-11  f_old:  1.5686E-04  df/f:  1.8919E-07  bin 40
+dfdt:  2.8411E-09  frac:  1.5375E-04  df:  1.8695E-11  df_factor: 1.000000 dt:    0.00658   dfdt*dt:  1.8695E-11  f_old:  1.5375E-04  df/f:  1.2159E-07  bin 41
+isotope_exc 15  3.5312E-16  2 -3.5312E-16
+gsolve  15   1  gc: -2.3869E-08  gcl:  1.5371E-10  prod: -3.6508E-06  
+        exc:  3.5312E-16  grow: -3.6508E-06  
+        drop:  0.0000E+00  mono:  0.0000E+00  poly:  0.0000E+00  
+        dt:  6.5802E-03 731.88548912 days    23676 itime
